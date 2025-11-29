@@ -1,0 +1,5 @@
+package com.zhuzhu66.hearai.hearai
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

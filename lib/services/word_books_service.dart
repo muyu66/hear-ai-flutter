@@ -1,0 +1,49 @@
+import 'package:hearai/apis/api_service.dart';
+import 'package:hearai/models/result_bool.dart';
+import 'package:hearai/models/result_int.dart';
+import 'package:hearai/models/word_book.dart';
+import 'package:hearai/models/word_book_summary.dart';
+
+class WordBooksService extends ApiService {
+  // 单词是否存在单词本
+  Future<ResultBool> exist(String word) async {
+    final res = await dio.get('/word_books/exist?word=$word');
+    return ResultBool.fromJson(res.data);
+  }
+
+  // 新增单词到单词本
+  Future<void> addWordBooks(String word) async {
+    await dio.post<bool>('/word_books', data: {"word": word});
+  }
+
+  // 获取单词本概况
+  Future<WordBookSummary> getWordBooksSummary() async {
+    final res = await dio.get('/word_books/summary');
+    return WordBookSummary.fromJson(res.data);
+  }
+
+  // 获取今天的单词本概况
+  Future<ResultInt> getWordBooksToday() async {
+    final res = await dio.get('/word_books/today');
+    return ResultInt.fromJson(res.data);
+  }
+
+  // 获取单词本列表
+  Future<List<WordBook>> getWordBooks() async {
+    final res = await dio.get<List<dynamic>>('/word_books');
+    return (res.data ?? []).map((e) => WordBook.fromJson(e)).toList();
+  }
+
+  // 记住单词
+  Future<void> rememberWordBooks(String word, int hintCount) async {
+    await dio.post<void>(
+      '/word_books/remember',
+      data: {"word": word, "hintCount": hintCount},
+    );
+  }
+
+  // 从单词本剔除单词
+  Future<void> deleteWordBooks(String word) async {
+    await dio.post<void>('/word_books/delete', data: {"word": word});
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "@@locale": "zh",
+  "confirm": "当然",
+  "cancel": "不",
+  "confirmDelete": "确定要删除吗？",
+  "confirmDeleteWordBooks": "将 {word} 从单词本中删除？",
+  "confirmClean": "确定要清理吗？",
+  "confirmSignOut": "如未绑定微信，退出后将无法再次登录本账号。"
+}
