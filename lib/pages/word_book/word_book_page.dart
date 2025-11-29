@@ -7,6 +7,7 @@ import 'package:hearai/models/word_book.dart';
 import 'package:hearai/models/word_book_summary.dart';
 import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/themes/light/color_schemes.dart';
+import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/widgets/dict.dart';
 import 'package:hearai/widgets/loading.dart';
 
@@ -121,6 +122,7 @@ class _WordBookPageState extends State<WordBookPage> {
                             showMore: word.word == currentWord,
                             hitCount: hitCount,
                             onTap: () {
+                              HapticFeedback.lightImpact();
                               setState(() {
                                 hitCount++;
                                 currentWord = word.word; // 激活这个单词
@@ -128,6 +130,7 @@ class _WordBookPageState extends State<WordBookPage> {
                               showDictModal(context, word.word);
                             },
                             onCorrect: () {
+                              HapticFeedback.lightImpact();
                               wordBooksService
                                   .rememberWordBooks(word.word, hitCount)
                                   .then((_) {
@@ -135,21 +138,12 @@ class _WordBookPageState extends State<WordBookPage> {
                                   });
                             },
                             onIncorrect: () {
-                              AwesomeDialog(
-                                transitionAnimationDuration: const Duration(
-                                  milliseconds: 200,
-                                ),
+                              HapticFeedback.lightImpact();
+                              showConfirmDialog(
                                 context: context,
-                                headerAnimationLoop: false,
-                                dialogType: DialogType.question,
-                                animType: AnimType.scale,
                                 title: l.confirmDeleteWordBooks(word.word),
-                                btnOkText: l.confirm,
-                                btnCancelText: l.cancel,
-                                btnCancelOnPress: () {
-                                  HapticFeedback.lightImpact();
-                                },
-                                btnOkOnPress: () {
+                                dialogType: DialogType.question,
+                                onConfirm: () {
                                   HapticFeedback.lightImpact();
                                   wordBooksService
                                       .deleteWordBooks(word.word)
@@ -157,7 +151,7 @@ class _WordBookPageState extends State<WordBookPage> {
                                         _loadData();
                                       });
                                 },
-                              ).show();
+                              );
                             },
                           );
                         },

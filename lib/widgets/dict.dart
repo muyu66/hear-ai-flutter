@@ -1,10 +1,11 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/word_dict.dart';
 import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/services/word_service.dart';
 import 'package:hearai/tools/audio_manager.dart';
+import 'package:hearai/tools/dialog.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void showDictModal(BuildContext context, String word) {
@@ -290,11 +291,27 @@ class _LocalDictView extends StatefulWidget {
 
 class _LocalDictViewState extends State<_LocalDictView> {
   bool done = false;
+  WordService wordService = WordService();
+
+  void _handleBadWordDict() {
+    final l = AppLocalizations.of(context);
+
+    HapticFeedback.lightImpact();
+    wordService
+        .badWordDict(widget.word)
+        .then((value) {
+          if (!mounted) return;
+          showNotifyDialog(context: context, title: l.reportSuccess);
+          setState(() {
+            done = true;
+          });
+        })
+        .catchError((error) {});
+  }
 
   @override
   Widget build(BuildContext context) {
     final c = Theme.of(context).colorScheme;
-    WordService wordService = WordService();
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -316,26 +333,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
                   color: done ? c.secondary : c.error,
                   size: 22,
                 ),
-                onPressed: done
-                    ? null
-                    : () {
-                        HapticFeedback.lightImpact();
-                        wordService
-                            .badWordDict(widget.word)
-                            .then((value) {
-                              BotToast.showText(
-                                text: "感谢您的贡献 😊",
-                                onlyOne: true,
-                                duration: Duration(milliseconds: 1500),
-                                align: Alignment(0, -0.9),
-                              );
-                              if (!mounted) return;
-                              setState(() {
-                                done = true;
-                              });
-                            })
-                            .catchError((error) {});
-                      },
+                onPressed: done ? null : _handleBadWordDict,
               ),
             ],
           ),

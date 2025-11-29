@@ -1,13 +1,14 @@
-import 'dart:convert';
-
+import 'dart:async';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hearai/apis/auth_store.dart';
-import 'package:hearai/models/sign_up_req.dart';
-import 'package:hearai/services/auth_service.dart';
-import 'package:hearai/tools/device_info.dart';
-import 'package:hearai/tools/key_manager.dart';
-import 'package:hearai/tools/secure_storage.dart';
+import 'package:hearai/l10n/app_localizations.dart';
+import 'package:hearai/tools/auth.dart';
+import 'package:hearai/tools/dialog.dart';
+import 'package:wechat_kit/wechat_kit.dart';
+
+const String kWechatAppID = 'wxb76a447bb568b5d8';
+const String kWechatUniversalLink = 'your wechat universal link'; // iOS 请配置
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -91,28 +92,7 @@ class _GuestButtonState extends State<_GuestButton> {
     HapticFeedback.lightImpact();
 
     try {
-      final pair = KeyManager.generateKeyPair();
-      final privateHash = KeyManager.sha256(pair.privateKey.bytes);
-      final publicKeyBase64 = base64Encode(pair.publicKey.bytes);
-      final privateKeyBase64 = base64Encode(pair.privateKey.bytes);
-      final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      final sig = KeyManager.sign(pair.privateKey.bytes, timestamp);
-      final sigBase64 = base64Encode(sig);
-      final deviceInfo = jsonEncode(await DeviceUtils.getDeviceInfo());
-
-      final api = await AuthService().signUp(
-        SignUpReq(
-          account: privateHash,
-          publicKeyBase64: publicKeyBase64,
-          signatureBase64: sigBase64,
-          timestamp: timestamp,
-          deviceInfo: deviceInfo,
-        ),
-      );
-
-      // 安全存储私钥
-      await SecureStorageUtils.write('privateKeyBase64', privateKeyBase64);
-      AuthStore().setToken(api.accessToken);
+      await authSignUp();
     } catch (e) {
       debugPrint('SignUp failed: $e');
     } finally {
@@ -120,17 +100,31 @@ class _GuestButtonState extends State<_GuestButton> {
         setState(() => _loading = false);
         Navigator.pushReplacementNamed(context, '/');
       }
-      ;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: OutlinedButton(
-        onPressed: _loading ? null : _onSignUp,
+        onPressed: _loading
+            ? null
+            : () {
+                HapticFeedback.lightImpact();
+                showConfirmDialog(
+                  context: context,
+                  title: l.confirmSignUpGuest,
+                  dialogType: DialogType.warning,
+                  onConfirm: () {
+                    HapticFeedback.lightImpact();
+                    _onSignUp();
+                  },
+                );
+              },
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.grey.shade400, width: 1.2),
           shape: RoundedRectangleBorder(
@@ -170,6 +164,57 @@ class _WeChatButton extends StatefulWidget {
 
 class _WeChatButtonState extends State<_WeChatButton> {
   bool _loading = false;
+  bool _support = true;
+  late final StreamSubscription<WechatResp> _respSubs;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSupport();
+    _respSubs = WechatKitPlatform.instance.respStream().listen(_listenResp);
+  }
+
+  @override
+  void dispose() {
+    _respSubs.cancel();
+    super.dispose();
+  }
+
+  void _listenResp(WechatResp resp) {
+    if (resp is WechatAuthResp) {
+      if (resp.errorCode != 0) {
+        throw Exception("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
+      }
+      final String code = resp.code ?? "";
+      if (code == "") {
+        throw Exception("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
+      }
+
+      authSignUpWechat(code)
+          .then((_) {
+            if (mounted) {
+              setState(() => _loading = false);
+              Navigator.pushReplacementNamed(context, '/');
+            }
+          })
+          .catchError((e) {
+            debugPrint('SignUp failed: $e');
+          });
+    }
+  }
+
+  Future<void> _checkSupport() async {
+    await WechatKitPlatform.instance.registerApp(
+      appId: kWechatAppID,
+      universalLink: kWechatUniversalLink,
+    );
+    bool support =
+        await WechatKitPlatform.instance.isInstalled() &&
+        await WechatKitPlatform.instance.isSupportApi();
+    setState(() {
+      _support = support;
+    });
+  }
 
   Future<void> _onWeChatLogin() async {
     if (_loading) return;
@@ -177,9 +222,10 @@ class _WeChatButtonState extends State<_WeChatButton> {
     HapticFeedback.lightImpact();
 
     try {
-      // TODO: 填写微信登录逻辑
-      await Future.delayed(const Duration(seconds: 1));
-      print("微信登录完成");
+      await WechatKitPlatform.instance.auth(
+        scope: <String>[WechatScope.kSNSApiUserInfo],
+        state: 'zhuzhu123456',
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -191,7 +237,11 @@ class _WeChatButtonState extends State<_WeChatButton> {
       width: double.infinity,
       height: 52,
       child: ElevatedButton(
-        onPressed: _loading ? null : _onWeChatLogin,
+        onPressed: !_support
+            ? null
+            : _loading
+            ? null
+            : _onWeChatLogin,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF07C160),
           shape: RoundedRectangleBorder(

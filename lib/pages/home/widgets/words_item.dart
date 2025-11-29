@@ -1,10 +1,11 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/words.dart';
 import 'package:hearai/pages/home/widgets/slice_words.dart';
 import 'package:hearai/services/words_service.dart';
 import 'package:hearai/tools/audio_manager.dart';
+import 'package:hearai/tools/dialog.dart';
 
 class WordsItem extends StatefulWidget {
   final WordsModel words;
@@ -24,6 +25,25 @@ class _WordsItemState extends State<WordsItem> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void _handleBadWords() async {
+    final l = AppLocalizations.of(context);
+
+    HapticFeedback.lightImpact();
+
+    wordsService
+        .badWords(widget.words.id)
+        .then((value) {
+          if (!mounted) return;
+          showNotifyDialog(context: context, title: l.reportSuccess);
+          setState(() {
+            done = true;
+          });
+        })
+        .catchError((error) {
+          if (!mounted) return;
+        });
   }
 
   @override
@@ -51,30 +71,7 @@ class _WordsItemState extends State<WordsItem> {
                       color: done ? c.secondary : c.error,
                       size: 22,
                     ),
-                    onPressed: done
-                        ? null
-                        : () {
-                            HapticFeedback.lightImpact();
-
-                            wordsService
-                                .badWords(widget.words.id)
-                                .then((value) {
-                                  BotToast.showText(
-                                    text: "感谢您的贡献 😊",
-                                    onlyOne: true,
-                                    duration: Duration(milliseconds: 1500),
-                                    align: Alignment(0, -0.9),
-                                  );
-                                  if (!mounted) return;
-                                  setState(() {
-                                    done = true;
-                                  });
-                                })
-                                .catchError((error) {
-                                  if (!mounted) return;
-                                });
-                            ;
-                          },
+                    onPressed: done ? null : _handleBadWords,
                   ),
                 ),
               ),

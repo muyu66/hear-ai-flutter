@@ -97,13 +97,13 @@ abstract class AppLocalizations {
   /// No description provided for @confirm.
   ///
   /// In zh, this message translates to:
-  /// **'当然'**
+  /// **'好的'**
   String get confirm;
 
   /// No description provided for @cancel.
   ///
   /// In zh, this message translates to:
-  /// **'不'**
+  /// **'不了'**
   String get cancel;
 
   /// No description provided for @confirmDelete.
@@ -127,8 +127,26 @@ abstract class AppLocalizations {
   /// No description provided for @confirmSignOut.
   ///
   /// In zh, this message translates to:
-  /// **'如未绑定微信，退出后将无法再次登录本账号。'**
+  /// **'确定要退出吗？'**
   String get confirmSignOut;
+
+  /// No description provided for @confirmSignOutWithoutWeChat.
+  ///
+  /// In zh, this message translates to:
+  /// **'未绑定微信，退出后将无法再次登录本账号'**
+  String get confirmSignOutWithoutWeChat;
+
+  /// No description provided for @confirmSignUpGuest.
+  ///
+  /// In zh, this message translates to:
+  /// **'临时账号只能保持30天，尽快绑定微信哦'**
+  String get confirmSignUpGuest;
+
+  /// No description provided for @reportSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'感谢您的贡献 😊'**
+  String get reportSuccess;
 }
 
 class _AppLocalizationsDelegate

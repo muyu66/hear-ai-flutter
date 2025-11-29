@@ -6,8 +6,11 @@ import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/services/auth_service.dart';
+import 'package:hearai/store.dart';
 import 'package:hearai/tools/cache_manager.dart';
+import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -21,7 +24,15 @@ class _SettingsPageState extends State<SettingsPage> {
   String _cacheSizeText = '0 B';
   CacheManager cacheManager = CacheManager();
   AuthService authService = AuthService();
-  UserProfile _userProfile = UserProfile("匿名用户", null, "pow", 3, 10, true);
+  UserProfile _userProfile = UserProfile(
+    "匿名用户",
+    null,
+    "pow",
+    3,
+    10,
+    true,
+    false,
+  );
 
   @override
   void initState() {
@@ -66,6 +77,17 @@ class _SettingsPageState extends State<SettingsPage> {
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/sign_in');
     }
+  }
+
+  void _updateUseMinute(int value) {
+    if (!mounted) return;
+    final store = Provider.of<Store>(context, listen: false);
+
+    HapticFeedback.lightImpact();
+    authService.updateProfile(useMinute: value).then((_) {
+      _loadProfile();
+      store.resetPercent();
+    });
   }
 
   @override
@@ -148,11 +170,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   DropdownMenuItem(value: 120, child: Text('2小时')),
                 ],
                 onChanged: (value) async {
-                  if (value != null) {
-                    HapticFeedback.lightImpact();
-                    await authService.updateProfile(useMinute: value);
-                    _loadProfile();
-                  }
+                  if (value == null) return;
+                  _updateUseMinute(value);
                 },
               ),
               _buildSwitchTile(
@@ -180,27 +199,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 icon: FontAwesomeIcons.trash,
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  AwesomeDialog(
-                    transitionAnimationDuration: const Duration(
-                      milliseconds: 200,
-                    ),
+                  showConfirmDialog(
                     context: context,
-                    headerAnimationLoop: false,
-                    dialogType: DialogType.warning,
-                    animType: AnimType.scale,
                     title: l.confirmClean,
-                    btnOkText: l.confirm,
-                    btnCancelText: l.cancel,
-                    btnCancelOnPress: () {
-                      HapticFeedback.lightImpact();
-                    },
-                    btnOkOnPress: () {
+                    dialogType: DialogType.warning,
+                    onConfirm: () {
                       HapticFeedback.lightImpact();
                       cacheManager.clearCache().then((_) {
                         _loadCacheSize();
                       });
                     },
-                  ).show();
+                  );
                 },
               ),
               _buildClickableTile(
@@ -244,22 +253,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 icon: FontAwesomeIcons.arrowRightFromBracket,
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  AwesomeDialog(
-                    transitionAnimationDuration: const Duration(
-                      milliseconds: 200,
-                    ),
+                  showConfirmDialog(
                     context: context,
-                    headerAnimationLoop: false,
+                    title: _userProfile.isWechat
+                        ? l.confirmSignOut
+                        : l.confirmSignOutWithoutWeChat,
                     dialogType: DialogType.warning,
-                    animType: AnimType.scale,
-                    title: l.confirmSignOut,
-                    btnOkText: l.confirm,
-                    btnCancelText: l.cancel,
-                    btnCancelOnPress: () {
+                    onConfirm: () {
                       HapticFeedback.lightImpact();
+                      _signOut();
                     },
-                    btnOkOnPress: _signOut,
-                  ).show();
+                  );
                 },
               ),
             ],

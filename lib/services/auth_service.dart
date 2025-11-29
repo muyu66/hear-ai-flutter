@@ -2,12 +2,19 @@ import 'package:hearai/apis/api_service.dart';
 import 'package:hearai/models/sign_in_req.dart';
 import 'package:hearai/models/sign_up_req.dart';
 import 'package:hearai/models/sign_up_res.dart';
+import 'package:hearai/models/sign_up_wechat_req.dart';
 import 'package:hearai/models/user_profile.dart';
 
 class AuthService extends ApiService {
   /// 用户注册
   Future<SignUpRes> signUp(SignUpReq req) async {
     final res = await dio.post('/auth/sign_up', data: req.toJson());
+    return SignUpRes.fromJson(res.data);
+  }
+
+  /// 微信用户注册
+  Future<SignUpRes> signUpWechat(SignUpWechatReq req) async {
+    final res = await dio.post('/auth/sign_up_wechat', data: req.toJson());
     return SignUpRes.fromJson(res.data);
   }
 

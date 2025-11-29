@@ -21,13 +21,15 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   audioplayers: ^6.5.1
   webview_flutter: ^4.13.0
-  bot_toast: ^4.1.3
   google_fonts: ^6.3.2
   awesome_dialog: ^3.3.0
   intl: ^0.20.2
   flutter_cache_manager: ^3.4.1
   path_provider: ^2.1.5
   url_launcher: ^6.3.2
+  wechat_kit: ^6.0.2
+  flutter_dotenv: ^6.0.0
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
@@ -40,7 +42,14 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - .env
+    - .env.prod
 
 flutter_launcher_icons:
   android: "launcher_icon"
   image_path: "assets/icon/logo_960.png"
+
+wechat_kit:
+  app_id: wxb76a447bb568b5d8
+  universal_link: https://xxxxx.com/universal_link/example_app/wechat/

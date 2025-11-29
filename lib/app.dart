@@ -4,22 +4,25 @@ import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/pages/home/home_page.dart';
 import 'package:hearai/pages/settings/settings_page.dart';
 import 'package:hearai/pages/sign_in/sign_in_page.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:hearai/pages/word_book/word_book_page.dart';
 import 'package:hearai/themes/light/theme.dart';
 import 'package:hearai/tools/audio_manager.dart';
 
-// 路由监听
+// 全局路由监听
 class _AppRouteObserver extends NavigatorObserver {
-  final VoidCallback onPush;
+  final void Function(Route<dynamic> topRoute, Route<dynamic>? previousTopRoute)
+  onPush;
 
   _AppRouteObserver({required this.onPush});
 
   @override
-  void didPush(Route route, Route? previousRoute) {
-    onPush();
+  void didChangeTop(Route<dynamic> topRoute, Route<dynamic>? previousTopRoute) {
+    onPush(topRoute, previousTopRoute);
   }
 }
+
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -37,12 +40,12 @@ class App extends StatelessWidget {
         '/word_book': (context) => WordBookPage(),
       },
       initialRoute: '/',
-      builder: BotToastInit(),
       navigatorObservers: [
-        BotToastNavigatorObserver(),
+        routeObserver,
         _AppRouteObserver(
-          onPush: () {
-            AudioManager().stop(); // 全局停止播放
+          onPush: (topRoute, previousTopRoute) {
+            // 全局停止
+            AudioManager().stop();
           },
         ),
       ],

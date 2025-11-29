@@ -8,6 +8,7 @@ class Pad extends StatefulWidget {
   final double width;
   final double height;
   final double knobSize;
+  final double percent;
   final void Function(String key)? onPressCenter;
   final void Function(String dir)? onDirection;
   final bool showBadge;
@@ -17,6 +18,7 @@ class Pad extends StatefulWidget {
     this.width = 260,
     this.height = 70,
     this.knobSize = 50,
+    this.percent = 1,
     this.onPressCenter,
     this.onDirection,
     this.showBadge = false,
@@ -70,17 +72,21 @@ class _PadState extends State<Pad> with SingleTickerProviderStateMixin {
       });
   }
 
-  Color lerpColor(Color a, Color b, double t) {
-    return Color.lerp(a, b, t.clamp(0, 1))!;
+  Color lerpHSL(Color a, Color b, double t) {
+    final hslA = HSLColor.fromColor(a);
+    final hslB = HSLColor.fromColor(b);
+    final hsl = HSLColor.lerp(hslA, hslB, t.clamp(0, 1))!;
+    return hsl.toColor();
   }
 
   @override
   Widget build(BuildContext context) {
-    final double percent = 1;
-    final knobColor = lerpColor(
-      const Color(0xFF2C7A30),
-      const Color.fromARGB(255, 211, 34, 34),
-      percent,
+    final c = Theme.of(context).colorScheme;
+
+    final knobColor = lerpHSL(
+      c.tertiary,
+      c.error,
+      Curves.easeInOut.transform(widget.percent),
     );
     final leftScale = 1.3 + (max(0, -dragX) / radius) * (2.0 - 1.3);
     final rightScale = 1.3 + (max(0, dragX) / radius) * (2.0 - 1.3);

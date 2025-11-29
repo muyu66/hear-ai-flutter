@@ -13,6 +13,7 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
   (json['wordsLevel'] as num).toInt(),
   (json['useMinute'] as num).toInt(),
   json['multiSpeaker'] as bool,
+  json['isWechat'] as bool,
 );
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
@@ -23,4 +24,5 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'wordsLevel': instance.wordsLevel,
       'useMinute': instance.useMinute,
       'multiSpeaker': instance.multiSpeaker,
+      'isWechat': instance.isWechat,
     };

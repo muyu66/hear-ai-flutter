@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'token_interceptor.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiClient {
+  final String baseUrl = dotenv.env['API_URL'] ?? 'http://192.168.3.14:3000';
   static final ApiClient _instance = ApiClient._internal();
   factory ApiClient() => _instance;
 
@@ -10,7 +12,7 @@ class ApiClient {
   ApiClient._internal() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.3.14:3000',
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
       ),

@@ -9,10 +9,10 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get confirm => '当然';
+  String get confirm => '好的';
 
   @override
-  String get cancel => '不';
+  String get cancel => '不了';
 
   @override
   String get confirmDelete => '确定要删除吗？';
@@ -26,5 +26,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirmClean => '确定要清理吗？';
 
   @override
-  String get confirmSignOut => '如未绑定微信，退出后将无法再次登录本账号。';
+  String get confirmSignOut => '确定要退出吗？';
+
+  @override
+  String get confirmSignOutWithoutWeChat => '未绑定微信，退出后将无法再次登录本账号';
+
+  @override
+  String get confirmSignUpGuest => '临时账号只能保持30天，尽快绑定微信哦';
+
+  @override
+  String get reportSuccess => '感谢您的贡献 😊';
 }
