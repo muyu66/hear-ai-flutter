@@ -2,7 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-Future<void> showConfirmDialog({
+Future<void> showConfirm({
   required BuildContext context,
   required String title,
   required DialogType dialogType,
@@ -30,7 +30,7 @@ Future<void> showConfirmDialog({
   ).show();
 }
 
-Future<void> showNotifyDialog({
+Future<void> showNotify({
   required BuildContext context,
   required String title,
 }) async {
@@ -39,6 +39,23 @@ Future<void> showNotifyDialog({
     context: context,
     headerAnimationLoop: false,
     customHeader: Text("😊", style: TextStyle(fontSize: 46)),
+    animType: AnimType.scale,
+    title: title,
+    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    autoHide: Duration(milliseconds: 1500),
+  ).show();
+}
+
+Future<void> showClassicNotify({
+  required BuildContext context,
+  required String title,
+  required DialogType dialogType,
+}) async {
+  await AwesomeDialog(
+    transitionAnimationDuration: const Duration(milliseconds: 200),
+    context: context,
+    headerAnimationLoop: false,
+    dialogType: dialogType,
     animType: AnimType.scale,
     title: title,
     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),

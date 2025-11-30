@@ -18,6 +18,11 @@ class AuthService extends ApiService {
     return SignUpRes.fromJson(res.data);
   }
 
+  /// 绑定微信
+  Future<void> linkWechat(String code) async {
+    await dio.post('/auth/link_wechat', data: {"code": code});
+  }
+
   /// 用户登录
   Future<SignUpRes> signIn(SignInReq req) async {
     final res = await dio.post('/auth/sign_in', data: req.toJson());

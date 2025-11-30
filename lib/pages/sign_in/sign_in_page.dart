@@ -1,12 +1,12 @@
 import 'dart:async';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/dialog.dart';
-import 'package:wechat_kit/wechat_kit.dart';
+import 'package:hearai/widgets/wechat_login.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -62,7 +62,7 @@ class SignInPage extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    showNotifyDialog(context: context, title: l.todo);
+                    showNotify(context: context, title: l.todo);
                   },
                   child: Opacity(
                     opacity: 0.6,
@@ -124,7 +124,7 @@ class _GuestButtonState extends State<_GuestButton> {
             ? null
             : () {
                 HapticFeedback.lightImpact();
-                showConfirmDialog(
+                showConfirm(
                   context: context,
                   title: l.confirmSignUpGuest,
                   dialogType: DialogType.warning,
@@ -172,102 +172,45 @@ class _WeChatButton extends StatefulWidget {
 }
 
 class _WeChatButtonState extends State<_WeChatButton> {
-  bool _loading = false;
-  bool _support = true;
-  late final StreamSubscription<WechatResp> _respSubs;
-  final String wechatAppId = dotenv.env['WECHAT_APPID'] ?? '';
-
-  @override
-  void initState() {
-    super.initState();
-    _checkSupport();
-    _respSubs = WechatKitPlatform.instance.respStream().listen(_listenResp);
-  }
-
-  @override
-  void dispose() {
-    _respSubs.cancel();
-    super.dispose();
-  }
-
-  void _listenResp(WechatResp resp) {
-    if (resp is WechatAuthResp) {
-      if (resp.errorCode != 0) {
-        debugPrint("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("微信登录失败"), backgroundColor: Colors.red),
-        );
-      }
-      final String code = resp.code ?? "";
-      if (code == "") {
-        debugPrint("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
-      }
-
-      authSignUpWechat(code)
-          .then((_) {
-            if (mounted) {
-              setState(() => _loading = false);
-              Navigator.pushReplacementNamed(context, '/home');
-            }
-          })
-          .catchError((e) {
-            debugPrint('SignUp failed: $e');
-          });
-    }
-  }
-
-  Future<void> _checkSupport() async {
-    await WechatKitPlatform.instance.registerApp(
-      appId: wechatAppId,
-      universalLink: "",
-    );
-    bool support =
-        await WechatKitPlatform.instance.isInstalled() &&
-        await WechatKitPlatform.instance.isSupportApi();
-    setState(() {
-      _support = support;
-    });
-  }
-
-  Future<void> _onWeChatLogin() async {
-    if (_loading) return;
-    setState(() => _loading = true);
-    HapticFeedback.lightImpact();
-
-    try {
-      await WechatKitPlatform.instance.auth(
-        scope: <String>[WechatScope.kSNSApiUserInfo],
-        state: 'zhuzhu123456',
-      );
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+  void _wechatSignInCallback(String code) {
+    authSignUpWechat(code)
+        .then((_) {
+          if (!mounted) return;
+          Navigator.pushReplacementNamed(context, '/home');
+        })
+        .catchError((e) {
+          debugPrint('SignUp failed: $e');
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: !_support
-            ? null
-            : _loading
-            ? null
-            : _onWeChatLogin,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF07C160),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-          padding: EdgeInsets.zero,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _loading
-                ? SizedBox(
+    return WeChatButton(
+      onCode: (code) {
+        _wechatSignInCallback(code);
+      },
+      onError: () {
+        showClassicNotify(
+          context: context,
+          title: "登录失败",
+          dialogType: DialogType.error,
+        );
+      },
+      builder: (context, loading, support, triggerLogin) {
+        return SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: (!support || loading) ? null : triggerLogin,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF07C160),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: loading
+                ? const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(
@@ -275,19 +218,24 @@ class _WeChatButtonState extends State<_WeChatButton> {
                       color: Colors.white,
                     ),
                   )
-                : Icon(Icons.wechat, color: Colors.white, size: 20),
-            SizedBox(width: 12),
-            Text(
-              "微信登录",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.wechat, color: Colors.white, size: 20),
+                      SizedBox(width: 12),
+                      Text(
+                        "微信登录",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        );
+      },
     );
   }
 }

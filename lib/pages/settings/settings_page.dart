@@ -10,6 +10,7 @@ import 'package:hearai/store.dart';
 import 'package:hearai/tools/cache_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/secure_storage.dart';
+import 'package:hearai/widgets/wechat_login.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -90,6 +91,29 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
+  void _linkWechat(String code) {
+    AuthService()
+        .linkWechat(code)
+        .then((_) {
+          if (!mounted) return;
+          showClassicNotify(
+            context: context,
+            title: "绑定成功",
+            dialogType: DialogType.success,
+          );
+          _loadProfile();
+        })
+        .catchError((err) {
+          if (!mounted) return;
+          debugPrint(err);
+          showClassicNotify(
+            context: context,
+            title: "绑定失败",
+            dialogType: DialogType.error,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -114,6 +138,31 @@ class _SettingsPageState extends State<SettingsPage> {
                   _loadProfile();
                 },
               ),
+              _userProfile.isWechat
+                  ? _buildSimpleTile(title: '已绑定微信', icon: Icons.wechat)
+                  : WeChatButton(
+                      builder: (context, loading, support, triggerLogin) {
+                        return _buildClickableTile(
+                          title: '绑定微信',
+                          icon: Icons.wechat,
+                          onTap: () async {
+                            HapticFeedback.lightImpact();
+                            await triggerLogin();
+                          },
+                        );
+                      },
+                      onCode: (code) {
+                        HapticFeedback.lightImpact();
+                        _linkWechat(code);
+                      },
+                      onError: () {
+                        showClassicNotify(
+                          context: context,
+                          title: "绑定失败",
+                          dialogType: DialogType.error,
+                        );
+                      },
+                    ),
             ],
           ),
 
@@ -199,7 +248,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 icon: FontAwesomeIcons.trash,
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  showConfirmDialog(
+                  showConfirm(
                     context: context,
                     title: l.confirmClean,
                     dialogType: DialogType.warning,
@@ -253,7 +302,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 icon: FontAwesomeIcons.arrowRightFromBracket,
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  showConfirmDialog(
+                  showConfirm(
                     context: context,
                     title: _userProfile.isWechat
                         ? l.confirmSignOut
@@ -414,6 +463,19 @@ class _SettingsPageState extends State<SettingsPage> {
       leading: FaIcon(icon, size: 20),
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: onTap,
+    );
+  }
+
+  // 纯展示项目组件
+  Widget _buildSimpleTile({
+    required String title,
+    String? subtitle,
+    required IconData icon,
+  }) {
+    return ListTile(
+      title: Text(title),
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      leading: FaIcon(icon, size: 20),
     );
   }
 

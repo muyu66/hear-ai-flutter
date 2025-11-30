@@ -139,7 +139,7 @@ class _WordBookPageState extends State<WordBookPage> {
                             },
                             onIncorrect: () {
                               HapticFeedback.lightImpact();
-                              showConfirmDialog(
+                              showConfirm(
                                 context: context,
                                 title: l.confirmDeleteWordBooks(word.word),
                                 dialogType: DialogType.question,

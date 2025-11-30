@@ -301,7 +301,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
         .badWordDict(widget.word)
         .then((value) {
           if (!mounted) return;
-          showNotifyDialog(context: context, title: l.reportSuccess);
+          showNotify(context: context, title: l.reportSuccess);
           setState(() {
             done = true;
           });

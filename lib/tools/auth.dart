@@ -72,7 +72,7 @@ Future<bool> authSignIn() async {
       return true;
     }
 
-    // 如果已经登录，则无视。如果已经登录但是accessToken过期，dio会自动清空accessToken
+    // 如果已经登录，则无视
     if (AuthStore().isLoggedIn) {
       debugPrint('有token');
       return false;
