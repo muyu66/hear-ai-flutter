@@ -35,7 +35,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirmSignUpGuest => '临时账号只能保持30天，尽快绑定微信哦';
 
   @override
-  String get reportSuccess => '感谢您的贡献 😊';
+  String get reportSuccess => '感谢您的贡献';
+
+  @override
+  String get todo => '我还没有想好哩...';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -69,5 +72,8 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get confirmSignUpGuest => '临时账号只能保持30天，尽快绑定微信哦';
 
   @override
-  String get reportSuccess => '感谢您的贡献 😊';
+  String get reportSuccess => '感谢您的贡献';
+
+  @override
+  String get todo => '我还没有想好哩...';
 }

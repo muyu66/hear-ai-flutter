@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Future<void> showConfirmDialog({
@@ -38,7 +38,7 @@ Future<void> showNotifyDialog({
     transitionAnimationDuration: const Duration(milliseconds: 200),
     context: context,
     headerAnimationLoop: false,
-    dialogType: DialogType.info,
+    customHeader: Text("😊", style: TextStyle(fontSize: 46)),
     animType: AnimType.scale,
     title: title,
     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),

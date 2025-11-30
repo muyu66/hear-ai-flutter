@@ -8,5 +8,6 @@
   "confirmSignOut": "确定要退出吗？",
   "confirmSignOutWithoutWeChat": "未绑定微信，退出后将无法再次登录本账号",
   "confirmSignUpGuest": "临时账号只能保持30天，尽快绑定微信哦",
-  "reportSuccess": "感谢您的贡献 😊"
+  "reportSuccess": "感谢您的贡献",
+  "todo": "我还没有想好哩..."
 }

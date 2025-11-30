@@ -99,57 +99,63 @@ abstract class AppLocalizations {
 
   /// No description provided for @confirm.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'好的'**
   String get confirm;
 
   /// No description provided for @cancel.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'不了'**
   String get cancel;
 
   /// No description provided for @confirmDelete.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'确定要删除吗？'**
   String get confirmDelete;
 
   /// No description provided for @confirmDeleteWordBooks.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'将 {word} 从单词本中删除？'**
   String confirmDeleteWordBooks(Object word);
 
   /// No description provided for @confirmClean.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'确定要清理吗？'**
   String get confirmClean;
 
   /// No description provided for @confirmSignOut.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'确定要退出吗？'**
   String get confirmSignOut;
 
   /// No description provided for @confirmSignOutWithoutWeChat.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'未绑定微信，退出后将无法再次登录本账号'**
   String get confirmSignOutWithoutWeChat;
 
   /// No description provided for @confirmSignUpGuest.
   ///
-  /// In zh_CN, this message translates to:
+  /// In zh, this message translates to:
   /// **'临时账号只能保持30天，尽快绑定微信哦'**
   String get confirmSignUpGuest;
 
   /// No description provided for @reportSuccess.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'感谢您的贡献 😊'**
+  /// In zh, this message translates to:
+  /// **'感谢您的贡献'**
   String get reportSuccess;
+
+  /// No description provided for @todo.
+  ///
+  /// In zh, this message translates to:
+  /// **'我还没有想好哩...'**
+  String get todo;
 }
 
 class _AppLocalizationsDelegate

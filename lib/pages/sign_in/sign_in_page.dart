@@ -13,6 +13,7 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -58,12 +59,21 @@ class SignInPage extends StatelessWidget {
                 _WeChatButton(),
 
                 const SizedBox(height: 200),
-                Opacity(
-                  opacity: 0.6,
-                  child: Text(
-                    "进入即代表你同意《用户协议》和《隐私政策》",
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                    textAlign: TextAlign.center,
+                InkWell(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    showNotifyDialog(context: context, title: l.todo);
+                  },
+                  child: Opacity(
+                    opacity: 0.6,
+                    child: Text(
+                      "进入即代表你同意《用户协议》和《隐私政策》",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ],

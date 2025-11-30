@@ -338,10 +338,11 @@ class _LocalDictViewState extends State<_LocalDictView> {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            "/${widget.phonetic}/",
-            style: TextStyle(fontSize: 18, color: Colors.grey),
-          ),
+          if (widget.phonetic.isNotEmpty)
+            Text(
+              "/${widget.phonetic}/",
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
           const SizedBox(height: 16),
           Text(widget.explanation, style: TextStyle(fontSize: 16, height: 1.4)),
           const SizedBox(height: 20),
