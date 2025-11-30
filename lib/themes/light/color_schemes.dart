@@ -21,7 +21,7 @@ final lightColorScheme = ColorScheme.light(
   errorContainer: const Color(0xFFFFDAD4),
   onErrorContainer: const Color(0xFF410001),
 
-  surface: Colors.white,
+  surface: Colors.white, // 背景色
   onSurface: const Color(0xFF1A1A1A),
   surfaceContainerHighest: const Color(0xFFF5F5F5), // 暖浅灰，轻量、通透
   onSurfaceVariant: const Color(0xFF6C6C6C),

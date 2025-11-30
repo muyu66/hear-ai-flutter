@@ -32,6 +32,7 @@ class AppTypographyTokens {
   static const sizeXl = 20.0;
   static const sizeXxl = 24.0;
   static const sizeDisplay = 30.0; // 单词大标题
+  static const sizeSplash = 42.0;
 
   // 行高（紧凑但可读）
   static const heightTight = 1.2;
@@ -92,5 +93,12 @@ class AppTextStyles {
     fontWeight: AppTypographyTokens.weightMedium,
     fontSize: AppTypographyTokens.sizeSm,
     height: AppTypographyTokens.heightNormal,
+  );
+
+  static const splashTextStyle = TextStyle(
+    fontFamily: 'MaShanZheng',
+    fontSize: AppTypographyTokens.sizeSplash,
+    fontWeight: AppTypographyTokens.weightSemibold,
+    height: AppTypographyTokens.heightTight,
   );
 }

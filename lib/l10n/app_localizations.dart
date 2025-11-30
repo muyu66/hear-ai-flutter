@@ -92,59 +92,62 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('zh')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('zh'),
+    Locale('zh', 'CN'),
+  ];
 
   /// No description provided for @confirm.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'好的'**
   String get confirm;
 
   /// No description provided for @cancel.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'不了'**
   String get cancel;
 
   /// No description provided for @confirmDelete.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'确定要删除吗？'**
   String get confirmDelete;
 
   /// No description provided for @confirmDeleteWordBooks.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'将 {word} 从单词本中删除？'**
   String confirmDeleteWordBooks(Object word);
 
   /// No description provided for @confirmClean.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'确定要清理吗？'**
   String get confirmClean;
 
   /// No description provided for @confirmSignOut.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'确定要退出吗？'**
   String get confirmSignOut;
 
   /// No description provided for @confirmSignOutWithoutWeChat.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'未绑定微信，退出后将无法再次登录本账号'**
   String get confirmSignOutWithoutWeChat;
 
   /// No description provided for @confirmSignUpGuest.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'临时账号只能保持30天，尽快绑定微信哦'**
   String get confirmSignUpGuest;
 
   /// No description provided for @reportSuccess.
   ///
-  /// In zh, this message translates to:
+  /// In zh_CN, this message translates to:
   /// **'感谢您的贡献 😊'**
   String get reportSuccess;
 }
@@ -167,6 +170,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'zh':
+      {
+        switch (locale.countryCode) {
+          case 'CN':
+            return AppLocalizationsZhCn();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'zh':

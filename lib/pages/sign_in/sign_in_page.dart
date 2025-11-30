@@ -2,13 +2,11 @@ import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:wechat_kit/wechat_kit.dart';
-
-const String kWechatAppID = 'wxb76a447bb568b5d8';
-const String kWechatUniversalLink = 'your wechat universal link'; // iOS 请配置
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -92,13 +90,14 @@ class _GuestButtonState extends State<_GuestButton> {
     HapticFeedback.lightImpact();
 
     try {
+      print(66666666666666);
       await authSignUp();
     } catch (e) {
       debugPrint('SignUp failed: $e');
     } finally {
       if (mounted) {
         setState(() => _loading = false);
-        Navigator.pushReplacementNamed(context, '/');
+        Navigator.pushReplacementNamed(context, '/home');
       }
     }
   }
@@ -166,6 +165,7 @@ class _WeChatButtonState extends State<_WeChatButton> {
   bool _loading = false;
   bool _support = true;
   late final StreamSubscription<WechatResp> _respSubs;
+  final String wechatAppId = dotenv.env['WECHAT_APPID'] ?? '';
 
   @override
   void initState() {
@@ -183,18 +183,21 @@ class _WeChatButtonState extends State<_WeChatButton> {
   void _listenResp(WechatResp resp) {
     if (resp is WechatAuthResp) {
       if (resp.errorCode != 0) {
-        throw Exception("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
+        debugPrint("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("微信登录失败"), backgroundColor: Colors.red),
+        );
       }
       final String code = resp.code ?? "";
       if (code == "") {
-        throw Exception("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
+        debugPrint("微信登录失败：${resp.errorCode} ${resp.errorMsg}");
       }
 
       authSignUpWechat(code)
           .then((_) {
             if (mounted) {
               setState(() => _loading = false);
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushReplacementNamed(context, '/home');
             }
           })
           .catchError((e) {
@@ -205,8 +208,8 @@ class _WeChatButtonState extends State<_WeChatButton> {
 
   Future<void> _checkSupport() async {
     await WechatKitPlatform.instance.registerApp(
-      appId: kWechatAppID,
-      universalLink: kWechatUniversalLink,
+      appId: wechatAppId,
+      universalLink: "",
     );
     bool support =
         await WechatKitPlatform.instance.isInstalled() &&

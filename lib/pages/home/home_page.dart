@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/app.dart';
-import 'package:hearai/models/sign_in_req.dart';
 import 'package:hearai/models/words.dart';
 import 'package:hearai/pages/home/widgets/pad.dart';
 import 'package:hearai/pages/home/widgets/words_item.dart';
@@ -14,8 +11,6 @@ import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/services/words_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/audio_manager.dart';
-import 'package:hearai/tools/key_manager.dart';
-import 'package:hearai/tools/secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -73,7 +68,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   Future<void> _initAsync() async {
-    await _onSignIn();
     await _getWords();
     await _setUserMinute();
     await pollingTask();
@@ -81,27 +75,27 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   Future<void> _setUserMinute() async {
-    final profile = await authService.getProfile();
     if (!mounted) return;
+    final profile = await authService.getProfile();
     setState(() {
       useMinute = profile.useMinute;
     });
   }
 
   Future<void> pollingTask() async {
+    if (!mounted) return;
+
     final store = Provider.of<Store>(context, listen: false);
     final today = await wordBooksService.getWordBooksToday();
 
-    if (mounted) {
-      setState(() {
-        // 获取今天需要复习的单词量
-        showBadge = today.result > 0;
+    setState(() {
+      // 获取今天需要复习的单词量
+      showBadge = today.result > 0;
 
-        // 计算Pad颜色百分比
-        int maxSeconds = (useMinute ?? 10) * 60;
-        store.updatePercent(store.percent - _timerInterval / maxSeconds);
-      });
-    }
+      // 计算Pad颜色百分比
+      int maxSeconds = (useMinute ?? 10) * 60;
+      store.updatePercent(store.percent - _timerInterval / maxSeconds);
+    });
   }
 
   void startPolling() {
@@ -116,47 +110,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
     _timer = null;
   }
 
-  Future<void> _onSignIn() async {
-    try {
-      final existPrivateKey = await SecureStorageUtils.has('privateKeyBase64');
-      if (!mounted) return;
-      if (!existPrivateKey) {
-        debugPrint("未发现 privateKey, 强制返回登录页");
-        Navigator.pushReplacementNamed(context, '/sign_in');
-        return;
-      }
-
-      final privateKeyBase64 = await SecureStorageUtils.read(
-        'privateKeyBase64',
-      );
-      if (privateKeyBase64 == null) {
-        throw Exception('No private key found');
-      }
-      final privateKey = base64Decode(privateKeyBase64);
-
-      final privateHash = KeyManager.sha256(privateKey);
-      final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      final sig = KeyManager.sign(privateKey, timestamp);
-      final sigBase64 = base64Encode(sig);
-
-      final api = await AuthService().signIn(
-        SignInReq(
-          account: privateHash,
-          signatureBase64: sigBase64,
-          timestamp: timestamp,
-        ),
-      );
-
-      AuthStore().setToken(api.accessToken);
-    } catch (e) {
-      debugPrint('SignIn failed: $e');
-    }
-  }
-
   Future<void> _getWords() async {
-    final fetchedWords = await wordsService.getWords(0);
-    // 防止异步回调时 widget 已经被销毁
     if (!mounted) return;
+    final fetchedWords = await wordsService.getWords(0);
     setState(() {
       words = fetchedWords;
     });

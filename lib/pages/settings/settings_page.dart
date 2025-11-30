@@ -371,6 +371,9 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: (T? newValue) {
                 onChanged(newValue);
               },
+              onTap: () {
+                HapticFeedback.lightImpact();
+              },
               enableFeedback: true,
               icon: const Icon(Icons.arrow_drop_down, size: 24),
               elevation: 2,

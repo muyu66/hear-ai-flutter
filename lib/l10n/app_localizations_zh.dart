@@ -37,3 +37,37 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get reportSuccess => '感谢您的贡献 😊';
 }
+
+/// The translations for Chinese, as used in China (`zh_CN`).
+class AppLocalizationsZhCn extends AppLocalizationsZh {
+  AppLocalizationsZhCn() : super('zh_CN');
+
+  @override
+  String get confirm => '好的';
+
+  @override
+  String get cancel => '不了';
+
+  @override
+  String get confirmDelete => '确定要删除吗？';
+
+  @override
+  String confirmDeleteWordBooks(Object word) {
+    return '将 $word 从单词本中删除？';
+  }
+
+  @override
+  String get confirmClean => '确定要清理吗？';
+
+  @override
+  String get confirmSignOut => '确定要退出吗？';
+
+  @override
+  String get confirmSignOutWithoutWeChat => '未绑定微信，退出后将无法再次登录本账号';
+
+  @override
+  String get confirmSignUpGuest => '临时账号只能保持30天，尽快绑定微信哦';
+
+  @override
+  String get reportSuccess => '感谢您的贡献 😊';
+}
