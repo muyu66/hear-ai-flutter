@@ -34,16 +34,26 @@ class _HomePageState extends State<HomePage> with RouteAware {
   // n秒执行一次定时任务
   final int _timerInterval = 10;
   int? useMinute;
+  bool _isSubscribed = false;
+  bool _isFetchingWords = false;
+  bool _pollingInProgress = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)!);
+    if (!_isSubscribed) {
+      routeObserver.subscribe(this, ModalRoute.of(context)!);
+      _isSubscribed = true;
+    }
   }
 
   @override
   void dispose() {
-    routeObserver.unsubscribe(this);
+    stopPolling();
+    if (_isSubscribed) {
+      routeObserver.unsubscribe(this);
+      _isSubscribed = false;
+    }
     super.dispose();
   }
 
@@ -54,23 +64,27 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   @override
   void didPopNext() {
-    _setUserMinute();
-    pollingTask();
+    _handleReturnFromNext();
+  }
+
+  Future<void> _handleReturnFromNext() async {
+    await _setUserMinute();
+    await pollingTask();
     startPolling();
   }
 
   @override
   void initState() {
+    super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     _initAsync();
-    startPolling();
-    super.initState();
   }
 
   Future<void> _initAsync() async {
-    await _getWords();
     await _setUserMinute();
+    await _getNewWords();
     await pollingTask();
+    startPolling();
     play(index: currIndex, slow: false);
   }
 
@@ -84,24 +98,31 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   Future<void> pollingTask() async {
     if (!mounted) return;
+    if (_pollingInProgress) return;
+    _pollingInProgress = true;
+    try {
+      final store = Provider.of<Store>(context, listen: false);
+      final today = await wordBooksService.getWordBooksToday();
 
-    final store = Provider.of<Store>(context, listen: false);
-    final today = await wordBooksService.getWordBooksToday();
-
-    setState(() {
-      // 获取今天需要复习的单词量
-      showBadge = today.result > 0;
-
-      // 计算Pad颜色百分比
       int maxSeconds = (useMinute ?? 10) * 60;
+      if (maxSeconds <= 0) maxSeconds = 600; // 默认10分钟
       store.updatePercent(store.percent - _timerInterval / maxSeconds);
-    });
+
+      setState(() {
+        showBadge = today.result > 0;
+      });
+    } catch (e, st) {
+      debugPrint('pollingTask error: $e\n$st');
+    } finally {
+      _pollingInProgress = false;
+    }
   }
 
   void startPolling() {
     _timer?.cancel(); // 避免重复启动
     _timer = Timer.periodic(Duration(seconds: _timerInterval), (timer) async {
-      pollingTask();
+      if (!mounted) return;
+      await pollingTask();
     });
   }
 
@@ -110,16 +131,20 @@ class _HomePageState extends State<HomePage> with RouteAware {
     _timer = null;
   }
 
-  Future<void> _getWords() async {
+  Future<void> _getNewWords() async {
     if (!mounted) return;
-    final fetchedWords = await wordsService.getWords(0);
+    final fetchedWords = await wordsService.getWords();
+    if (fetchedWords.isEmpty) return;
     setState(() {
-      words = fetchedWords;
+      words.addAll(fetchedWords);
     });
   }
 
   void play({int index = 0, bool slow = false}) {
+    // 因为卡顿，所以延迟400ms保持流畅
     Future.delayed(Duration(milliseconds: 400), () {
+      // 因为延迟做的边界检查
+      if (index < 0 || index >= words.length) return;
       audioManager.play(
         wordsService.getWordsVoiceUrl(words[index].id, slow: slow),
         mimeType: 'audio/ogg',
@@ -136,13 +161,23 @@ class _HomePageState extends State<HomePage> with RouteAware {
       body: Stack(
         children: [
           PageView.builder(
-            onPageChanged: (index) => {
+            onPageChanged: (index) {
               // 第一次播放常速
-              play(index: index, slow: false),
+              play(index: index, slow: false);
               setState(() {
                 level = 1;
                 currIndex = index;
-              }),
+              });
+              // 自动预加载
+              debugPrint(
+                'index=${index.toString()}, words.length=${words.length}, getNewWords=${index >= words.length - 10}',
+              );
+              if (index >= words.length - 10 && !_isFetchingWords) {
+                _isFetchingWords = true;
+                _getNewWords().then((_) {
+                  _isFetchingWords = false;
+                });
+              }
             },
             scrollDirection: Axis.vertical,
             itemCount: words.length,

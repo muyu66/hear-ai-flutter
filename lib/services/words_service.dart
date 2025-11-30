@@ -6,11 +6,8 @@ import 'package:hearai/models/words.dart';
 
 class WordsService extends ApiService {
   /// 获取句子分页
-  Future<List<WordsModel>> getWords(int after) async {
-    final res = await dio.get<List<dynamic>>(
-      '/words',
-      queryParameters: {'after': after},
-    );
+  Future<List<WordsModel>> getWords() async {
+    final res = await dio.get<List<dynamic>>('/words');
     return (res.data ?? []).map((item) => WordsModel.fromJson(item)).toList();
   }
 
