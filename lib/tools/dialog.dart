@@ -19,8 +19,8 @@ Future<void> showConfirm({
     dialogType: dialogType,
     animType: AnimType.scale,
     title: title,
-    titleTextStyle: t.titleMedium,
-    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    titleTextStyle: t.labelLarge,
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     btnOkText: '',
     btnOkIcon: Icons.check,
     btnOkColor: c.tertiary,
@@ -46,7 +46,7 @@ Future<void> showNotify({
     animType: AnimType.scale,
     title: title,
     titleTextStyle: t.titleMedium,
-    padding: EdgeInsets.fromLTRB(8, 0, 8, 24),
+    padding: EdgeInsets.fromLTRB(12, 0, 12, 24),
     autoHide: Duration(milliseconds: 1500),
   ).show();
 }
@@ -66,7 +66,7 @@ Future<void> showClassicNotify({
     animType: AnimType.scale,
     title: title,
     titleTextStyle: t.titleMedium,
-    padding: EdgeInsets.fromLTRB(8, 0, 8, 24),
+    padding: EdgeInsets.fromLTRB(12, 0, 12, 24),
     autoHide: Duration(milliseconds: 1500),
   ).show();
 }

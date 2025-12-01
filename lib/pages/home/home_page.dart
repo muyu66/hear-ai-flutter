@@ -181,15 +181,19 @@ class _HomePageState extends State<HomePage> with RouteAware {
         children: [
           PageView.builder(
             onPageChanged: (index) {
+              // 上报记住的句子
+              wordsService.rememberWords(words[currIndex].id, level);
+
               // 第一次播放常速
               play(index: index, slow: false);
               setState(() {
                 level = 1;
                 currIndex = index;
               });
+
               // 自动预加载
               debugPrint(
-                'index=${index.toString()}, words.length=${words.length}, getNewWords=${index >= words.length - 10}',
+                'index=${index.toString()}, currIndex=${currIndex.toString()}, wordsId=${words[index].id} words.length=${words.length}, getNewWords=${index >= words.length - 10}',
               );
               if (index >= words.length - 10 && !_isFetchingWords) {
                 _isFetchingWords = true;
