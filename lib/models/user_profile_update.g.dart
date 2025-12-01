@@ -8,11 +8,11 @@ part of 'user_profile_update.dart';
 
 UserProfileUpdate _$UserProfileUpdateFromJson(Map<String, dynamic> json) =>
     UserProfileUpdate(
-      json['nickname'] as String?,
-      json['rememberMethod'] as String?,
-      (json['wordsLevel'] as num?)?.toInt(),
-      (json['useMinute'] as num?)?.toInt(),
-      json['multiSpeaker'] as bool?,
+      nickname: json['nickname'] as String?,
+      rememberMethod: json['rememberMethod'] as String?,
+      wordsLevel: (json['wordsLevel'] as num?)?.toInt(),
+      useMinute: (json['useMinute'] as num?)?.toInt(),
+      multiSpeaker: json['multiSpeaker'] as bool?,
     );
 
 Map<String, dynamic> _$UserProfileUpdateToJson(UserProfileUpdate instance) =>

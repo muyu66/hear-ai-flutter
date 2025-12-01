@@ -22,7 +22,11 @@ class WordBookPage extends StatefulWidget {
 class _WordBookPageState extends State<WordBookPage> {
   final List<WordBook> words = [];
   bool _loading = true;
-  WordBookSummary summary = WordBookSummary(0, 0, 0);
+  WordBookSummary summary = WordBookSummary(
+    todayCount: 0,
+    tomorrowCount: 0,
+    totalCount: 0,
+  );
   final WordBooksService wordBooksService = WordBooksService();
   // 点击寻求提示的次数
   int hitCount = 0;

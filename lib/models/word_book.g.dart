@@ -7,9 +7,9 @@ part of 'word_book.dart';
 // **************************************************************************
 
 WordBook _$WordBookFromJson(Map<String, dynamic> json) => WordBook(
-  json['word'] as String,
-  json['voice'] as String,
-  json['phonetic'] as String?,
+  word: json['word'] as String,
+  voice: json['voice'] as String,
+  phonetic: json['phonetic'] as String?,
 );
 
 Map<String, dynamic> _$WordBookToJson(WordBook instance) => <String, dynamic>{

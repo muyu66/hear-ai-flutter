@@ -7,9 +7,9 @@ part of 'word_dict.dart';
 // **************************************************************************
 
 WordDict _$WordDictFromJson(Map<String, dynamic> json) => WordDict(
-  json['word'] as String,
-  json['phonetic'] as String,
-  json['translation'] as String,
+  word: json['word'] as String,
+  phonetic: json['phonetic'] as String,
+  translation: json['translation'] as String,
 );
 
 Map<String, dynamic> _$WordDictToJson(WordDict instance) => <String, dynamic>{

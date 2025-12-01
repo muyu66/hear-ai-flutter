@@ -6,7 +6,7 @@ part 'result_bool.g.dart';
 class ResultBool {
   final bool result;
 
-  ResultBool(this.result);
+  ResultBool({required this.result});
 
   factory ResultBool.fromJson(Map<String, dynamic> json) =>
       _$ResultBoolFromJson(json);

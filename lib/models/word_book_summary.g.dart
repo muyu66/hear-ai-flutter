@@ -8,9 +8,9 @@ part of 'word_book_summary.dart';
 
 WordBookSummary _$WordBookSummaryFromJson(Map<String, dynamic> json) =>
     WordBookSummary(
-      (json['totalCount'] as num).toInt(),
-      (json['todayCount'] as num).toInt(),
-      (json['tomorrowCount'] as num).toInt(),
+      totalCount: (json['totalCount'] as num).toInt(),
+      todayCount: (json['todayCount'] as num).toInt(),
+      tomorrowCount: (json['tomorrowCount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>

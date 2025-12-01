@@ -12,15 +12,15 @@ class UserProfile {
   bool multiSpeaker;
   bool isWechat;
 
-  UserProfile(
-    this.nickname,
+  UserProfile({
+    required this.nickname,
     this.avatar,
-    this.rememberMethod,
-    this.wordsLevel,
-    this.useMinute,
-    this.multiSpeaker,
-    this.isWechat,
-  );
+    required this.rememberMethod,
+    required this.wordsLevel,
+    required this.useMinute,
+    required this.multiSpeaker,
+    required this.isWechat,
+  });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
       _$UserProfileFromJson(json);

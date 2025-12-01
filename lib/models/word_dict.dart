@@ -8,7 +8,11 @@ class WordDict {
   final String phonetic;
   final String translation;
 
-  WordDict(this.word, this.phonetic, this.translation);
+  WordDict({
+    required this.word,
+    required this.phonetic,
+    required this.translation,
+  });
 
   factory WordDict.fromJson(Map<String, dynamic> json) =>
       _$WordDictFromJson(json);

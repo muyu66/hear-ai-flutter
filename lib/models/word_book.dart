@@ -8,7 +8,7 @@ class WordBook {
   final String voice;
   final String? phonetic;
 
-  WordBook(this.word, this.voice, this.phonetic);
+  WordBook({required this.word, required this.voice, required this.phonetic});
 
   factory WordBook.fromJson(Map<String, dynamic> json) =>
       _$WordBookFromJson(json);

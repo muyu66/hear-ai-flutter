@@ -8,7 +8,11 @@ class WordBookSummary {
   final int todayCount;
   final int tomorrowCount;
 
-  WordBookSummary(this.totalCount, this.todayCount, this.tomorrowCount);
+  WordBookSummary({
+    required this.totalCount,
+    required this.todayCount,
+    required this.tomorrowCount,
+  });
 
   factory WordBookSummary.fromJson(Map<String, dynamic> json) =>
       _$WordBookSummaryFromJson(json);

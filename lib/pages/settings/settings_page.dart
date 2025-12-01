@@ -27,7 +27,15 @@ class _SettingsPageState extends State<SettingsPage> {
   String _cacheSizeText = '0 B';
   CacheManager cacheManager = CacheManager();
   AuthService authService = AuthService();
-  UserProfile _userProfile = UserProfile("", null, "pow", 3, 5, true, false);
+  UserProfile _userProfile = UserProfile(
+    nickname: "",
+    avatar: null,
+    rememberMethod: "pow",
+    wordsLevel: 3,
+    useMinute: 5,
+    multiSpeaker: true,
+    isWechat: false,
+  );
 
   @override
   void initState() {

@@ -7,7 +7,7 @@ part of 'result_int.dart';
 // **************************************************************************
 
 ResultInt _$ResultIntFromJson(Map<String, dynamic> json) =>
-    ResultInt((json['result'] as num).toInt());
+    ResultInt(result: (json['result'] as num).toInt());
 
 Map<String, dynamic> _$ResultIntToJson(ResultInt instance) => <String, dynamic>{
   'result': instance.result,

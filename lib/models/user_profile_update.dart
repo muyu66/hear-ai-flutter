@@ -10,13 +10,13 @@ class UserProfileUpdate {
   final int? useMinute;
   final bool? multiSpeaker;
 
-  UserProfileUpdate(
+  UserProfileUpdate({
     this.nickname,
     this.rememberMethod,
     this.wordsLevel,
     this.useMinute,
     this.multiSpeaker,
-  );
+  });
 
   factory UserProfileUpdate.fromJson(Map<String, dynamic> json) =>
       _$UserProfileUpdateFromJson(json);

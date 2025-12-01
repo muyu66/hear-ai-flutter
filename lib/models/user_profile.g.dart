@@ -7,13 +7,13 @@ part of 'user_profile.dart';
 // **************************************************************************
 
 UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
-  json['nickname'] as String,
-  json['avatar'] as String?,
-  json['rememberMethod'] as String,
-  (json['wordsLevel'] as num).toInt(),
-  (json['useMinute'] as num).toInt(),
-  json['multiSpeaker'] as bool,
-  json['isWechat'] as bool,
+  nickname: json['nickname'] as String,
+  avatar: json['avatar'] as String?,
+  rememberMethod: json['rememberMethod'] as String,
+  wordsLevel: (json['wordsLevel'] as num).toInt(),
+  useMinute: (json['useMinute'] as num).toInt(),
+  multiSpeaker: json['multiSpeaker'] as bool,
+  isWechat: json['isWechat'] as bool,
 );
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>

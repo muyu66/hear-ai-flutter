@@ -6,7 +6,7 @@ part 'result_int.g.dart';
 class ResultInt {
   final int result;
 
-  ResultInt(this.result);
+  ResultInt({required this.result});
 
   factory ResultInt.fromJson(Map<String, dynamic> json) =>
       _$ResultIntFromJson(json);
