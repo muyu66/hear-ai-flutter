@@ -156,6 +156,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'我还没有想好哩...'**
   String get todo;
+
+  /// No description provided for @confirmSignInDevice.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认登录 Chrome 插件？'**
+  String get confirmSignInDevice;
 }
 
 class _AppLocalizationsDelegate

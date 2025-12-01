@@ -45,6 +45,8 @@ flutter:
   assets:
     - .env
     - .env.prod
+    - assets/sounds/
+
   fonts:
     - family: Lexend
       fonts:

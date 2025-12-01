@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hearai/apis/auth_store.dart';
+import 'package:hearai/models/create_device_session_req.dart';
 import 'package:hearai/models/sign_in_req.dart';
 import 'package:hearai/models/sign_up_req.dart';
 import 'package:hearai/models/sign_up_wechat_req.dart';
@@ -105,5 +106,41 @@ Future<bool> authSignIn() async {
   } catch (e) {
     debugPrint('登录失败: $e');
     return true;
+  }
+}
+
+Future<void> authCreateDeviceSession(String deviceSessionId) async {
+  try {
+    final existPrivateKey = await SecureStorageUtils.has('privateKeyBase64');
+    if (!existPrivateKey) {
+      return;
+    }
+
+    // 如果没有登录，则无视
+    if (!AuthStore().isLoggedIn) {
+      return;
+    }
+
+    final privateKeyBase64 = await SecureStorageUtils.read('privateKeyBase64');
+    if (privateKeyBase64 == null) {
+      return;
+    }
+    final privateKey = base64Decode(privateKeyBase64);
+    final privateHash = KeyManager.sha256(privateKey);
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    final sig = KeyManager.sign(privateKey, timestamp);
+    final sigBase64 = base64Encode(sig);
+
+    await AuthService().createDeviceSession(
+      CreateDeviceSessionReq(
+        deviceSessionId: deviceSessionId,
+        account: privateHash,
+        signatureBase64: sigBase64,
+        timestamp: timestamp,
+      ),
+    );
+  } catch (e) {
+    debugPrint('登录失败: $e');
+    return;
   }
 }

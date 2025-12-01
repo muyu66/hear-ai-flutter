@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/l10n/app_localizations.dart';
+import 'package:hearai/models/create_device_session_req.dart';
 import 'package:hearai/models/user_profile.dart';
+import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/services/auth_service.dart';
 import 'package:hearai/store.dart';
+import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/cache_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/secure_storage.dart';
@@ -114,6 +117,22 @@ class _SettingsPageState extends State<SettingsPage> {
         });
   }
 
+  void _handleScan(String result) {
+    final l = AppLocalizations.of(context);
+
+    debugPrint("扫码结果: $result");
+    String deviceSessionId = result.split('://')[1];
+    showConfirm(
+      context: context,
+      title: l.confirmSignInDevice,
+      dialogType: DialogType.info,
+      onConfirm: () {
+        HapticFeedback.lightImpact();
+        authCreateDeviceSession(deviceSessionId);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -138,6 +157,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _loadProfile();
                 },
               ),
+              // 微信绑定
               _userProfile.isWechat
                   ? _buildSimpleTile(title: '已绑定微信', icon: Icons.wechat)
                   : WeChatButton(
@@ -163,6 +183,21 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                     ),
+              // 扫码登录设备
+              _buildClickableTile(
+                title: '扫码登录设备',
+                icon: Icons.qr_code_scanner,
+                onTap: () async {
+                  HapticFeedback.lightImpact();
+                  final String? result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ScanQr()),
+                  );
+                  if (result != null) {
+                    _handleScan(result);
+                  }
+                },
+              ),
             ],
           ),
 

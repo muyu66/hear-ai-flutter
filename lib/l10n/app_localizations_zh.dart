@@ -39,6 +39,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get todo => '我还没有想好哩...';
+
+  @override
+  String get confirmSignInDevice => '确认登录 Chrome 插件？';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).

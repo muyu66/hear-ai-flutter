@@ -1,4 +1,5 @@
 import 'package:hearai/apis/api_service.dart';
+import 'package:hearai/models/create_device_session_req.dart';
 import 'package:hearai/models/sign_in_req.dart';
 import 'package:hearai/models/sign_up_req.dart';
 import 'package:hearai/models/sign_up_res.dart';
@@ -27,6 +28,11 @@ class AuthService extends ApiService {
   Future<SignUpRes> signIn(SignInReq req) async {
     final res = await dio.post('/auth/sign_in', data: req.toJson());
     return SignUpRes.fromJson(res.data);
+  }
+
+  /// 创建设备登录会话
+  Future<void> createDeviceSession(CreateDeviceSessionReq req) async {
+    await dio.post('/auth/device_session', data: req.toJson());
   }
 
   /// 更新用户信息

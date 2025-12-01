@@ -8,18 +8,16 @@ class AudioManager {
 
   final AudioPlayer _player = AudioPlayer();
 
-  /// 播放音频
-  Future<void> play(
-    String url, {
-    bool isLocal = false,
-    String? mimeType,
-  }) async {
+  /// 播放URL音频
+  Future<void> play(String url, {String? mimeType}) async {
     await _player.stop(); // 播放新音频前先停止当前音频
-    if (isLocal) {
-      await _player.play(DeviceFileSource(url, mimeType: mimeType));
-    } else {
-      await _player.play(UrlSource(url, mimeType: mimeType));
-    }
+    await _player.play(UrlSource(url, mimeType: mimeType));
+  }
+
+  /// 播放音频
+  Future<void> playSource(Source source) async {
+    await _player.stop(); // 播放新音频前先停止当前音频
+    await _player.play(source);
   }
 
   /// 暂停
