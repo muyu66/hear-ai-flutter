@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 class Store extends ChangeNotifier {
   double _percent = 1.0;
   bool _wordsLevelChange = false;
+  bool _showBadge = false;
 
   double get percent => _percent;
   bool get wordsLevelChange => _wordsLevelChange;
+  bool get showBadge => _showBadge;
 
   void resetPercent() {
     _percent = 1.0;
@@ -24,6 +26,11 @@ class Store extends ChangeNotifier {
 
   void updateWordsLevelChange() {
     _wordsLevelChange = true;
+    notifyListeners();
+  }
+
+  void updateShowBadge(bool newValue) {
+    _showBadge = newValue;
     notifyListeners();
   }
 }

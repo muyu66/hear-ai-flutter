@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
   final WordsService wordsService = WordsService();
   final WordBooksService wordBooksService = WordBooksService();
   final AuthService authService = AuthService();
-  final AudioManager audioManager = AudioManager();
   List<WordsModel> words = [];
   // 0来自于数组第一元素下标
   int currIndex = 0;
@@ -37,6 +36,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   bool _isSubscribed = false;
   bool _isFetchingWords = false;
   bool _pollingInProgress = false;
+  final AudioManager audioManager = AudioManager();
 
   @override
   void didChangeDependencies() {
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
       _isSubscribed = true;
     }
     // 如果单词等级改变，则重新获取单词
-    final store = Provider.of<Store>(context);
+    final store = Provider.of<Store>(context, listen: false);
     if (store.wordsLevelChange) {
       store.resetWordsLevelChange();
       // 废弃未看的内容，并获取新内容
@@ -92,7 +92,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
     await _loadWords();
     await pollingTask();
     startPolling();
-    play(index: currIndex, slow: false);
   }
 
   Future<void> _setUserMinute() async {
@@ -114,10 +113,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
       int maxSeconds = (useMinute ?? 10) * 60;
       if (maxSeconds <= 0) maxSeconds = 600; // 默认10分钟
       store.updatePercent(store.percent - _timerInterval / maxSeconds);
-
-      setState(() {
-        showBadge = today.result > 0;
-      });
+      store.updateShowBadge(today.result > 0);
     } catch (e, st) {
       debugPrint('pollingTask error: $e\n$st');
     } finally {
@@ -159,33 +155,20 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
   }
 
-  void play({int index = 0, bool slow = false}) {
-    // 因为卡顿，所以延迟400ms保持流畅
-    Future.delayed(Duration(milliseconds: 400), () {
-      // 因为延迟做的边界检查
-      if (index < 0 || index >= words.length) return;
-      audioManager.play(
-        wordsService.getWordsVoiceUrl(words[index].id, slow: slow),
-        mimeType: 'audio/ogg',
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final store = Provider.of<Store>(context);
-
     return Scaffold(
       appBar: null,
       body: Stack(
         children: [
           PageView.builder(
             onPageChanged: (index) {
-              // 上报记住的句子
-              wordsService.rememberWords(words[currIndex].id, level);
+              audioManager.stop();
 
-              // 第一次播放常速
-              play(index: index, slow: false);
+              // 上报记住的句子
+              wordsService.rememberWords(words[currIndex].id, level - 1);
+
+              // 初始化当前PageView页
               setState(() {
                 level = 1;
                 currIndex = index;
@@ -205,31 +188,37 @@ class _HomePageState extends State<HomePage> with RouteAware {
             scrollDirection: Axis.vertical,
             itemCount: words.length,
             itemBuilder: (context, index) {
-              return WordsItem(words: words[index], level: level);
+              return WordsItem(
+                key: ValueKey(words[index].id),
+                words: words[index],
+                level: level,
+              );
             },
           ),
           Positioned(
             bottom: 54,
             left: 40,
             right: 40,
-            child: Pad(
-              percent: store.percent,
-              showBadge: showBadge,
-              onPressCenter: (key) {
-                if (!mounted) return;
-                HapticFeedback.lightImpact();
-                // 后续播放慢速
-                play(index: currIndex, slow: true);
-                setState(() {
-                  level++;
-                });
-              },
-              onDirection: (dir) {
-                if (dir == "left") {
-                  Navigator.pushNamed(context, '/word_book');
-                } else if (dir == "right") {
-                  Navigator.pushNamed(context, '/settings');
-                }
+            child: Consumer<Store>(
+              builder: (_, store, _) {
+                return Pad(
+                  percent: store.percent,
+                  showBadge: store.showBadge,
+                  onPressCenter: (key) {
+                    if (!mounted) return;
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      level++;
+                    });
+                  },
+                  onDirection: (dir) {
+                    if (dir == "left") {
+                      Navigator.pushNamed(context, '/word_book');
+                    } else if (dir == "right") {
+                      Navigator.pushNamed(context, '/settings');
+                    }
+                  },
+                );
               },
             ),
           ),
