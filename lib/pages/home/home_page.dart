@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hearai/app.dart';
+import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/words.dart';
 import 'package:hearai/pages/home/widgets/pad.dart';
 import 'package:hearai/pages/home/widgets/words_item.dart';
@@ -11,6 +12,7 @@ import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/services/words_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/audio_manager.dart';
+import 'package:hearai/tools/dialog.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,7 +30,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
   // 0来自于数组第一元素下标
   int currIndex = 0;
   int level = 1;
-  bool showBadge = false;
   Timer? _timer;
   // n秒执行一次定时任务
   final int _timerInterval = 10;
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   bool _isFetchingWords = false;
   bool _pollingInProgress = false;
   final AudioManager audioManager = AudioManager();
+  final PageController _controller = PageController();
 
   @override
   void didChangeDependencies() {
@@ -91,6 +93,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     await _setUserMinute();
     await _loadWords();
     await pollingTask();
+    _tryPlay(words[0].id, words[0].type);
     startPolling();
   }
 
@@ -155,6 +158,71 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
   }
 
+  void _tryPlay(int wordsId, WidgetType type) {
+    if (type == WidgetType.say) {
+      if (level == 2) {
+        play(wordsId, slow: false);
+      } else if (level >= 3) {
+        play(wordsId, slow: true);
+      }
+    } else if (type == WidgetType.listen) {
+      if (level == 1) {
+        play(wordsId, slow: false);
+      } else {
+        play(wordsId, slow: true);
+      }
+    }
+  }
+
+  Future<void> play(int wordsId, {bool slow = false}) async {
+    await audioManager.play(
+      wordsService.getWordsVoiceUrl(wordsId, slow: slow),
+      mimeType: 'audio/ogg',
+    );
+  }
+
+  Future<void> _handlePageChanged(int index) async {
+    audioManager.stop();
+
+    // 上报记住的句子
+    wordsService.rememberWords(words[currIndex].id, level - 1);
+
+    // 初始化当前PageView页
+    setState(() {
+      level = 1;
+      currIndex = index;
+    });
+
+    // 注意，此时已经是新的Index了，所以是播放当前
+    _tryPlay(words[currIndex].id, words[currIndex].type);
+
+    // 自动预加载
+    debugPrint(
+      'index=${index.toString()}, currIndex=${currIndex.toString()}, wordsId=${words[index].id} words.length=${words.length}, getNewWords=${index >= words.length - 10}',
+    );
+    if (index >= words.length - 10 && !_isFetchingWords) {
+      _isFetchingWords = true;
+      _loadWords().then((_) {
+        _isFetchingWords = false;
+      });
+    }
+  }
+
+  void _handleBadWords(WordsModel wordsModel) {
+    final l = AppLocalizations.of(context);
+
+    HapticFeedback.lightImpact();
+
+    wordsService
+        .badWords(wordsModel.id)
+        .then((value) {
+          if (!mounted) return;
+          showNotify(context: context, title: l.reportSuccess);
+          wordsModel.reported = true;
+        })
+        .catchError((error) {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,36 +230,20 @@ class _HomePageState extends State<HomePage> with RouteAware {
       body: Stack(
         children: [
           PageView.builder(
-            onPageChanged: (index) {
-              audioManager.stop();
-
-              // 上报记住的句子
-              wordsService.rememberWords(words[currIndex].id, level - 1);
-
-              // 初始化当前PageView页
-              setState(() {
-                level = 1;
-                currIndex = index;
-              });
-
-              // 自动预加载
-              debugPrint(
-                'index=${index.toString()}, currIndex=${currIndex.toString()}, wordsId=${words[index].id} words.length=${words.length}, getNewWords=${index >= words.length - 10}',
-              );
-              if (index >= words.length - 10 && !_isFetchingWords) {
-                _isFetchingWords = true;
-                _loadWords().then((_) {
-                  _isFetchingWords = false;
-                });
-              }
-            },
+            controller: _controller,
+            onPageChanged: _handlePageChanged,
             scrollDirection: Axis.vertical,
             itemCount: words.length,
             itemBuilder: (context, index) {
               return WordsItem(
                 key: ValueKey(words[index].id),
-                words: words[index],
+                wordsModel: words[index],
                 level: level,
+                type: words[index].type,
+                reported: words[index].reported,
+                onTapReport: () {
+                  _handleBadWords(words[index]);
+                },
               );
             },
           ),
@@ -210,6 +262,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     setState(() {
                       level++;
                     });
+                    _tryPlay(words[currIndex].id, words[currIndex].type);
                   },
                   onDirection: (dir) {
                     if (dir == "left") {

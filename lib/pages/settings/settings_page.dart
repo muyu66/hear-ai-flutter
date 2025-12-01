@@ -27,15 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String _cacheSizeText = '0 B';
   CacheManager cacheManager = CacheManager();
   AuthService authService = AuthService();
-  UserProfile _userProfile = UserProfile(
-    "匿名用户",
-    null,
-    "pow",
-    3,
-    10,
-    true,
-    false,
-  );
+  UserProfile _userProfile = UserProfile("", null, "pow", 3, 5, true, false);
 
   @override
   void initState() {

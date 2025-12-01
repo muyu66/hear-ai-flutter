@@ -194,7 +194,7 @@ class _SplashPageState extends State<SplashPage>
         return FadeTransition(
           opacity: anim,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 14),
             child: Text(
               colChars[rowIndex],
               style: t.splashText,

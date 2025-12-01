@@ -10,7 +10,16 @@ class WordsModel {
   final String translation;
   final WidgetType type;
 
-  WordsModel(this.id, this.words, this.translation, this.type);
+  // 扩展字段
+  bool reported;
+
+  WordsModel({
+    required this.id,
+    required this.words,
+    required this.translation,
+    required this.type,
+    this.reported = false,
+  });
 
   factory WordsModel.fromJson(Map<String, dynamic> json) =>
       _$WordsModelFromJson(json);

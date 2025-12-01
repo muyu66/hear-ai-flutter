@@ -7,10 +7,11 @@ part of 'words.dart';
 // **************************************************************************
 
 WordsModel _$WordsModelFromJson(Map<String, dynamic> json) => WordsModel(
-  (json['id'] as num).toInt(),
-  json['words'] as String,
-  json['translation'] as String,
-  $enumDecode(_$WidgetTypeEnumMap, json['type']),
+  id: (json['id'] as num).toInt(),
+  words: json['words'] as String,
+  translation: json['translation'] as String,
+  type: $enumDecode(_$WidgetTypeEnumMap, json['type']),
+  reported: json['reported'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$WordsModelToJson(WordsModel instance) =>
@@ -19,6 +20,7 @@ Map<String, dynamic> _$WordsModelToJson(WordsModel instance) =>
       'words': instance.words,
       'translation': instance.translation,
       'type': _$WidgetTypeEnumMap[instance.type]!,
+      'reported': instance.reported,
     };
 
 const _$WidgetTypeEnumMap = {
