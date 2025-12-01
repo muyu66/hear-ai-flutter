@@ -42,6 +42,7 @@ class AuthService extends ApiService {
     int? wordsLevel,
     int? useMinute,
     bool? multiSpeaker,
+    int? sayRatio,
   }) async {
     final data = {
       'nickname': nickname,
@@ -49,6 +50,7 @@ class AuthService extends ApiService {
       'wordsLevel': wordsLevel,
       'useMinute': useMinute,
       'multiSpeaker': multiSpeaker,
+      'sayRatio': sayRatio,
     }..removeWhere((key, value) => value == null);
 
     await dio.post('/auth/profile', data: data);

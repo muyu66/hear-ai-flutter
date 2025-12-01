@@ -9,6 +9,7 @@ class UserProfileUpdate {
   final int? wordsLevel;
   final int? useMinute;
   final bool? multiSpeaker;
+  final int? sayRatio;
 
   UserProfileUpdate({
     this.nickname,
@@ -16,6 +17,7 @@ class UserProfileUpdate {
     this.wordsLevel,
     this.useMinute,
     this.multiSpeaker,
+    this.sayRatio,
   });
 
   factory UserProfileUpdate.fromJson(Map<String, dynamic> json) =>

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class Store extends ChangeNotifier {
   double _percent = 1.0;
-  bool _wordsLevelChange = false;
+  bool _refreshWords = false;
   bool _showBadge = false;
 
   double get percent => _percent;
-  bool get wordsLevelChange => _wordsLevelChange;
+  bool get refreshWords => _refreshWords;
   bool get showBadge => _showBadge;
 
   void resetPercent() {
@@ -19,13 +19,13 @@ class Store extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetWordsLevelChange() {
-    _wordsLevelChange = false;
+  void resetRefreshWords() {
+    _refreshWords = false;
     notifyListeners();
   }
 
-  void updateWordsLevelChange() {
-    _wordsLevelChange = true;
+  void needRefreshWords() {
+    _refreshWords = true;
     notifyListeners();
   }
 

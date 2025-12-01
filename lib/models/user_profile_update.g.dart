@@ -13,6 +13,7 @@ UserProfileUpdate _$UserProfileUpdateFromJson(Map<String, dynamic> json) =>
       wordsLevel: (json['wordsLevel'] as num?)?.toInt(),
       useMinute: (json['useMinute'] as num?)?.toInt(),
       multiSpeaker: json['multiSpeaker'] as bool?,
+      sayRatio: (json['sayRatio'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UserProfileUpdateToJson(UserProfileUpdate instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$UserProfileUpdateToJson(UserProfileUpdate instance) =>
       'wordsLevel': instance.wordsLevel,
       'useMinute': instance.useMinute,
       'multiSpeaker': instance.multiSpeaker,
+      'sayRatio': instance.sayRatio,
     };

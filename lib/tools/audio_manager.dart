@@ -26,7 +26,7 @@ class AudioManager {
   /// 停止
   Future<void> stop() async {
     if (await isPlaying()) {
-      _player.stop();
+      await _player.stop();
     }
   }
 

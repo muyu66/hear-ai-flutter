@@ -11,6 +11,7 @@ class UserProfile {
   int useMinute;
   bool multiSpeaker;
   bool isWechat;
+  int sayRatio;
 
   UserProfile({
     required this.nickname,
@@ -20,6 +21,7 @@ class UserProfile {
     required this.useMinute,
     required this.multiSpeaker,
     required this.isWechat,
+    required this.sayRatio,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>

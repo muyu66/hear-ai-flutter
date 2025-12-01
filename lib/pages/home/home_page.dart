@@ -49,8 +49,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
     }
     // 如果单词等级改变，则重新获取单词
     final store = Provider.of<Store>(context, listen: false);
-    if (store.wordsLevelChange) {
-      store.resetWordsLevelChange();
+    if (store.refreshWords) {
+      store.resetRefreshWords();
       // 废弃未看的内容，并获取新内容
       _loadNewWords();
     }
@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     await _setUserMinute();
     await _loadWords();
     await pollingTask();
-    _tryPlay(words[0].id, words[0].type);
+    playWeb(words[0].id);
     startPolling();
   }
 
@@ -158,30 +158,35 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
   }
 
-  void _tryPlay(int wordsId, WidgetType type) {
+  // 播放逻辑， false=播放慢速， true=播放常速, null=不播放
+  bool? _tryPlay(int wordsId, WidgetType type) {
     if (type == WidgetType.say) {
       if (level == 2) {
-        play(wordsId, slow: false);
+        return false;
       } else if (level >= 3) {
-        play(wordsId, slow: true);
+        return true;
       }
     } else if (type == WidgetType.listen) {
       if (level == 1) {
-        play(wordsId, slow: false);
+        return false;
       } else {
-        play(wordsId, slow: true);
+        return true;
       }
+    }
+    return null;
+  }
+
+  void playWeb(int wordsId) {
+    bool? playRegular = _tryPlay(words[currIndex].id, words[currIndex].type);
+    if (playRegular != null) {
+      audioManager.play(
+        wordsService.getWordsVoiceUrl(wordsId, slow: !playRegular),
+        mimeType: 'audio/ogg',
+      );
     }
   }
 
-  Future<void> play(int wordsId, {bool slow = false}) async {
-    await audioManager.play(
-      wordsService.getWordsVoiceUrl(wordsId, slow: slow),
-      mimeType: 'audio/ogg',
-    );
-  }
-
-  Future<void> _handlePageChanged(int index) async {
+  void _handlePageChanged(int index) {
     audioManager.stop();
 
     // 上报记住的句子
@@ -193,19 +198,20 @@ class _HomePageState extends State<HomePage> with RouteAware {
       currIndex = index;
     });
 
-    // 注意，此时已经是新的Index了，所以是播放当前
-    _tryPlay(words[currIndex].id, words[currIndex].type);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      playWeb(words[currIndex].id);
 
-    // 自动预加载
-    debugPrint(
-      'index=${index.toString()}, currIndex=${currIndex.toString()}, wordsId=${words[index].id} words.length=${words.length}, getNewWords=${index >= words.length - 10}',
-    );
-    if (index >= words.length - 10 && !_isFetchingWords) {
-      _isFetchingWords = true;
-      _loadWords().then((_) {
-        _isFetchingWords = false;
-      });
-    }
+      // 自动预加载
+      debugPrint(
+        'index=${index.toString()}, currIndex=${currIndex.toString()}, wordsId=${words[index].id} words.length=${words.length}, getNewWords=${index >= words.length - 10}',
+      );
+      if (index >= words.length - 10 && !_isFetchingWords) {
+        _isFetchingWords = true;
+        _loadWords().then((_) {
+          _isFetchingWords = false;
+        });
+      }
+    });
   }
 
   void _handleBadWords(WordsModel wordsModel) {
@@ -262,7 +268,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     setState(() {
                       level++;
                     });
-                    _tryPlay(words[currIndex].id, words[currIndex].type);
+                    playWeb(words[currIndex].id);
                   },
                   onDirection: (dir) {
                     if (dir == "left") {

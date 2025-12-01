@@ -35,6 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
     useMinute: 5,
     multiSpeaker: true,
     isWechat: false,
+    sayRatio: 20,
   );
 
   @override
@@ -102,7 +103,20 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _userProfile.wordsLevel = value;
       });
-      store.updateWordsLevelChange();
+      store.needRefreshWords();
+    });
+  }
+
+  void _updateSayRatio(int value) {
+    if (!mounted) return;
+    final store = Provider.of<Store>(context, listen: false);
+
+    HapticFeedback.lightImpact();
+    authService.updateProfile(sayRatio: value).then((_) {
+      setState(() {
+        _userProfile.sayRatio = value;
+      });
+      store.needRefreshWords();
     });
   }
 
@@ -166,7 +180,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 onChanged: (value) async {
                   HapticFeedback.lightImpact();
                   await authService.updateProfile(nickname: value);
-                  _loadProfile();
+                  setState(() {
+                    _userProfile.nickname = value;
+                  });
                 },
               ),
               // 微信绑定
@@ -231,7 +247,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   if (value != null) {
                     HapticFeedback.lightImpact();
                     await authService.updateProfile(rememberMethod: value);
-                    _loadProfile();
+                    setState(() {
+                      _userProfile.rememberMethod = value;
+                    });
                   }
                 },
               ),
@@ -273,7 +291,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 onChanged: (value) async {
                   HapticFeedback.lightImpact();
                   await authService.updateProfile(multiSpeaker: value);
-                  _loadProfile();
+                  setState(() {
+                    _userProfile.multiSpeaker = value;
+                  });
+                },
+              ),
+              _buildSlider(
+                title: '口语推送占比',
+                value: _userProfile.sayRatio,
+                divisions: 10,
+                onChanged: (value) {
+                  setState(() {
+                    _userProfile.sayRatio = value;
+                  });
+                },
+                onChangeEnd: (value) {
+                  _updateSayRatio(value);
                 },
               ),
             ],
@@ -421,6 +454,63 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.pop(context);
             },
             child: Text(l.confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 数字滑块组件 1-100
+  Widget _buildSlider({
+    required String title,
+    required int value,
+    required Function(int) onChanged,
+    required Function(int) onChangeEnd,
+    int min = 0,
+    int max = 100,
+    int divisions = 100,
+  }) {
+    final c = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: t.bodyMedium),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: 160,
+                child: Slider(
+                  value: value.toDouble(),
+                  min: min.toDouble(),
+                  max: max.toDouble(),
+                  divisions: divisions,
+                  label: value.toString(),
+                  activeColor: c.primary,
+                  onChangeEnd: (double newValue) {
+                    HapticFeedback.lightImpact();
+                    onChangeEnd(newValue.round());
+                  },
+                  onChanged: (double newValue) {
+                    HapticFeedback.lightImpact();
+                    onChanged(newValue.round());
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 30,
+                child: Text(
+                  '$value',
+                  style: t.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ],
       ),
