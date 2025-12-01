@@ -1,4 +1,5 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:hearai/apis/auth_store.dart';
+import 'package:just_audio/just_audio.dart';
 
 class AudioManager {
   // 单例
@@ -6,18 +7,31 @@ class AudioManager {
   static final AudioManager _instance = AudioManager._internal();
   factory AudioManager() => _instance;
 
-  final AudioPlayer _player = AudioPlayer();
+  final _player = AudioPlayer();
 
   /// 播放URL音频
   Future<void> play(String url, {String? mimeType}) async {
-    await _player.stop(); // 播放新音频前先停止当前音频
-    await _player.play(UrlSource(url, mimeType: mimeType));
+    if (isPlaying()) {
+      await _player.stop(); // 播放新音频前先停止当前音频
+    }
+    if (AuthStore().isLoggedIn) {
+      await _player.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(url),
+          headers: {"Authorization": 'Bearer ${AuthStore().accessToken}'},
+        ),
+      );
+      await _player.play();
+    }
   }
 
-  /// 播放音频
-  Future<void> playSource(Source source) async {
-    await _player.stop(); // 播放新音频前先停止当前音频
-    await _player.play(source);
+  /// 播放asset音频
+  Future<void> playAsset(String assetUrl) async {
+    if (isPlaying()) {
+      await _player.stop(); // 播放新音频前先停止当前音频
+    }
+    await _player.setAudioSource(AudioSource.asset(assetUrl));
+    await _player.play();
   }
 
   /// 暂停
@@ -25,7 +39,7 @@ class AudioManager {
 
   /// 停止
   Future<void> stop() async {
-    if (await isPlaying()) {
+    if (isPlaying()) {
       await _player.stop();
     }
   }
@@ -34,8 +48,7 @@ class AudioManager {
   Future<void> setVolume(double volume) => _player.setVolume(volume);
 
   /// 是否正在播放
-  Future<bool> isPlaying() async {
-    final state = _player.state;
-    return state == PlayerState.playing;
+  bool isPlaying() {
+    return _player.playing;
   }
 }

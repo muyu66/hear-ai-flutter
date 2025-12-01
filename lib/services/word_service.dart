@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:hearai/apis/api_service.dart';
-import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/models/word_dict.dart';
 
 class WordService extends ApiService {
@@ -21,11 +18,6 @@ class WordService extends ApiService {
 
   /// 获取单词发音
   String getWordVoiceUrl(String word, {bool slow = false}) {
-    final token = AuthStore().accessToken;
-    if (token == null) {
-      return '';
-    }
-    final base64Token = base64Encode(utf8.encode(token));
-    return '${dio.options.baseUrl}/word/$word/voice_stream?token=$base64Token&slow=$slow';
+    return '${dio.options.baseUrl}/word/$word/voice_stream?slow=$slow';
   }
 }

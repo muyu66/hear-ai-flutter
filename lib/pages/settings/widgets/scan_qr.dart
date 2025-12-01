@@ -1,9 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class ScanQr extends StatefulWidget {
   const ScanQr({super.key});
@@ -17,16 +17,9 @@ class _ScanQrState extends State<ScanQr> with SingleTickerProviderStateMixin {
   final AudioManager audioManager = AudioManager();
   bool isHandling = false;
   Timer? _scanThrottleTimer;
-  late final Uint8List _audioBytes;
 
   late AnimationController lineController;
   late Animation<double> lineAnimation;
-
-  Future<void> _loadAudio() async {
-    _audioBytes = await rootBundle
-        .load('assets/sounds/scan.opus')
-        .then((b) => b.buffer.asUint8List());
-  }
 
   @override
   void initState() {
@@ -42,8 +35,6 @@ class _ScanQrState extends State<ScanQr> with SingleTickerProviderStateMixin {
       begin: 0,
       end: 1,
     ).animate(CurvedAnimation(parent: lineController, curve: Curves.easeInOut));
-
-    _loadAudio();
   }
 
   @override
@@ -58,7 +49,7 @@ class _ScanQrState extends State<ScanQr> with SingleTickerProviderStateMixin {
     if (!raw.startsWith("hearai-device-session://")) return;
 
     // 播放音效 & 震动反馈
-    audioManager.playSource(BytesSource(_audioBytes));
+    audioManager.playAsset("assets/sounds/scan.opus");
     HapticFeedback.selectionClick();
 
     Navigator.pop(context, raw);
