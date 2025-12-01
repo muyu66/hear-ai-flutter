@@ -13,7 +13,7 @@ class WordBooksService extends ApiService {
 
   // 新增单词到单词本
   Future<void> addWordBooks(String word) async {
-    await dio.post<bool>('/word_books', data: {"word": word});
+    await dio.post<void>('/word_books', data: {"word": word});
   }
 
   // 获取单词本概况

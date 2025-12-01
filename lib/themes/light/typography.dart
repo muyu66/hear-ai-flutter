@@ -15,8 +15,8 @@ final appTextTheme = TextTheme(
 
 class AppTypographyTokens {
   // 字体家族（中英文混排）
-  static const fontFamily = 'Lexend';
-  static const fallback = ['Noto Sans SC'];
+  static const fontFamily = 'EngText';
+  static const fallback = ['ZhCNText'];
 
   // 字重
   static const weightRegular = FontWeight.w400;
@@ -96,7 +96,7 @@ class AppTextStyles {
   );
 
   static const splashTextStyle = TextStyle(
-    fontFamily: 'MaShanZheng',
+    fontFamily: 'SplashUI',
     fontSize: AppTypographyTokens.sizeSplash,
     fontWeight: AppTypographyTokens.weightSemibold,
     height: AppTypographyTokens.heightTight,

@@ -48,12 +48,29 @@ flutter:
     - assets/sounds/
 
   fonts:
-    - family: Lexend
+    - family: EngText
       fonts:
-        - asset: assets/fonts/Lexend-Regular.ttf
-    - family: MaShanZheng
+        - asset: assets/fonts/Lora-VariableFont_wght.ttf
+          style: normal
+        - asset: assets/fonts/Lora-Italic-VariableFont_wght.ttf
+          style: italic
+    - family: SplashUI
       fonts:
         - asset: assets/fonts/MaShanZheng-Regular.ttf
+    - family: ZhCNText
+      fonts:
+        - asset: assets/fonts/noto-serif-sc-chinese-simplified-400-normal.ttf
+          style: normal
+          weight: 400
+        - asset: assets/fonts/noto-serif-sc-chinese-simplified-500-normal.ttf
+          style: normal
+          weight: 500
+        - asset: assets/fonts/noto-serif-sc-chinese-simplified-600-normal.ttf
+          style: normal
+          weight: 600
+        - asset: assets/fonts/noto-serif-sc-chinese-simplified-700-normal.ttf
+          style: normal
+          weight: 700
 
 flutter_launcher_icons:
   android: "launcher_icon"

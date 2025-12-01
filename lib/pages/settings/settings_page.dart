@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/l10n/app_localizations.dart';
-import 'package:hearai/models/create_device_session_req.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/services/auth_service.dart';
