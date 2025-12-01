@@ -31,7 +31,6 @@ ThemeData buildLightTheme() {
     useMaterial3: true,
     colorScheme: lightColorScheme,
     brightness: Brightness.light,
-    fontFamily: AppTypographyTokens.fontFamily,
     textTheme: appTextTheme,
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {

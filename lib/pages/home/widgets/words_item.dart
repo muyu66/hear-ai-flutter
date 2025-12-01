@@ -4,6 +4,7 @@ import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/words.dart';
 import 'package:hearai/pages/home/widgets/slice_words.dart';
 import 'package:hearai/services/words_service.dart';
+import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 
@@ -127,7 +128,7 @@ class _WordsItemState extends State<WordsItem> {
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
                 child: Text(
                   widget.words.translation,
-                  style: TextStyle(fontSize: 20),
+                  style: Theme.of(context).textTheme.printText,
                 ),
               ),
             ],

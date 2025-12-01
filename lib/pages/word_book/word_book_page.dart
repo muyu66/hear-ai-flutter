@@ -7,6 +7,7 @@ import 'package:hearai/models/word_book.dart';
 import 'package:hearai/models/word_book_summary.dart';
 import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/themes/light/color_schemes.dart';
+import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/widgets/dict.dart';
 import 'package:hearai/widgets/loading.dart';
@@ -228,12 +229,12 @@ class _WordListItem extends StatelessWidget {
       color: showMore ? c.listHighlight : null,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        title: Text(word, style: const TextStyle(fontSize: 18)),
+        title: Text(word, style: Theme.of(context).textTheme.printText),
         onTap: onTap,
         subtitle: (showMore && phonetic != null)
             ? Text(
                 "/$phonetic/",
-                style: const TextStyle(fontSize: 16, color: Colors.black54),
+                style: Theme.of(context).textTheme.printTextSm,
               )
             : null,
         trailing: Row(

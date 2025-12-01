@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hearai/themes/light/typography.dart';
 import 'dart:math';
 
 import 'package:hearai/widgets/dict.dart';
@@ -30,6 +31,7 @@ class SliceWords extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
     final words = this.words
         .split(RegExp(r'\s+'))
         .where((w) => w.isNotEmpty)
@@ -62,8 +64,7 @@ class SliceWords extends StatelessWidget {
               children: [
                 Text(
                   word,
-                  style: TextStyle(
-                    fontSize: 22,
+                  style: t.printTextLg.copyWith(
                     color: isHidden ? Colors.black.withAlpha(1) : Colors.black,
                   ),
                 ),

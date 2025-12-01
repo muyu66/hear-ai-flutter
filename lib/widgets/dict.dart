@@ -4,6 +4,7 @@ import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/word_dict.dart';
 import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/services/word_service.dart';
+import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -312,6 +313,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
   @override
   Widget build(BuildContext context) {
     final c = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -322,10 +324,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
             children: [
               Text(
                 widget.word,
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: t.printTextLg.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: Icon(
@@ -337,14 +336,13 @@ class _LocalDictViewState extends State<_LocalDictView> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
           if (widget.phonetic.isNotEmpty)
             Text(
               "/${widget.phonetic}/",
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: t.printTextSm.copyWith(color: c.secondary),
             ),
-          const SizedBox(height: 16),
-          Text(widget.explanation, style: TextStyle(fontSize: 16, height: 1.4)),
+          const SizedBox(height: 22),
+          Text(widget.explanation, style: t.printTextSm),
           const SizedBox(height: 20),
         ],
       ),

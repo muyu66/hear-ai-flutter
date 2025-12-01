@@ -424,7 +424,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required List<DropdownMenuItem<T>> items,
     required Function(T?) onChanged,
   }) {
-    final c = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -433,16 +433,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: c.onSurface,
-                  ),
-                ),
-              ],
+              children: [Text(title)],
             ),
           ),
           const SizedBox(width: 8),
@@ -461,7 +452,7 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: const Icon(Icons.arrow_drop_down, size: 24),
               elevation: 2,
               borderRadius: BorderRadius.circular(8),
-              style: TextStyle(fontSize: 14, color: c.onSurface),
+              style: t.bodyMedium,
             ),
           ),
         ],
@@ -525,7 +516,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 12),
           Text(
             _userProfile.nickname,
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ],
       ),
@@ -585,17 +576,18 @@ class _SettingsPageState extends State<SettingsPage> {
   // 版权
   Widget _buildCopyright(BuildContext context) {
     final c = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
 
     return Center(
       child: Column(
         children: [
           Text(
             "© 2025 zhuzhu",
-            style: TextStyle(fontSize: 14, color: c.secondary),
+            style: t.bodyMedium!.copyWith(color: c.secondary),
           ),
           Text(
             "Version 1.0.0",
-            style: TextStyle(fontSize: 14, color: c.secondary),
+            style: t.bodyMedium!.copyWith(color: c.secondary),
           ),
         ],
       ),

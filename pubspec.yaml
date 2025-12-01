@@ -48,7 +48,7 @@ flutter:
     - assets/sounds/
 
   fonts:
-    - family: EngText
+    - family: EnText
       fonts:
         - asset: assets/fonts/Lora-VariableFont_wght.ttf
           style: normal
@@ -57,7 +57,7 @@ flutter:
     - family: SplashUI
       fonts:
         - asset: assets/fonts/MaShanZheng-Regular.ttf
-    - family: ZhCNText
+    - family: ZhText
       fonts:
         - asset: assets/fonts/noto-serif-sc-chinese-simplified-400-normal.ttf
           style: normal
@@ -69,6 +69,20 @@ flutter:
           style: normal
           weight: 600
         - asset: assets/fonts/noto-serif-sc-chinese-simplified-700-normal.ttf
+          style: normal
+          weight: 700
+    - family: ZhUI
+      fonts:
+        - asset: assets/fonts/noto-sans-sc-chinese-simplified-400-normal.ttf
+          style: normal
+          weight: 400
+        - asset: assets/fonts/noto-sans-sc-chinese-simplified-500-normal.ttf
+          style: normal
+          weight: 500
+        - asset: assets/fonts/noto-sans-sc-chinese-simplified-600-normal.ttf
+          style: normal
+          weight: 600
+        - asset: assets/fonts/noto-sans-sc-chinese-simplified-700-normal.ttf
           style: normal
           weight: 700
 

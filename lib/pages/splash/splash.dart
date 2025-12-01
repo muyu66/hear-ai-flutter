@@ -180,6 +180,7 @@ class _SplashPageState extends State<SplashPage>
 
   /// 构建单列竖排（使用 _chars 和 _charAnimations）
   Widget _buildVerticalText(int colIndex) {
+    final t = Theme.of(context).textTheme;
     final colChars = _chars[colIndex];
     final colAnims = _charAnimations[colIndex];
 
@@ -196,7 +197,7 @@ class _SplashPageState extends State<SplashPage>
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
             child: Text(
               colChars[rowIndex],
-              style: AppTextStyles.splashTextStyle,
+              style: t.splashText,
               textAlign: TextAlign.center,
             ),
           ),

@@ -10,6 +10,7 @@ Future<void> showConfirm({
   VoidCallback? onCancel,
 }) async {
   final c = Theme.of(context).colorScheme;
+  final t = Theme.of(context).textTheme;
 
   await AwesomeDialog(
     transitionAnimationDuration: const Duration(milliseconds: 200),
@@ -18,6 +19,7 @@ Future<void> showConfirm({
     dialogType: dialogType,
     animType: AnimType.scale,
     title: title,
+    titleTextStyle: t.titleMedium,
     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     btnOkText: '',
     btnOkIcon: Icons.check,
@@ -34,6 +36,8 @@ Future<void> showNotify({
   required BuildContext context,
   required String title,
 }) async {
+  final t = Theme.of(context).textTheme;
+
   await AwesomeDialog(
     transitionAnimationDuration: const Duration(milliseconds: 200),
     context: context,
@@ -41,7 +45,8 @@ Future<void> showNotify({
     customHeader: Text("😊", style: TextStyle(fontSize: 46)),
     animType: AnimType.scale,
     title: title,
-    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    titleTextStyle: t.titleMedium,
+    padding: EdgeInsets.fromLTRB(8, 0, 8, 24),
     autoHide: Duration(milliseconds: 1500),
   ).show();
 }
@@ -51,6 +56,8 @@ Future<void> showClassicNotify({
   required String title,
   required DialogType dialogType,
 }) async {
+  final t = Theme.of(context).textTheme;
+
   await AwesomeDialog(
     transitionAnimationDuration: const Duration(milliseconds: 200),
     context: context,
@@ -58,7 +65,8 @@ Future<void> showClassicNotify({
     dialogType: dialogType,
     animType: AnimType.scale,
     title: title,
-    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    titleTextStyle: t.titleMedium,
+    padding: EdgeInsets.fromLTRB(8, 0, 8, 24),
     autoHide: Duration(milliseconds: 1500),
   ).show();
 }
