@@ -45,6 +45,13 @@ class _HomePageState extends State<HomePage> with RouteAware {
       routeObserver.subscribe(this, ModalRoute.of(context)!);
       _isSubscribed = true;
     }
+    // 如果单词等级改变，则重新获取单词
+    final store = Provider.of<Store>(context);
+    if (store.wordsLevelChange) {
+      store.resetWordsLevelChange();
+      // 废弃未看的内容，并获取新内容
+      _loadNewWords();
+    }
   }
 
   @override
@@ -82,7 +89,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   Future<void> _initAsync() async {
     await _setUserMinute();
-    await _getNewWords();
+    await _loadWords();
     await pollingTask();
     startPolling();
     play(index: currIndex, slow: false);
@@ -131,12 +138,24 @@ class _HomePageState extends State<HomePage> with RouteAware {
     _timer = null;
   }
 
-  Future<void> _getNewWords() async {
+  Future<void> _loadWords() async {
     if (!mounted) return;
     final fetchedWords = await wordsService.getWords();
     if (fetchedWords.isEmpty) return;
     setState(() {
       words.addAll(fetchedWords);
+    });
+  }
+
+  // 废弃未看的内容，并获取新内容
+  Future<void> _loadNewWords() async {
+    if (!mounted) return;
+    final fetchedWords = await wordsService.getWords();
+    if (fetchedWords.isEmpty) return;
+    setState(() {
+      final subWords = words.take(currIndex + 1).toList();
+      subWords.addAll(fetchedWords);
+      words = subWords;
     });
   }
 
@@ -174,7 +193,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
               );
               if (index >= words.length - 10 && !_isFetchingWords) {
                 _isFetchingWords = true;
-                _getNewWords().then((_) {
+                _loadWords().then((_) {
                   _isFetchingWords = false;
                 });
               }

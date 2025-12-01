@@ -93,6 +93,19 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
+  void _updateWordsLevel(int value) {
+    if (!mounted) return;
+    final store = Provider.of<Store>(context, listen: false);
+
+    HapticFeedback.lightImpact();
+    authService.updateProfile(wordsLevel: value).then((_) {
+      setState(() {
+        _userProfile.wordsLevel = value;
+      });
+      store.updateWordsLevelChange();
+    });
+  }
+
   void _linkWechat(String code) {
     AuthService()
         .linkWechat(code)
@@ -233,11 +246,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   DropdownMenuItem(value: 5, child: Text('🤯 神仙打架')),
                 ],
                 onChanged: (value) async {
-                  if (value != null) {
-                    HapticFeedback.lightImpact();
-                    await authService.updateProfile(wordsLevel: value);
-                    _loadProfile();
-                  }
+                  if (value == null) return;
+                  _updateWordsLevel(value);
                 },
               ),
               _buildDropdownSelection<int>(
