@@ -26,6 +26,7 @@ class _WordBookPageState extends State<WordBookPage> {
     todayCount: 0,
     tomorrowCount: 0,
     totalCount: 0,
+    nowCount: 0,
   );
   final WordBooksService wordBooksService = WordBooksService();
   // 点击寻求提示的次数
@@ -73,7 +74,9 @@ class _WordBookPageState extends State<WordBookPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  _buildStatCard(title: '当前需复习', value: summary.todayCount),
+                  _buildStatCard(title: '当前需复习', value: summary.nowCount),
+                  const SizedBox(width: 12),
+                  _buildStatCard(title: '今天还需复习', value: summary.todayCount),
                   const SizedBox(width: 12),
                   _buildStatCard(title: '明天需复习', value: summary.tomorrowCount),
                   const SizedBox(width: 12),

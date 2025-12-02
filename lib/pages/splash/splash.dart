@@ -160,7 +160,7 @@ class _SplashPageState extends State<SplashPage>
     // So we reverse the list when building children to keep data order stable.
     final columns = List<Widget>.generate(_chars.length, (colIndex) {
       // 你希望右列高一点（上移），左列低一点
-      final offsetY = colIndex == 0 ? -30.0 : -10.0;
+      final offsetY = colIndex == 0 ? -40.0 : -20.0;
       // Use RepaintBoundary to limit repaint area
       return RepaintBoundary(
         child: Transform.translate(

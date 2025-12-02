@@ -1,6 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ionicons/ionicons.dart';
 
 class HapticsController extends GetxController {
   static const _key = 'haptics_enabled';
@@ -23,6 +25,7 @@ class HapticsController extends GetxController {
 class StoreController extends GetxController {
   var percent = 1.0;
   var showBadge = false;
+  IconData padIcon = Ionicons.heart_circle;
 
   void setPercent(double newValue) {
     percent = newValue.clamp(0.0, 1.0);
@@ -36,6 +39,11 @@ class StoreController extends GetxController {
 
   void setShowBadge(bool newValue) {
     showBadge = newValue;
+    update();
+  }
+
+  void setPadIcon(IconData newValue) {
+    padIcon = newValue;
     update();
   }
 }

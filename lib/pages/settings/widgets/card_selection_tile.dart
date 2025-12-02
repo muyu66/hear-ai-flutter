@@ -24,12 +24,15 @@ class CardSelectionTile extends StatelessWidget {
     final c = Theme.of(context).colorScheme;
 
     return Card(
-      elevation: selected ? 8 : 2,
+      elevation: selected ? 12 : 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: selected
             ? BorderSide(color: Theme.of(context).primaryColor, width: 2)
-            : BorderSide.none,
+            : BorderSide(
+                color: Theme.of(context).colorScheme.outline,
+                width: 0.3,
+              ),
       ),
       child: InkWell(
         onTap: onTap,

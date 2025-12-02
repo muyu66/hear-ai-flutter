@@ -23,8 +23,8 @@ class WordBooksService extends ApiService {
   }
 
   // 获取今天的单词本概况
-  Future<ResultInt> getWordBooksToday() async {
-    final res = await dio.get('/word_books/today');
+  Future<ResultInt> getWordBooksNow() async {
+    final res = await dio.get('/word_books/now');
     return ResultInt.fromJson(res.data);
   }
 

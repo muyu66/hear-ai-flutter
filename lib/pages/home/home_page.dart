@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/app.dart';
 import 'package:hearai/l10n/app_localizations.dart';
@@ -112,14 +113,14 @@ class _HomePageState extends State<HomePage> with RouteAware {
     if (_pollingInProgress) return;
     _pollingInProgress = true;
     try {
-      final today = await wordBooksService.getWordBooksToday();
+      final now = await wordBooksService.getWordBooksNow();
 
       int maxSeconds = (useMinute ?? 10) * 60;
       if (maxSeconds <= 0) maxSeconds = 600; // 默认10分钟
       storeController.setPercent(
         storeController.percent - _timerInterval / maxSeconds,
       );
-      storeController.setShowBadge(today.result > 0);
+      storeController.setShowBadge(now.result > 0);
     } catch (e, st) {
       debugPrint('pollingTask error: $e\n$st');
     } finally {
@@ -164,14 +165,36 @@ class _HomePageState extends State<HomePage> with RouteAware {
   // 播放逻辑， false=播放慢速， true=播放常速, null=不播放
   bool? _tryPlay(int wordsId, WidgetType type) {
     if (type == WidgetType.say) {
-      if (level == 2) {
+      if (level == 1) {
+        // 引导用户说
+        storeController.setPadIcon(Icons.volume_up);
+        return null;
+      } else if (level == 2) {
+        // 引导用户核对
+        storeController.setPadIcon(FontAwesomeIcons.question);
         return false;
       } else if (level >= 3) {
+        // 鼓励用户
+        storeController.setPadIcon(FontAwesomeIcons.rightLong);
         return true;
       }
     } else if (type == WidgetType.listen) {
       if (level == 1) {
+        // 引导用户说出来
+        storeController.setPadIcon(Icons.volume_up);
         return false;
+      } else if (level <= 4) {
+        // 引导用户想单词
+        storeController.setPadIcon(FontAwesomeIcons.eye);
+        return true;
+      } else if (level == 5) {
+        // 引导用户想中文
+        storeController.setPadIcon(FontAwesomeIcons.textHeight);
+        return true;
+      } else if (level == 6) {
+        // 引导用户核对
+        storeController.setPadIcon(FontAwesomeIcons.rightLong);
+        return true;
       } else {
         return true;
       }
@@ -262,6 +285,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             right: 40,
             child: GetBuilder<StoreController>(
               builder: (_) => Pad(
+                icon: storeController.padIcon,
                 percent: storeController.percent,
                 showBadge: storeController.showBadge,
                 onPressCenter: (key) {

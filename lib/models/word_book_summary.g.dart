@@ -11,6 +11,7 @@ WordBookSummary _$WordBookSummaryFromJson(Map<String, dynamic> json) =>
       totalCount: (json['totalCount'] as num).toInt(),
       todayCount: (json['todayCount'] as num).toInt(),
       tomorrowCount: (json['tomorrowCount'] as num).toInt(),
+      nowCount: (json['nowCount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>
       'totalCount': instance.totalCount,
       'todayCount': instance.todayCount,
       'tomorrowCount': instance.tomorrowCount,
+      'nowCount': instance.nowCount,
     };

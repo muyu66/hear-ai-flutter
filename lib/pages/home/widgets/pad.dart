@@ -1,6 +1,6 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 import 'package:ionicons/ionicons.dart';
@@ -13,6 +13,7 @@ class Pad extends StatefulWidget {
   final void Function(String key)? onPressCenter;
   final void Function(String dir)? onDirection;
   final bool showBadge;
+  final IconData? icon;
 
   const Pad({
     super.key,
@@ -23,6 +24,7 @@ class Pad extends StatefulWidget {
     this.onPressCenter,
     this.onDirection,
     this.showBadge = false,
+    this.icon = Ionicons.heart_circle,
   });
 
   @override
@@ -107,6 +109,7 @@ class _PadState extends State<Pad> with SingleTickerProviderStateMixin {
             LeftButton(scale: leftScale, showBadge: widget.showBadge),
             RightButton(scale: rightScale),
             CenterKnob(
+              icon: widget.icon,
               dragX: dragX,
               knobSize: widget.knobSize,
               color: knobColor,
@@ -199,6 +202,7 @@ class CenterKnob extends StatelessWidget {
   final double opacity;
   final void Function(double dx) onPanUpdate;
   final VoidCallback onPanEnd;
+  final IconData? icon;
 
   const CenterKnob({
     super.key,
@@ -208,6 +212,7 @@ class CenterKnob extends StatelessWidget {
     required this.opacity,
     required this.onPanUpdate,
     required this.onPanEnd,
+    this.icon,
   });
 
   @override
@@ -224,11 +229,7 @@ class CenterKnob extends StatelessWidget {
             height: knobSize,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             alignment: Alignment.center,
-            child: Icon(
-              Ionicons.heart_circle,
-              size: knobSize,
-              color: Colors.black87,
-            ),
+            child: Icon(icon, size: knobSize, color: Colors.black87),
           ),
         ),
       ),
