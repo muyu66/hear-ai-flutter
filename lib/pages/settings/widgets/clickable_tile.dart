@@ -19,7 +19,12 @@ class ClickableTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      subtitle: subtitle != null
+          ? Padding(
+              padding: EdgeInsetsGeometry.symmetric(vertical: 2),
+              child: Text(subtitle!),
+            )
+          : null,
       leading: FaIcon(icon, size: 20),
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: onTap,

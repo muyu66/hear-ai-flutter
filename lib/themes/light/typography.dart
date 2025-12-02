@@ -11,7 +11,7 @@ final appTextTheme = TextTheme(
 
   labelLarge: AppTextStyles.labelLg,
   labelMedium: AppTextStyles.label,
-  labelSmall: AppTextStyles.label,
+  labelSmall: AppTextStyles.labelSm,
 
   titleLarge: AppTextStyles.titleLg,
   titleMedium: AppTextStyles.title,
@@ -155,6 +155,13 @@ class AppTextStyles {
     fontFamily: AppTypographyTokens.fontFamilyZhUI,
     fontWeight: AppTypographyTokens.weight500,
     fontSize: AppTypographyTokens.size14,
+    height: AppTypographyTokens.heightNormal,
+  );
+
+  static const labelSm = TextStyle(
+    fontFamily: AppTypographyTokens.fontFamilyZhUI,
+    fontWeight: AppTypographyTokens.weight500,
+    fontSize: AppTypographyTokens.size12,
     height: AppTypographyTokens.heightNormal,
   );
 

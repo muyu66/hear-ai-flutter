@@ -51,6 +51,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorUnknown => '哦豁，程序出错了 👀';
+
+  @override
+  String get chooseRememberModel => '选择适合你的记忆模型';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).

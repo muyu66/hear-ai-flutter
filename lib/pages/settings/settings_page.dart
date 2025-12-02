@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +9,7 @@ import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
 import 'package:hearai/pages/settings/widgets/dropdown_selection_tile.dart';
 import 'package:hearai/pages/settings/widgets/editable_text_tile.dart';
+import 'package:hearai/pages/settings/widgets/remember_selection_page.dart';
 import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/pages/settings/widgets/section_tile.dart';
 import 'package:hearai/pages/settings/widgets/simple_tile.dart';
@@ -43,12 +42,13 @@ class _SettingsPageState extends State<SettingsPage> {
   UserProfile _userProfile = UserProfile(
     nickname: "",
     avatar: null,
-    rememberMethod: "pow",
+    rememberMethod: "sm2",
     wordsLevel: 3,
     useMinute: 5,
     multiSpeaker: true,
     isWechat: false,
     sayRatio: 20,
+    targetRetention: 90,
   );
   final storeController = Get.put(StoreController());
   final refreshWordsController = Get.put(RefreshWordsController());
@@ -243,32 +243,44 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionTitle(
             title: '学习',
             children: [
-              DropdownSelectionTile<String>(
-                title: '记忆法',
-                value: _userProfile.rememberMethod,
-                items: const [
-                  DropdownMenuItem(value: 'pow', child: Text('指数间隔')),
-                  DropdownMenuItem(value: 'fc', child: Text('遗忘曲线')),
-                ],
-                onChanged: (value) async {
-                  if (value != null) {
-                    HapticsManager.light();
-                    await authService.updateProfile(rememberMethod: value);
-                    setState(() {
-                      _userProfile.rememberMethod = value;
-                    });
-                  }
+              ClickableTile(
+                title: '记忆模型',
+                icon: FontAwesomeIcons.lightbulb,
+                subtitle: rememberMethodList
+                    .firstWhereOrNull(
+                      (item) => item.value == _userProfile.rememberMethod,
+                    )
+                    ?.title,
+                onTap: () async {
+                  HapticsManager.light();
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RememberSelectionPage(
+                        rememberMethod: _userProfile.rememberMethod,
+                        onTap: (String value) async {
+                          HapticsManager.light();
+                          await authService.updateProfile(
+                            rememberMethod: value,
+                          );
+                          setState(() {
+                            _userProfile.rememberMethod = value;
+                          });
+                        },
+                      ),
+                    ),
+                  );
                 },
               ),
               DropdownSelectionTile<int>(
                 title: '难度等级',
                 value: _userProfile.wordsLevel,
                 items: const [
-                  DropdownMenuItem(value: 1, child: Text('🥚 菜鸟')),
-                  DropdownMenuItem(value: 2, child: Text('🐣 半熟萌新')),
-                  DropdownMenuItem(value: 3, child: Text('🍳 适中')),
-                  DropdownMenuItem(value: 4, child: Text('🦉 老鸟探险者')),
-                  DropdownMenuItem(value: 5, child: Text('🤯 神仙打架')),
+                  DropdownMenuItem(value: 1, child: Text('菜鸟 🥚')),
+                  DropdownMenuItem(value: 2, child: Text('半熟萌新')),
+                  DropdownMenuItem(value: 3, child: Text('适中 🍳')),
+                  DropdownMenuItem(value: 4, child: Text('老鸟探险者')),
+                  DropdownMenuItem(value: 5, child: Text('神仙打架')),
                 ],
                 onChanged: (value) async {
                   if (value == null) return;
@@ -281,7 +293,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 items: const [
                   DropdownMenuItem(value: 3, child: Text('3分钟')),
                   DropdownMenuItem(value: 5, child: Text('5分钟')),
-                  DropdownMenuItem(value: 10, child: Text('10分钟')),
+                  DropdownMenuItem(value: 10, child: Text('10分钟 😛')),
                   DropdownMenuItem(value: 20, child: Text('20分钟')),
                   DropdownMenuItem(value: 30, child: Text('30分钟')),
                   DropdownMenuItem(value: 60, child: Text('1小时')),
@@ -314,6 +326,24 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
                 onChangeEnd: (value) {
                   _updateSayRatio(value);
+                },
+              ),
+              DropdownSelectionTile<int>(
+                title: '学习态度',
+                value: _userProfile.targetRetention,
+                items: const [
+                  DropdownMenuItem(value: 80, child: Text('Whatever 🤪')),
+                  DropdownMenuItem(value: 85, child: Text('试试看')),
+                  DropdownMenuItem(value: 90, child: Text('稳扎稳打 ✊')),
+                  DropdownMenuItem(value: 95, child: Text('滴水不漏')),
+                ],
+                onChanged: (value) async {
+                  if (value == null) return;
+                  HapticsManager.light();
+                  await authService.updateProfile(targetRetention: value);
+                  setState(() {
+                    _userProfile.targetRetention = value;
+                  });
                 },
               ),
             ],

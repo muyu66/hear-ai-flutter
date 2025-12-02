@@ -180,6 +180,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'哦豁，程序出错了 👀'**
   String get errorUnknown;
+
+  /// No description provided for @chooseRememberModel.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择适合你的记忆模型'**
+  String get chooseRememberModel;
 }
 
 class _AppLocalizationsDelegate

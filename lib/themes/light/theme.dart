@@ -32,6 +32,9 @@ ThemeData buildLightTheme() {
     colorScheme: lightColorScheme,
     brightness: Brightness.light,
     textTheme: appTextTheme,
+    splashColor: lightColorScheme.primaryContainer, // 水波纹
+    highlightColor: lightColorScheme.primaryContainer, // 按下高亮
+    hoverColor: lightColorScheme.primaryContainer, // 鼠标悬停（桌面/WEB）
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: NoAnimationPageTransitionsBuilder(),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hearai/l10n/app_localizations.dart';
+import 'package:hearai/l10n/app_translations.dart';
 import 'package:hearai/pages/home/home_page.dart';
 import 'package:hearai/pages/settings/settings_page.dart';
 import 'package:hearai/pages/sign_in/sign_in_page.dart';
@@ -33,7 +35,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      translations: AppTranslations(),
+      locale: Locale('zh', 'CN'),
+      fallbackLocale: Locale('zh', 'US'),
       debugShowCheckedModeBanner: false,
       title: 'HearAI',
       theme: buildLightTheme(),

@@ -15,6 +15,7 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
   multiSpeaker: json['multiSpeaker'] as bool,
   isWechat: json['isWechat'] as bool,
   sayRatio: (json['sayRatio'] as num).toInt(),
+  targetRetention: (json['targetRetention'] as num).toInt(),
 );
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
@@ -27,4 +28,5 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'multiSpeaker': instance.multiSpeaker,
       'isWechat': instance.isWechat,
       'sayRatio': instance.sayRatio,
+      'targetRetention': instance.targetRetention,
     };
