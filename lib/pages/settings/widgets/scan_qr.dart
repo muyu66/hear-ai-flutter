@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hearai/tools/audio_manager.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ScanQr extends StatefulWidget {
@@ -50,7 +50,7 @@ class _ScanQrState extends State<ScanQr> with SingleTickerProviderStateMixin {
 
     // 播放音效 & 震动反馈
     audioManager.playAsset("assets/sounds/scan.opus");
-    HapticFeedback.selectionClick();
+    HapticsManager.selectionClick();
 
     Navigator.pop(context, raw);
   }

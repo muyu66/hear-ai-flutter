@@ -9,6 +9,7 @@ import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/themes/light/color_schemes.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/dialog.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/widgets/dict.dart';
 import 'package:hearai/widgets/loading.dart';
 
@@ -127,7 +128,7 @@ class _WordBookPageState extends State<WordBookPage> {
                             showMore: word.word == currentWord,
                             hitCount: hitCount,
                             onTap: () {
-                              HapticFeedback.lightImpact();
+                              HapticsManager.light();
                               setState(() {
                                 hitCount++;
                                 currentWord = word.word; // 激活这个单词
@@ -135,7 +136,7 @@ class _WordBookPageState extends State<WordBookPage> {
                               showDictModal(context, word.word);
                             },
                             onCorrect: () {
-                              HapticFeedback.lightImpact();
+                              HapticsManager.light();
                               wordBooksService
                                   .rememberWordBooks(word.word, hitCount)
                                   .then((_) {
@@ -143,13 +144,13 @@ class _WordBookPageState extends State<WordBookPage> {
                                   });
                             },
                             onIncorrect: () {
-                              HapticFeedback.lightImpact();
+                              HapticsManager.light();
                               showConfirm(
                                 context: context,
                                 title: l.confirmDeleteWordBooks(word.word),
                                 dialogType: DialogType.question,
                                 onConfirm: () {
-                                  HapticFeedback.lightImpact();
+                                  HapticsManager.light();
                                   wordBooksService
                                       .deleteWordBooks(word.word)
                                       .then((_) {

@@ -1,36 +1,55 @@
-import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get_storage/get_storage.dart';
 
-class Store extends ChangeNotifier {
-  double _percent = 1.0;
-  bool _refreshWords = false;
-  bool _showBadge = false;
+class HapticsController extends GetxController {
+  static const _key = 'haptics_enabled';
+  final storage = GetStorage();
+  RxBool enabled = true.obs;
 
-  double get percent => _percent;
-  bool get refreshWords => _refreshWords;
-  bool get showBadge => _showBadge;
+  @override
+  void onInit() {
+    super.onInit();
+    // 从本地存储加载状态
+    enabled.value = storage.read(_key) ?? true;
+  }
+
+  Future<void> setEnabled(bool value) async {
+    enabled.value = value;
+    storage.write(_key, value); // 保存到本地
+  }
+}
+
+class StoreController extends GetxController {
+  var percent = 1.0;
+  var showBadge = false;
+
+  void setPercent(double newValue) {
+    percent = newValue.clamp(0.0, 1.0);
+    update();
+  }
 
   void resetPercent() {
-    _percent = 1.0;
-    notifyListeners();
+    percent = 1.0;
+    update();
   }
 
-  void updatePercent(double newValue) {
-    _percent = newValue.clamp(0.0, 1.0);
-    notifyListeners();
+  void setShowBadge(bool newValue) {
+    showBadge = newValue;
+    update();
+  }
+}
+
+class RefreshWordsController extends GetxController {
+  var refreshWords = false;
+
+  void setTrue() {
+    refreshWords = true;
+    update();
   }
 
-  void resetRefreshWords() {
-    _refreshWords = false;
-    notifyListeners();
-  }
-
-  void needRefreshWords() {
-    _refreshWords = true;
-    notifyListeners();
-  }
-
-  void updateShowBadge(bool newValue) {
-    _showBadge = newValue;
-    notifyListeners();
+  void setFalse() {
+    refreshWords = false;
+    update();
   }
 }

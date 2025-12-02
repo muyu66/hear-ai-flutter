@@ -1,19 +1,26 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/user_profile.dart';
+import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
+import 'package:hearai/pages/settings/widgets/dropdown_selection_tile.dart';
+import 'package:hearai/pages/settings/widgets/editable_text_tile.dart';
 import 'package:hearai/pages/settings/widgets/scan_qr.dart';
+import 'package:hearai/pages/settings/widgets/section_tile.dart';
+import 'package:hearai/pages/settings/widgets/simple_tile.dart';
+import 'package:hearai/pages/settings/widgets/slider_tile.dart';
+import 'package:hearai/pages/settings/widgets/switch_tile_tile.dart';
 import 'package:hearai/services/auth_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/cache_manager.dart';
 import 'package:hearai/tools/dialog.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/tools/secure_storage.dart';
 import 'package:hearai/widgets/wechat_login.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -37,6 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
     isWechat: false,
     sayRatio: 20,
   );
+  final storeController = Get.put(StoreController());
+  final refreshWordsController = Get.put(RefreshWordsController());
 
   @override
   void initState() {
@@ -75,7 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _signOut() async {
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
     await SecureStorageUtils.delete("privateKeyBase64");
     AuthStore().clearToken();
     if (mounted) {
@@ -85,38 +94,32 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _updateUseMinute(int value) {
     if (!mounted) return;
-    final store = Provider.of<Store>(context, listen: false);
-
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
     authService.updateProfile(useMinute: value).then((_) {
       _loadProfile();
-      store.resetPercent();
+      storeController.resetPercent();
     });
   }
 
   void _updateWordsLevel(int value) {
     if (!mounted) return;
-    final store = Provider.of<Store>(context, listen: false);
-
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
     authService.updateProfile(wordsLevel: value).then((_) {
       setState(() {
         _userProfile.wordsLevel = value;
       });
-      store.needRefreshWords();
+      refreshWordsController.setTrue();
     });
   }
 
   void _updateSayRatio(int value) {
     if (!mounted) return;
-    final store = Provider.of<Store>(context, listen: false);
-
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
     authService.updateProfile(sayRatio: value).then((_) {
       setState(() {
         _userProfile.sayRatio = value;
       });
-      store.needRefreshWords();
+      refreshWordsController.setTrue();
     });
   }
 
@@ -153,7 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
       title: l.confirmSignInDevice,
       dialogType: DialogType.info,
       onConfirm: () {
-        HapticFeedback.lightImpact();
+        HapticsManager.light();
         authCreateDeviceSession(deviceSessionId);
       },
     );
@@ -170,15 +173,14 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 16),
 
           // 账号设置
-          _buildSectionTitle(context, '账号'),
-          _buildCard(
-            context,
+          SectionTitle(
+            title: '账号',
             children: [
-              _buildEditableTextField(
+              EditableTextTile(
                 title: '昵称',
                 value: _userProfile.nickname,
                 onChanged: (value) async {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   await authService.updateProfile(nickname: value);
                   setState(() {
                     _userProfile.nickname = value;
@@ -187,20 +189,20 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               // 微信绑定
               _userProfile.isWechat
-                  ? _buildSimpleTile(title: '已绑定微信', icon: Icons.wechat)
+                  ? SimpleTile(title: '已绑定微信', icon: Icons.wechat)
                   : WeChatButton(
                       builder: (context, loading, support, triggerLogin) {
-                        return _buildClickableTile(
+                        return ClickableTile(
                           title: '绑定微信',
                           icon: Icons.wechat,
                           onTap: () async {
-                            HapticFeedback.lightImpact();
+                            HapticsManager.light();
                             await triggerLogin();
                           },
                         );
                       },
                       onCode: (code) {
-                        HapticFeedback.lightImpact();
+                        HapticsManager.light();
                         _linkWechat(code);
                       },
                       onError: () {
@@ -212,11 +214,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                     ),
               // 扫码登录设备
-              _buildClickableTile(
+              ClickableTile(
                 title: '扫码登录设备',
                 icon: Icons.qr_code_scanner,
                 onTap: () async {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   final String? result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ScanQr()),
@@ -232,11 +234,10 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 16),
 
           // 学习设置
-          _buildSectionTitle(context, '学习'),
-          _buildCard(
-            context,
+          SectionTitle(
+            title: '学习',
             children: [
-              _buildDropdownSelection<String>(
+              DropdownSelectionTile<String>(
                 title: '记忆法',
                 value: _userProfile.rememberMethod,
                 items: const [
@@ -245,7 +246,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
                 onChanged: (value) async {
                   if (value != null) {
-                    HapticFeedback.lightImpact();
+                    HapticsManager.light();
                     await authService.updateProfile(rememberMethod: value);
                     setState(() {
                       _userProfile.rememberMethod = value;
@@ -253,7 +254,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   }
                 },
               ),
-              _buildDropdownSelection<int>(
+              DropdownSelectionTile<int>(
                 title: '难度等级',
                 value: _userProfile.wordsLevel,
                 items: const [
@@ -268,7 +269,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _updateWordsLevel(value);
                 },
               ),
-              _buildDropdownSelection<int>(
+              DropdownSelectionTile<int>(
                 title: '每日学习时间',
                 value: _userProfile.useMinute,
                 items: const [
@@ -285,18 +286,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   _updateUseMinute(value);
                 },
               ),
-              _buildSwitchTile(
+              SwitchTile(
                 title: '多种发音源',
                 value: _userProfile.multiSpeaker,
                 onChanged: (value) async {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   await authService.updateProfile(multiSpeaker: value);
                   setState(() {
                     _userProfile.multiSpeaker = value;
                   });
                 },
               ),
-              _buildSlider(
+              SliderTile(
                 title: '口语推送占比',
                 value: _userProfile.sayRatio,
                 divisions: 10,
@@ -315,22 +316,31 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 16),
 
           // 通用设置
-          _buildSectionTitle(context, '通用'),
-          _buildCard(
-            context,
+          SectionTitle(
+            title: '通用',
             children: [
-              _buildClickableTile(
+              Obx(() {
+                return SwitchTile(
+                  title: '触觉反馈',
+                  value: HapticsManager.enabled,
+                  onChanged: (value) async {
+                    HapticsManager.light();
+                    HapticsManager.setEnabled(value);
+                  },
+                );
+              }),
+              ClickableTile(
                 title: '清理缓存',
                 subtitle: _cacheSizeText,
                 icon: FontAwesomeIcons.trash,
                 onTap: () {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   showConfirm(
                     context: context,
                     title: l.confirmClean,
                     dialogType: DialogType.warning,
                     onConfirm: () {
-                      HapticFeedback.lightImpact();
+                      HapticsManager.light();
                       cacheManager.clearCache().then((_) {
                         _loadCacheSize();
                       });
@@ -338,11 +348,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
-              _buildClickableTile(
+              ClickableTile(
                 title: '捐赠',
                 icon: FontAwesomeIcons.handHoldingHeart,
                 onTap: () async {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   try {
                     await launchUrl(
                       Uri.parse(
@@ -357,11 +367,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   }
                 },
               ),
-              _buildClickableTile(
+              ClickableTile(
                 title: '前往 HearAI 网站',
                 icon: FontAwesomeIcons.globe,
                 onTap: () async {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   try {
                     await launchUrl(
                       Uri.parse('https://muyu66.github.io/hear-ai-website'),
@@ -374,11 +384,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   }
                 },
               ),
-              _buildClickableTile(
+              ClickableTile(
                 title: '退出账号',
                 icon: FontAwesomeIcons.arrowRightFromBracket,
                 onTap: () {
-                  HapticFeedback.lightImpact();
+                  HapticsManager.light();
                   showConfirm(
                     context: context,
                     title: _userProfile.isWechat
@@ -386,7 +396,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         : l.confirmSignOutWithoutWeChat,
                     dialogType: DialogType.warning,
                     onConfirm: () {
-                      HapticFeedback.lightImpact();
+                      HapticsManager.light();
                       _signOut();
                     },
                   );
@@ -395,212 +405,11 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
 
-          const SizedBox(height: 36),
-          _buildCopyright(context),
           const SizedBox(height: 42),
+          _buildCopyright(context),
+          const SizedBox(height: 52),
         ],
       ),
-    );
-  }
-
-  // 可编辑文本字段组件
-  Widget _buildEditableTextField({
-    required String title,
-    required String value,
-    required Function(String) onChanged,
-  }) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Text(value),
-      trailing: const Icon(Icons.edit, size: 20),
-      onTap: () {
-        HapticFeedback.lightImpact();
-        _showEditDialog(title, value, onChanged);
-      },
-    );
-  }
-
-  void _showEditDialog(
-    String title,
-    String currentValue,
-    Function(String) onChanged,
-  ) {
-    final l = AppLocalizations.of(context);
-    final controller = TextEditingController(text: currentValue);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('修改$title'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: '请输入$title',
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              final newValue = controller.text.trim();
-              if (newValue.isNotEmpty && newValue != currentValue) {
-                onChanged(newValue);
-              }
-              Navigator.pop(context);
-            },
-            child: Text(l.confirm),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 数字滑块组件 1-100
-  Widget _buildSlider({
-    required String title,
-    required int value,
-    required Function(int) onChanged,
-    required Function(int) onChangeEnd,
-    int min = 0,
-    int max = 100,
-    int divisions = 100,
-  }) {
-    final c = Theme.of(context).colorScheme;
-    final t = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: t.bodyMedium),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 160,
-                child: Slider(
-                  value: value.toDouble(),
-                  min: min.toDouble(),
-                  max: max.toDouble(),
-                  divisions: divisions,
-                  label: value.toString(),
-                  activeColor: c.primary,
-                  onChangeEnd: (double newValue) {
-                    HapticFeedback.lightImpact();
-                    onChangeEnd(newValue.round());
-                  },
-                  onChanged: (double newValue) {
-                    HapticFeedback.lightImpact();
-                    onChanged(newValue.round());
-                  },
-                ),
-              ),
-              SizedBox(
-                width: 30,
-                child: Text(
-                  '$value',
-                  style: t.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 下拉选择组件（使用 DropdownMenuItem）
-  Widget _buildDropdownSelection<T>({
-    required String title,
-    required T value,
-    required List<DropdownMenuItem<T>> items,
-    required Function(T?) onChanged,
-  }) {
-    final t = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text(title)],
-            ),
-          ),
-          const SizedBox(width: 8),
-          DropdownButtonHideUnderline(
-            child: DropdownButton<T>(
-              value: value,
-              alignment: Alignment.centerRight,
-              items: items,
-              onChanged: (T? newValue) {
-                onChanged(newValue);
-              },
-              onTap: () {
-                HapticFeedback.lightImpact();
-              },
-              enableFeedback: true,
-              icon: const Icon(Icons.arrow_drop_down, size: 24),
-              elevation: 2,
-              borderRadius: BorderRadius.circular(8),
-              style: t.bodyMedium,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 开关组件
-  Widget _buildSwitchTile({
-    required String title,
-    required bool value,
-    IconData? icon,
-    required Function(bool) onChanged,
-  }) {
-    return SwitchListTile(
-      title: Text(title),
-      value: value,
-      secondary: icon == null ? null : FaIcon(icon, size: 18),
-      onChanged: onChanged,
-    );
-  }
-
-  // 可点击项目组件
-  Widget _buildClickableTile({
-    required String title,
-    String? subtitle,
-    required IconData icon,
-    required Function() onTap,
-  }) {
-    return ListTile(
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      leading: FaIcon(icon, size: 20),
-      trailing: const Icon(Icons.chevron_right, size: 20),
-      onTap: onTap,
-    );
-  }
-
-  // 纯展示项目组件
-  Widget _buildSimpleTile({
-    required String title,
-    String? subtitle,
-    required IconData icon,
-  }) {
-    return ListTile(
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      leading: FaIcon(icon, size: 20),
     );
   }
 
@@ -623,56 +432,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  // 分组标题
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    final c = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: c.primary,
-        ),
-      ),
-    );
-  }
-
-  // 卡片包装
-  Widget _buildCard(BuildContext context, {required List<Widget> children}) {
-    final c = Theme.of(context).colorScheme;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: c.outline,
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: children.asMap().entries.map((entry) {
-          final index = entry.key;
-          final widget = entry.value;
-          return Column(
-            children: [
-              widget,
-              if (index != children.length - 1)
-                Divider(height: 1, thickness: 1, color: c.outlineVariant),
-            ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-
   // 版权
   Widget _buildCopyright(BuildContext context) {
     final c = Theme.of(context).colorScheme;
@@ -683,10 +442,6 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           Text(
             "© 2025 zhuzhu",
-            style: t.bodyMedium!.copyWith(color: c.secondary),
-          ),
-          Text(
-            "Version 1.0.0",
             style: t.bodyMedium!.copyWith(color: c.secondary),
           ),
         ],

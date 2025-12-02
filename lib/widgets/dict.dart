@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/word_dict.dart';
 import 'package:hearai/services/word_books_service.dart';
@@ -7,6 +6,7 @@ import 'package:hearai/services/word_service.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void showDictModal(BuildContext context, String word) {
@@ -192,7 +192,7 @@ class _DictModalState extends State<_DictModal>
           Expanded(
             child: TextButton.icon(
               onPressed: () {
-                HapticFeedback.lightImpact();
+                HapticsManager.light();
                 audioManager.play(
                   wordService.getWordVoiceUrl(widget.word),
                   mimeType: 'audio/ogg',
@@ -237,7 +237,7 @@ class _DictModalState extends State<_DictModal>
               onPressed: existInWordBooks == null
                   ? null
                   : () {
-                      HapticFeedback.lightImpact();
+                      HapticsManager.light();
                       if (existInWordBooks!) {
                         wordBooksService.deleteWordBooks(widget.word).then((_) {
                           _handleExistInWordBooks();
@@ -297,7 +297,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
   void _handleBadWordDict() {
     final l = AppLocalizations.of(context);
 
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
     wordService
         .badWordDict(widget.word)
         .then((value) {

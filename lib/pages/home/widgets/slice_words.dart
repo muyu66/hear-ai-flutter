@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:hearai/themes/light/typography.dart';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:hearai/themes/light/typography.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/widgets/dict.dart';
 
 class SliceWords extends StatelessWidget {
@@ -50,7 +50,7 @@ class SliceWords extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             if (!isHidden) {
-              HapticFeedback.lightImpact();
+              HapticsManager.light();
 
               final safeWord = word
                   .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')

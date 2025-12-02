@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/dialog.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/widgets/wechat_login.dart';
 
 class SignInPage extends StatelessWidget {
@@ -61,7 +61,7 @@ class SignInPage extends StatelessWidget {
                 const SizedBox(height: 200),
                 InkWell(
                   onTap: () {
-                    HapticFeedback.lightImpact();
+                    HapticsManager.light();
                     showNotify(context: context, title: l.todo);
                   },
                   child: Opacity(
@@ -97,7 +97,7 @@ class _GuestButtonState extends State<_GuestButton> {
   Future<void> _onSignUp() async {
     if (_loading) return;
     setState(() => _loading = true);
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
 
     try {
       print(66666666666666);
@@ -123,13 +123,13 @@ class _GuestButtonState extends State<_GuestButton> {
         onPressed: _loading
             ? null
             : () {
-                HapticFeedback.lightImpact();
+                HapticsManager.light();
                 showConfirm(
                   context: context,
                   title: l.confirmSignUpGuest,
                   dialogType: DialogType.warning,
                   onConfirm: () {
-                    HapticFeedback.lightImpact();
+                    HapticsManager.light();
                     _onSignUp();
                   },
                 );

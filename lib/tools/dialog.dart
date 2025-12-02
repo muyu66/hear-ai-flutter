@@ -1,6 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 
 Future<void> showConfirm({
   required BuildContext context,
@@ -27,7 +27,11 @@ Future<void> showConfirm({
     btnCancelText: '',
     btnCancelIcon: Icons.close,
     btnCancelColor: c.error,
-    btnCancelOnPress: onCancel ?? HapticFeedback.lightImpact,
+    btnCancelOnPress:
+        onCancel ??
+        () {
+          HapticsManager.light();
+        },
     btnOkOnPress: onConfirm,
   ).show();
 }

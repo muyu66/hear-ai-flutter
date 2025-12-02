@@ -1,7 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:wechat_kit/wechat_kit.dart';
 
 typedef WeChatButtonBuilder =
@@ -86,7 +87,7 @@ class _WeChatButtonState extends State<WeChatButton> {
     if (_loading) return;
 
     setState(() => _loading = true);
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
 
     try {
       await WechatKitPlatform.instance.auth(

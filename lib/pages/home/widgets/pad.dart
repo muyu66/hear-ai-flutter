@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 import 'package:ionicons/ionicons.dart';
 
 class Pad extends StatefulWidget {
@@ -115,16 +116,16 @@ class _PadState extends State<Pad> with SingleTickerProviderStateMixin {
                   dragX += dx;
                   dragX = dragX.clamp(-radius, radius);
                 });
-                HapticFeedback.lightImpact();
+                HapticsManager.light();
               },
               onPanEnd: () {
                 if (dragX > 10) {
                   // 增加明显震动
-                  HapticFeedback.mediumImpact();
+                  HapticsManager.medium();
                   widget.onDirection?.call("right");
                 } else if (dragX < -10) {
                   // 增加明显震动
-                  HapticFeedback.mediumImpact();
+                  HapticsManager.medium();
                   widget.onDirection?.call("left");
                 } else {
                   widget.onPressCenter?.call("center");

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:hearai/app.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/words.dart';
@@ -13,7 +14,7 @@ import 'package:hearai/services/words_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
-import 'package:provider/provider.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,6 +40,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
   bool _pollingInProgress = false;
   final AudioManager audioManager = AudioManager();
   final PageController _controller = PageController();
+  final storeController = Get.put(StoreController());
+  final refreshWordsController = Get.put(RefreshWordsController());
 
   @override
   void didChangeDependencies() {
@@ -48,9 +51,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
       _isSubscribed = true;
     }
     // 如果单词等级改变，则重新获取单词
-    final store = Provider.of<Store>(context, listen: false);
-    if (store.refreshWords) {
-      store.resetRefreshWords();
+    if (refreshWordsController.refreshWords) {
+      refreshWordsController.setFalse();
       // 废弃未看的内容，并获取新内容
       _loadNewWords();
     }
@@ -110,13 +112,14 @@ class _HomePageState extends State<HomePage> with RouteAware {
     if (_pollingInProgress) return;
     _pollingInProgress = true;
     try {
-      final store = Provider.of<Store>(context, listen: false);
       final today = await wordBooksService.getWordBooksToday();
 
       int maxSeconds = (useMinute ?? 10) * 60;
       if (maxSeconds <= 0) maxSeconds = 600; // 默认10分钟
-      store.updatePercent(store.percent - _timerInterval / maxSeconds);
-      store.updateShowBadge(today.result > 0);
+      storeController.setPercent(
+        storeController.percent - _timerInterval / maxSeconds,
+      );
+      storeController.setShowBadge(today.result > 0);
     } catch (e, st) {
       debugPrint('pollingTask error: $e\n$st');
     } finally {
@@ -217,7 +220,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   void _handleBadWords(WordsModel wordsModel) {
     final l = AppLocalizations.of(context);
 
-    HapticFeedback.lightImpact();
+    HapticsManager.light();
 
     wordsService
         .badWords(wordsModel.id)
@@ -257,28 +260,26 @@ class _HomePageState extends State<HomePage> with RouteAware {
             bottom: 54,
             left: 40,
             right: 40,
-            child: Consumer<Store>(
-              builder: (_, store, _) {
-                return Pad(
-                  percent: store.percent,
-                  showBadge: store.showBadge,
-                  onPressCenter: (key) {
-                    if (!mounted) return;
-                    HapticFeedback.lightImpact();
-                    setState(() {
-                      level++;
-                    });
-                    playWeb(words[currIndex].id);
-                  },
-                  onDirection: (dir) {
-                    if (dir == "left") {
-                      Navigator.pushNamed(context, '/word_book');
-                    } else if (dir == "right") {
-                      Navigator.pushNamed(context, '/settings');
-                    }
-                  },
-                );
-              },
+            child: GetBuilder<StoreController>(
+              builder: (_) => Pad(
+                percent: storeController.percent,
+                showBadge: storeController.showBadge,
+                onPressCenter: (key) {
+                  if (!mounted) return;
+                  HapticsManager.light();
+                  setState(() {
+                    level++;
+                  });
+                  playWeb(words[currIndex].id);
+                },
+                onDirection: (dir) {
+                  if (dir == "left") {
+                    Navigator.pushNamed(context, '/word_book');
+                  } else if (dir == "right") {
+                    Navigator.pushNamed(context, '/settings');
+                  }
+                },
+              ),
             ),
           ),
         ],
