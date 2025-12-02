@@ -120,6 +120,14 @@ class AppTextStyles {
   );
 
   // 正文（释义、例句主文本）
+  static const bodyLarge = TextStyle(
+    fontFamily: AppTypographyTokens.fontFamilyZhUI,
+    fontWeight: AppTypographyTokens.weight400,
+    fontSize: AppTypographyTokens.size16,
+    height: AppTypographyTokens.heightNormal,
+  );
+
+  // 正文（释义、例句主文本）
   static const body = TextStyle(
     fontFamily: AppTypographyTokens.fontFamilyZhUI,
     fontWeight: AppTypographyTokens.weight400,

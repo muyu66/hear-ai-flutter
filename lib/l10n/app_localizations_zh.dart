@@ -42,6 +42,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirmSignInDevice => '确认登录 Chrome 插件？';
+
+  @override
+  String get shareText => '忍不住安利一个英语学习 APP';
+
+  @override
+  String get noLinkWechat => '还没有绑定微信哦';
+
+  @override
+  String get errorUnknown => '哦豁，程序出错了 👀';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).

@@ -55,6 +55,23 @@ Future<void> showNotify({
   ).show();
 }
 
+Future<void> showOk({required BuildContext context}) async {
+  final t = Theme.of(context).textTheme;
+
+  await AwesomeDialog(
+    transitionAnimationDuration: const Duration(milliseconds: 150),
+    context: context,
+    headerAnimationLoop: false,
+    animType: AnimType.scale,
+    dialogType: DialogType.success,
+    body: null,
+    titleTextStyle: t.titleLarge,
+    padding: EdgeInsets.zero,
+    autoHide: Duration(milliseconds: 800),
+    dialogBackgroundColor: Colors.transparent,
+  ).show();
+}
+
 Future<void> showClassicNotify({
   required BuildContext context,
   required String title,

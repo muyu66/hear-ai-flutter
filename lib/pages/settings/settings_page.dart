@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/apis/auth_store.dart';
@@ -19,9 +22,12 @@ import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/cache_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
+import 'package:hearai/tools/save_img.dart';
 import 'package:hearai/tools/secure_storage.dart';
+import 'package:hearai/tools/share.dart';
 import 'package:hearai/widgets/wechat_login.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wechat_kit/wechat_kit.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -416,11 +422,80 @@ class _SettingsPageState extends State<SettingsPage> {
   // Header 区域
   Widget _buildHeader(BuildContext context) {
     final c = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
+    const String inviteUrl = 'https://yourapp.com/invite?user=123';
+
+    Future<void> onTapWechat(Uint8List? bytes) async {
+      if (!context.mounted) return;
+      if (_userProfile.isWechat) {
+        HapticsManager.light();
+        if (bytes == null) {
+          showClassicNotify(
+            context: context,
+            title: l.errorUnknown,
+            dialogType: DialogType.error,
+          );
+          return;
+        }
+        await WechatKitPlatform.instance.shareImage(
+          scene: WechatScene.kSession,
+          imageData: bytes,
+        );
+      } else {
+        HapticsManager.light();
+        showNotify(context: context, title: l.noLinkWechat);
+      }
+    }
+
+    Future<void> onTapSave(Uint8List? bytes) async {
+      HapticsManager.light();
+      if (bytes == null) {
+        showClassicNotify(
+          context: context,
+          title: l.errorUnknown,
+          dialogType: DialogType.error,
+        );
+        return;
+      }
+      await saveImg("share", bytes);
+      if (!context.mounted) return;
+      showOk(context: context);
+    }
+
+    Future<void> onTapCopyUrl() async {
+      HapticsManager.light();
+      await Clipboard.setData(ClipboardData(text: inviteUrl));
+      if (!context.mounted) return;
+      showOk(context: context);
+    }
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 48, bottom: 22),
+      padding: const EdgeInsets.only(top: 14, bottom: 22),
       child: Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                iconSize: 24,
+                icon: Icon(FontAwesomeIcons.shareNodes, color: c.secondary),
+                onPressed: () async {
+                  HapticsManager.light();
+                  // 以后可以远程获取
+
+                  showShare(
+                    context,
+                    qrData: inviteUrl,
+                    onTapWechat: onTapWechat,
+                    onTapSave: onTapSave,
+                    onTapCopyUrl: onTapCopyUrl,
+                  );
+                },
+              ),
+              const SizedBox(width: 30),
+            ],
+          ),
           Icon(Icons.account_circle, color: c.primary, size: 72),
           const SizedBox(height: 12),
           Text(

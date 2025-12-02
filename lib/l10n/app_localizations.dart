@@ -162,6 +162,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'确认登录 Chrome 插件？'**
   String get confirmSignInDevice;
+
+  /// No description provided for @shareText.
+  ///
+  /// In zh, this message translates to:
+  /// **'忍不住安利一个英语学习 APP'**
+  String get shareText;
+
+  /// No description provided for @noLinkWechat.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有绑定微信哦'**
+  String get noLinkWechat;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In zh, this message translates to:
+  /// **'哦豁，程序出错了 👀'**
+  String get errorUnknown;
 }
 
 class _AppLocalizationsDelegate
