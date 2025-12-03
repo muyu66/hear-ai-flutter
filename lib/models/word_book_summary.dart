@@ -5,15 +5,17 @@ part 'word_book_summary.g.dart';
 @JsonSerializable()
 class WordBookSummary {
   final int totalCount;
-  final int todayCount;
+  final int? currStability;
   final int tomorrowCount;
   final int nowCount;
+  final int todayDoneCount;
 
   WordBookSummary({
     required this.totalCount,
-    required this.todayCount,
+    this.currStability,
     required this.tomorrowCount,
     required this.nowCount,
+    required this.todayDoneCount,
   });
 
   factory WordBookSummary.fromJson(Map<String, dynamic> json) =>

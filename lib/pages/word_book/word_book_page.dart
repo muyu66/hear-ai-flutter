@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/word_book.dart';
 import 'package:hearai/models/word_book_summary.dart';
+import 'package:hearai/pages/word_book/widgets/stats.dart';
 import 'package:hearai/services/word_books_service.dart';
 import 'package:hearai/themes/light/color_schemes.dart';
 import 'package:hearai/themes/light/typography.dart';
@@ -23,10 +24,11 @@ class _WordBookPageState extends State<WordBookPage> {
   final List<WordBook> words = [];
   bool _loading = true;
   WordBookSummary summary = WordBookSummary(
-    todayCount: 0,
+    currStability: 0,
     tomorrowCount: 0,
     totalCount: 0,
     nowCount: 0,
+    todayDoneCount: 0,
   );
   final WordBooksService wordBooksService = WordBooksService();
   // 点击寻求提示的次数
@@ -72,17 +74,7 @@ class _WordBookPageState extends State<WordBookPage> {
             // ===== 顶部统计卡片 =====
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  _buildStatCard(title: '当前需复习', value: summary.nowCount),
-                  const SizedBox(width: 12),
-                  _buildStatCard(title: '今天还需复习', value: summary.todayCount),
-                  const SizedBox(width: 12),
-                  _buildStatCard(title: '明天需复习', value: summary.tomorrowCount),
-                  const SizedBox(width: 12),
-                  _buildStatCard(title: '单词本总数', value: summary.totalCount),
-                ],
-              ),
+              child: Stats(summary: summary),
             ),
 
             // ===== 单词列表 =====
@@ -170,41 +162,6 @@ class _WordBookPageState extends State<WordBookPage> {
                       ),
                     ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 构建一个统计卡片
-  Widget _buildStatCard({required String title, required int value}) {
-    final c = Theme.of(context).colorScheme;
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        decoration: BoxDecoration(
-          color: c.onSecondaryContainer,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: c.outline),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 32, // 限制数字区域高度
-              child: Text(
-                '$value',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: c.onPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.fade, // 或 ellipsis
-              ),
-            ),
-            Text(title, style: TextStyle(fontSize: 14, color: c.onPrimary)),
           ],
         ),
       ),

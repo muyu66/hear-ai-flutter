@@ -9,15 +9,17 @@ part of 'word_book_summary.dart';
 WordBookSummary _$WordBookSummaryFromJson(Map<String, dynamic> json) =>
     WordBookSummary(
       totalCount: (json['totalCount'] as num).toInt(),
-      todayCount: (json['todayCount'] as num).toInt(),
+      currStability: (json['currStability'] as num?)?.toInt(),
       tomorrowCount: (json['tomorrowCount'] as num).toInt(),
       nowCount: (json['nowCount'] as num).toInt(),
+      todayDoneCount: (json['todayDoneCount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>
     <String, dynamic>{
       'totalCount': instance.totalCount,
-      'todayCount': instance.todayCount,
+      'currStability': instance.currStability,
       'tomorrowCount': instance.tomorrowCount,
       'nowCount': instance.nowCount,
+      'todayDoneCount': instance.todayDoneCount,
     };
