@@ -30,7 +30,7 @@ class _WordBookPageState extends State<WordBookPage> {
   );
   final WordBooksService wordBooksService = WordBooksService();
   // 点击寻求提示的次数
-  int hitCount = 0;
+  int hintCount = 0;
   // 用于显示音标
   String? currentWord;
 
@@ -128,11 +128,11 @@ class _WordBookPageState extends State<WordBookPage> {
                             word: word.word,
                             phonetic: word.phonetic,
                             showMore: word.word == currentWord,
-                            hitCount: hitCount,
+                            hintCount: hintCount,
                             onTap: () {
                               HapticsManager.light();
                               setState(() {
-                                hitCount++;
+                                hintCount++;
                                 currentWord = word.word; // 激活这个单词
                               });
                               showDictModal(context, word.word);
@@ -140,7 +140,11 @@ class _WordBookPageState extends State<WordBookPage> {
                             onCorrect: () {
                               HapticsManager.light();
                               wordBooksService
-                                  .rememberWordBooks(word.word, hitCount)
+                                  .rememberWordBooks(
+                                    word: word.word,
+                                    hintCount: hintCount,
+                                    thinkingTime: 0,
+                                  )
                                   .then((_) {
                                     _loadData();
                                   });
@@ -214,7 +218,7 @@ class _WordListItem extends StatelessWidget {
   final String? phonetic;
   final VoidCallback onCorrect;
   final VoidCallback onIncorrect;
-  final int hitCount;
+  final int hintCount;
   final bool showMore;
   final VoidCallback onTap;
 
@@ -223,7 +227,7 @@ class _WordListItem extends StatelessWidget {
     this.phonetic,
     required this.onCorrect,
     required this.onIncorrect,
-    required this.hitCount,
+    required this.hintCount,
     required this.showMore,
     required this.onTap,
   });

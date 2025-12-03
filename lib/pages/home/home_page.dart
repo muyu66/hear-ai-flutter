@@ -44,6 +44,10 @@ class _HomePageState extends State<HomePage> with RouteAware {
   final PageController _controller = PageController();
   final storeController = Get.put(StoreController());
   final refreshWordsController = Get.put(RefreshWordsController());
+  // =null 说明不需要记录
+  DateTime? _lastThinkingTime;
+  // 防止快速点击
+  int _lastClickTime = 0; // 上次点击时间（毫秒）
 
   @override
   void didChangeDependencies() {
@@ -164,10 +168,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   // 点击Pad中间按钮的逻辑
-  ({bool play, bool playSlow, bool record, bool playRecord}) _onTapPadCenter(
-    int wordsId,
-    WidgetType type,
-  ) {
+  ({bool play, bool playSlow, bool record, bool playRecord, bool thinking})
+  _onTapPadCenter(int wordsId, WidgetType type) {
     if (type == WidgetType.say) {
       switch (level) {
         case 1:
@@ -178,6 +180,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             playSlow: false,
             record: false,
             playRecord: false,
+            thinking: false,
           );
         case 2:
           // 引导用户录音
@@ -187,14 +190,37 @@ class _HomePageState extends State<HomePage> with RouteAware {
             playSlow: false,
             record: true,
             playRecord: false,
+            thinking: true,
           );
         case 3:
           // 引导用户核对
           storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
-          return (play: true, playSlow: true, record: false, playRecord: true);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: true,
+            thinking: false,
+          );
+        case 4:
+          // 引导用户核对
+          storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: true,
+            thinking: false,
+          );
         default:
           storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
-          return (play: true, playSlow: true, record: false, playRecord: false);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: false,
+            thinking: false,
+          );
       }
     } else if (type == WidgetType.listen) {
       switch (level) {
@@ -206,30 +232,67 @@ class _HomePageState extends State<HomePage> with RouteAware {
             playSlow: false,
             record: false,
             playRecord: false,
+            thinking: false,
           );
         case <= 4:
           // 引导用户想英文
           storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
-          return (play: true, playSlow: true, record: false, playRecord: false);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: false,
+            thinking: true,
+          );
         case 5:
           // 引导用户想中文
           storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
-          return (play: true, playSlow: true, record: false, playRecord: false);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: false,
+            thinking: false,
+          );
         case >= 6:
           // 引导用户核对
           storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
-          return (play: true, playSlow: true, record: false, playRecord: false);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: false,
+            thinking: false,
+          );
         default:
           storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
-          return (play: true, playSlow: true, record: false, playRecord: false);
+          return (
+            play: true,
+            playSlow: true,
+            record: false,
+            playRecord: false,
+            thinking: false,
+          );
       }
     } else {
-      return (play: false, playSlow: false, record: false, playRecord: false);
+      return (
+        play: false,
+        playSlow: false,
+        record: false,
+        playRecord: false,
+        thinking: false,
+      );
     }
   }
 
   Future<void> play(int wordsId) async {
     final op = _onTapPadCenter(words[currIndex].id, words[currIndex].type);
+
+    if (op.thinking) {
+      setState(() {
+        _lastThinkingTime = DateTime.now();
+      });
+    }
 
     if (op.play) {
       await audioManager.play(
@@ -254,13 +317,24 @@ class _HomePageState extends State<HomePage> with RouteAware {
   void _handlePageChanged(int index) {
     audioManager.stop();
 
+    final now = DateTime.now();
+
     // 上报记住的句子
-    wordsService.rememberWords(words[currIndex].id, level - 1);
+    wordsService.rememberWords(
+      wordsId: words[currIndex].id,
+      hintCount: level - 1,
+      // 配合 _onTapPadCenter 表示只要点击PAD后才开始计时，忽略一些不喜欢就翻页的场景
+      thinkingTime: _lastThinkingTime == null
+          ? 0
+          : now.millisecondsSinceEpoch -
+                _lastThinkingTime!.millisecondsSinceEpoch,
+    );
 
     // 初始化当前PageView页
     setState(() {
       level = 1;
       currIndex = index;
+      _lastThinkingTime = null;
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -329,6 +403,15 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 showBadge: storeController.showBadge,
                 onPressCenter: (key) async {
                   if (!mounted) return;
+
+                  // 防止快速点击
+                  final int now = DateTime.now().millisecondsSinceEpoch;
+                  if (now - _lastClickTime < 100) {
+                    // 小于 100ms，忽略点击
+                    return;
+                  }
+                  _lastClickTime = now;
+
                   HapticsManager.light();
                   setState(() {
                     level++;

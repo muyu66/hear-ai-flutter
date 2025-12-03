@@ -35,10 +35,18 @@ class WordBooksService extends ApiService {
   }
 
   // 记住单词
-  Future<void> rememberWordBooks(String word, int hintCount) async {
+  Future<void> rememberWordBooks({
+    required String word,
+    required int hintCount,
+    required int thinkingTime,
+  }) async {
     await dio.post<void>(
       '/word_books/remember',
-      data: {"word": word, "hintCount": hintCount},
+      data: {
+        "word": word,
+        "hintCount": hintCount,
+        "thinkingTime": thinkingTime,
+      },
     );
   }
 

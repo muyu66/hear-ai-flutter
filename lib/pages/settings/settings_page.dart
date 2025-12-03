@@ -195,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         title: "阁下尊姓大名？",
                         value: _userProfile.nickname,
                         validation: (value) {
-                          if (value.length > 20 || value.isEmpty) {
+                          if (value.length > 8 || value.isEmpty) {
                             return false;
                           }
                           if (!RegExp(
@@ -526,7 +526,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 14, bottom: 22),
+      padding: const EdgeInsets.only(bottom: 22),
       child: Column(
         children: [
           Row(

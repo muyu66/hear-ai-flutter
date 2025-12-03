@@ -18,7 +18,14 @@ class WordsService extends ApiService {
   }
 
   // 记住句子
-  Future<void> rememberWords(int wordsId, int hintCount) async {
-    await dio.post('/words/$wordsId/remember', data: {"hintCount": hintCount});
+  Future<void> rememberWords({
+    required int wordsId,
+    required int hintCount,
+    required int thinkingTime,
+  }) async {
+    await dio.post(
+      '/words/$wordsId/remember',
+      data: {"hintCount": hintCount, "thinkingTime": thinkingTime},
+    );
   }
 }

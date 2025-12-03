@@ -21,7 +21,6 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   webview_flutter: ^4.13.0
   awesome_dialog: ^3.3.0
-  intl: ^0.20.2
   flutter_cache_manager: ^3.4.1
   path_provider: ^2.1.5
   url_launcher: ^6.3.2
@@ -97,4 +96,4 @@ flutter:
 
 flutter_launcher_icons:
   android: "launcher_icon"
-  image_path: "assets/icon/logo_960.png"
+  image_path: "assets/icon/logo_819.png"
