@@ -8,7 +8,7 @@ import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
 import 'package:hearai/pages/settings/widgets/dropdown_selection_tile.dart';
-import 'package:hearai/pages/settings/widgets/editable_text_tile.dart';
+import 'package:hearai/pages/settings/widgets/editable_text_page.dart';
 import 'package:hearai/pages/settings/widgets/remember_selection_page.dart';
 import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/pages/settings/widgets/section_tile.dart';
@@ -182,15 +182,40 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionTitle(
             title: '账号',
             children: [
-              EditableTextTile(
+              ClickableTile(
                 title: '昵称',
-                value: _userProfile.nickname,
-                onChanged: (value) async {
+                icon: FontAwesomeIcons.lightbulb,
+                subtitle: _userProfile.nickname,
+                onTap: () async {
                   HapticsManager.light();
-                  await authService.updateProfile(nickname: value);
-                  setState(() {
-                    _userProfile.nickname = value;
-                  });
+                  final String? newValue = await Navigator.push<String>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditableTextPage(
+                        title: "阁下尊姓大名？",
+                        value: _userProfile.nickname,
+                        validation: (value) {
+                          if (value.length > 20 || value.isEmpty) {
+                            return false;
+                          }
+                          if (!RegExp(
+                            r'^[\u4e00-\u9fa5_a-zA-Z0-9]+$',
+                          ).hasMatch(value)) {
+                            return false;
+                          }
+                          return true;
+                        },
+                      ),
+                    ),
+                  );
+                  if (newValue != null &&
+                      newValue.isNotEmpty &&
+                      newValue != _userProfile.nickname) {
+                    await authService.updateProfile(nickname: newValue);
+                    setState(() {
+                      _userProfile.nickname = newValue;
+                    });
+                  }
                 },
               ),
               // 微信绑定

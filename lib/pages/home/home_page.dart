@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     await _setUserMinute();
     await _loadWords();
     await pollingTask();
-    playWeb(words[0].id);
+    play(words[0].id);
     startPolling();
   }
 
@@ -193,7 +193,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
           storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
           return (play: true, playSlow: true, record: false, playRecord: true);
         default:
-          storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
+          storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
           return (play: true, playSlow: true, record: false, playRecord: false);
       }
     } else if (type == WidgetType.listen) {
@@ -220,6 +220,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
           storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
           return (play: true, playSlow: true, record: false, playRecord: false);
         default:
+          storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
           return (play: true, playSlow: true, record: false, playRecord: false);
       }
     } else {
@@ -227,7 +228,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     }
   }
 
-  Future<void> playWeb(int wordsId) async {
+  Future<void> play(int wordsId) async {
     final op = _onTapPadCenter(words[currIndex].id, words[currIndex].type);
 
     if (op.play) {
@@ -238,6 +239,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     }
 
     if (op.record) {
+      await audioManager.stop();
       await RecordManager().start();
     }
 
@@ -262,7 +264,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      playWeb(words[currIndex].id);
+      play(words[currIndex].id);
 
       // 自动预加载
       debugPrint(
@@ -331,7 +333,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   setState(() {
                     level++;
                   });
-                  await playWeb(words[currIndex].id);
+                  await play(words[currIndex].id);
                 },
                 onDirection: (dir) {
                   if (dir == "left") {
