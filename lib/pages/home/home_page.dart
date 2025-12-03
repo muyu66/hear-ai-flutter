@@ -16,6 +16,7 @@ import 'package:hearai/store.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
+import 'package:hearai/tools/record_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -162,53 +163,89 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
   }
 
-  // 播放逻辑， false=播放慢速， true=播放常速, null=不播放
-  bool? _tryPlay(int wordsId, WidgetType type) {
+  // 点击Pad中间按钮的逻辑
+  ({bool play, bool playSlow, bool record, bool playRecord}) _onTapPadCenter(
+    int wordsId,
+    WidgetType type,
+  ) {
     if (type == WidgetType.say) {
-      if (level == 1) {
-        // 引导用户说
-        storeController.setPadIcon(Icons.volume_up);
-        return null;
-      } else if (level == 2) {
-        // 引导用户核对
-        storeController.setPadIcon(FontAwesomeIcons.question);
-        return false;
-      } else if (level >= 3) {
-        // 鼓励用户
-        storeController.setPadIcon(FontAwesomeIcons.rightLong);
-        return true;
+      switch (level) {
+        case 1:
+          // 引导用户自己发音
+          storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
+          return (
+            play: false,
+            playSlow: false,
+            record: false,
+            playRecord: false,
+          );
+        case 2:
+          // 引导用户录音
+          storeController.setPadIcon(FontAwesomeIcons.solidCircleStop);
+          return (
+            play: false,
+            playSlow: false,
+            record: true,
+            playRecord: false,
+          );
+        case 3:
+          // 引导用户核对
+          storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
+          return (play: true, playSlow: true, record: false, playRecord: true);
+        default:
+          storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
+          return (play: true, playSlow: true, record: false, playRecord: false);
       }
     } else if (type == WidgetType.listen) {
-      if (level == 1) {
-        // 引导用户说出来
-        storeController.setPadIcon(Icons.volume_up);
-        return false;
-      } else if (level <= 4) {
-        // 引导用户想单词
-        storeController.setPadIcon(FontAwesomeIcons.eye);
-        return true;
-      } else if (level == 5) {
-        // 引导用户想中文
-        storeController.setPadIcon(FontAwesomeIcons.textHeight);
-        return true;
-      } else if (level == 6) {
-        // 引导用户核对
-        storeController.setPadIcon(FontAwesomeIcons.rightLong);
-        return true;
-      } else {
-        return true;
+      switch (level) {
+        case 1:
+          // 引导用户说出来
+          storeController.setPadIcon(FontAwesomeIcons.solidCircleQuestion);
+          return (
+            play: true,
+            playSlow: false,
+            record: false,
+            playRecord: false,
+          );
+        case <= 4:
+          // 引导用户想英文
+          storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
+          return (play: true, playSlow: true, record: false, playRecord: false);
+        case 5:
+          // 引导用户想中文
+          storeController.setPadIcon(FontAwesomeIcons.solidCirclePlay);
+          return (play: true, playSlow: true, record: false, playRecord: false);
+        case >= 6:
+          // 引导用户核对
+          storeController.setPadIcon(FontAwesomeIcons.solidCircleCheck);
+          return (play: true, playSlow: true, record: false, playRecord: false);
+        default:
+          return (play: true, playSlow: true, record: false, playRecord: false);
       }
+    } else {
+      return (play: false, playSlow: false, record: false, playRecord: false);
     }
-    return null;
   }
 
-  void playWeb(int wordsId) {
-    bool? playRegular = _tryPlay(words[currIndex].id, words[currIndex].type);
-    if (playRegular != null) {
-      audioManager.play(
-        wordsService.getWordsVoiceUrl(wordsId, slow: !playRegular),
+  Future<void> playWeb(int wordsId) async {
+    final op = _onTapPadCenter(words[currIndex].id, words[currIndex].type);
+
+    if (op.play) {
+      await audioManager.play(
+        wordsService.getWordsVoiceUrl(wordsId, slow: op.playSlow),
         mimeType: 'audio/ogg',
       );
+    }
+
+    if (op.record) {
+      await RecordManager().start();
+    }
+
+    if (!op.record && op.playRecord) {
+      final recordFilePath = await RecordManager().stop();
+      if (recordFilePath != null) {
+        await audioManager.playFile(recordFilePath);
+      }
     }
   }
 
@@ -288,13 +325,13 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 icon: storeController.padIcon,
                 percent: storeController.percent,
                 showBadge: storeController.showBadge,
-                onPressCenter: (key) {
+                onPressCenter: (key) async {
                   if (!mounted) return;
                   HapticsManager.light();
                   setState(() {
                     level++;
                   });
-                  playWeb(words[currIndex].id);
+                  await playWeb(words[currIndex].id);
                 },
                 onDirection: (dir) {
                   if (dir == "left") {

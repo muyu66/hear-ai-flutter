@@ -217,6 +217,8 @@ class CenterKnob extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onPanUpdate: (details) => onPanUpdate(details.delta.dx),
       onPanEnd: (_) => onPanEnd(),
@@ -229,7 +231,7 @@ class CenterKnob extends StatelessWidget {
             height: knobSize,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             alignment: Alignment.center,
-            child: Icon(icon, size: knobSize, color: Colors.black87),
+            child: Icon(icon, size: knobSize, color: c.inverseSurface),
           ),
         ),
       ),
