@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:hearai/l10n/app_localizations.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hearai/l10n/app_translations.dart';
 import 'package:hearai/pages/home/home_page.dart';
 import 'package:hearai/pages/settings/settings_page.dart';
@@ -10,6 +11,7 @@ import 'package:hearai/pages/splash/splash.dart';
 import 'package:hearai/pages/word_book/word_book_page.dart';
 import 'package:hearai/themes/light/theme.dart';
 import 'package:hearai/tools/audio_manager.dart';
+import 'package:hearai/tools/tool.dart';
 
 // 全局路由监听
 class _AppRouteObserver extends NavigatorObserver {
@@ -35,10 +37,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = GetStorage().read<String>('language') ?? 'zh_CN';
+
     return GetMaterialApp(
       translations: AppTranslations(),
-      locale: Locale('zh', 'CN'),
-      fallbackLocale: Locale('zh', 'US'),
+      locale: parseLocale(lang),
+      fallbackLocale: const Locale('zh', 'CN'),
       debugShowCheckedModeBanner: false,
       title: 'HearAI',
       theme: buildLightTheme(),
@@ -53,7 +57,6 @@ class App extends StatelessWidget {
       initialRoute: '/splash',
       navigatorObservers: [routeObserver, _AppRouteObserver()],
       localizationsDelegates: const [
-        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

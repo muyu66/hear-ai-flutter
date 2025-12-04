@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:hearai/l10n/app_localizations.dart';
+import 'package:get/utils.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
@@ -13,7 +13,6 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -62,7 +61,7 @@ class SignInPage extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     HapticsManager.light();
-                    showNotify(context: context, title: l.todo);
+                    showNotify(context: context, title: "todo".tr);
                   },
                   child: Opacity(
                     opacity: 0.6,
@@ -114,8 +113,6 @@ class _GuestButtonState extends State<_GuestButton> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -126,7 +123,7 @@ class _GuestButtonState extends State<_GuestButton> {
                 HapticsManager.light();
                 showConfirm(
                   context: context,
-                  title: l.confirmSignUpGuest,
+                  title: "confirmSignUpGuest".tr,
                   dialogType: DialogType.warning,
                   onConfirm: () {
                     HapticsManager.light();

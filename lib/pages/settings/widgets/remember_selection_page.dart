@@ -82,7 +82,9 @@ class _RememberSelectionPageState extends State<RememberSelectionPage> {
     final t = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text("选择适合你的记忆模型".tr, style: t.titleMedium)),
+      appBar: AppBar(
+        title: Text("chooseRememberModel".tr, style: t.titleMedium),
+      ),
       body: SafeArea(
         child: Expanded(
           child: ListView.builder(

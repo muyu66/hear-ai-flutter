@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hearai/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 
 class EditableTextTile extends StatelessWidget {
@@ -28,7 +28,6 @@ class EditableTextTile extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context) {
-    final l = AppLocalizations.of(context);
     final controller = TextEditingController(text: value);
 
     showDialog(
@@ -46,7 +45,7 @@ class EditableTextTile extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l.cancel),
+            child: Text("cancel".tr),
           ),
           TextButton(
             onPressed: () {
@@ -56,7 +55,7 @@ class EditableTextTile extends StatelessWidget {
               }
               Navigator.pop(context);
             },
-            child: Text(l.confirm),
+            child: Text("confirm".tr),
           ),
         ],
       ),

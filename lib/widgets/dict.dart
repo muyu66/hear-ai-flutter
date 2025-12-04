@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hearai/l10n/app_localizations.dart';
+import 'package:get/utils.dart';
 import 'package:hearai/models/dict.dart';
 import 'package:hearai/services/dict_service.dart';
 import 'package:hearai/services/my_word_service.dart';
@@ -270,14 +270,12 @@ class _LocalDictViewState extends State<_LocalDictView> {
   bool done = false;
 
   void _badDict(String dictType) {
-    final l = AppLocalizations.of(context);
-
     HapticsManager.light();
     dictService
         .bad(word: widget.word, dictType: dictType)
         .then((value) {
           if (!mounted) return;
-          showNotify(context: context, title: l.reportSuccess);
+          showNotify(context: context, title: "reportSuccess".tr);
           setState(() {
             done = true;
           });

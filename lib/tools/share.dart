@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:hearai/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image/image.dart' as img;
 
@@ -73,7 +73,6 @@ class _ShareDialogState extends State<_ShareDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
     final c = Theme.of(context).colorScheme;
     final t = Theme.of(context).textTheme;
 
@@ -169,7 +168,7 @@ class _ShareDialogState extends State<_ShareDialog> {
                       // 分享文本
                       const SizedBox(height: 20),
                       Text(
-                        l.shareText,
+                        "shareText".tr,
                         style: t.labelMedium!.copyWith(color: c.secondary),
                       ),
                     ],

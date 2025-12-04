@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/app.dart';
-import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/words.dart';
 import 'package:hearai/pages/home/widgets/pad.dart';
 import 'package:hearai/pages/home/widgets/words_item.dart';
@@ -354,15 +353,13 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   void _handleBadWords(WordsModel wordsModel) {
-    final l = AppLocalizations.of(context);
-
     HapticsManager.light();
 
     sentenceService
         .bad(wordsModel.id)
         .then((value) {
           if (!mounted) return;
-          showNotify(context: context, title: l.reportSuccess);
+          showNotify(context: context, title: "reportSuccess".tr);
           wordsModel.reported = true;
         })
         .catchError((error) {});

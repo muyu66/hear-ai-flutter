@@ -1,6 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:hearai/l10n/app_localizations.dart';
+import 'package:get/utils.dart';
 import 'package:hearai/models/word_book.dart';
 import 'package:hearai/pages/word_book/widgets/book_item.dart';
 import 'package:hearai/services/my_word_service.dart';
@@ -89,14 +89,12 @@ class _BookPageViewState extends State<BookPageView> {
   }
 
   void _onTapBad(String word) {
-    final l = AppLocalizations.of(context);
-
     HapticsManager.light();
     myWordService
         .bad(word)
         .then((value) {
           if (!mounted) return;
-          showNotify(context: context, title: l.reportSuccess);
+          showNotify(context: context, title: "reportSuccess".tr);
         })
         .catchError((error) {});
   }

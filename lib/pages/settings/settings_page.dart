@@ -4,11 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/apis/auth_store.dart';
-import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
 import 'package:hearai/pages/settings/widgets/dropdown_selection_tile.dart';
 import 'package:hearai/pages/settings/widgets/editable_text_page.dart';
+import 'package:hearai/pages/settings/widgets/language_page.dart';
 import 'package:hearai/pages/settings/widgets/remember_selection_page.dart';
 import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/pages/settings/widgets/section_tile.dart';
@@ -71,23 +71,10 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _loadProfile() async {
-    try {
-      final userProfile = await authService.getProfile();
-      setState(() {
-        _userProfile = userProfile;
-      });
-    } catch (e) {
-      _showErrorSnackBar('加载设置失败: $e');
-    }
-  }
-
-  void _showErrorSnackBar(String message) {
-    final c = Theme.of(context).colorScheme;
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: c.error),
-      );
-    }
+    final userProfile = await authService.getProfile();
+    setState(() {
+      _userProfile = userProfile;
+    });
   }
 
   Future<void> _signOut() async {
@@ -137,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
           if (!mounted) return;
           showClassicNotify(
             context: context,
-            title: "绑定成功",
+            title: "bindSuccess".tr,
             dialogType: DialogType.success,
           );
           _loadProfile();
@@ -147,20 +134,18 @@ class _SettingsPageState extends State<SettingsPage> {
           debugPrint(err);
           showClassicNotify(
             context: context,
-            title: "绑定失败",
+            title: "bindFailed".tr,
             dialogType: DialogType.error,
           );
         });
   }
 
   void _handleScan(String result) {
-    final l = AppLocalizations.of(context);
-
     debugPrint("扫码结果: $result");
     String deviceSessionId = result.split('://')[1];
     showConfirm(
       context: context,
-      title: l.confirmSignInDevice,
+      title: "confirmSignInDevice".tr,
       dialogType: DialogType.info,
       onConfirm: () {
         HapticsManager.light();
@@ -171,8 +156,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-
     return Scaffold(
       body: ListView(
         children: [
@@ -181,10 +164,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
           // 账号设置
           SectionTitle(
-            title: '账号',
+            title: 'account'.tr,
             children: [
               ClickableTile(
-                title: '昵称',
+                title: 'nickname'.tr,
                 icon: FontAwesomeIcons.lightbulb,
                 subtitle: _userProfile.nickname,
                 onTap: () async {
@@ -193,7 +176,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => EditableTextPage(
-                        title: "阁下尊姓大名？",
+                        title: "inputNickname".tr,
                         value: _userProfile.nickname,
                         validation: (value) {
                           if (value.length > 8 || value.isEmpty) {
@@ -221,11 +204,11 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               // 微信绑定
               _userProfile.isWechat
-                  ? SimpleTile(title: '已绑定微信', icon: Icons.wechat)
+                  ? SimpleTile(title: 'boundWechat'.tr, icon: Icons.wechat)
                   : WeChatButton(
                       builder: (context, loading, support, triggerLogin) {
                         return ClickableTile(
-                          title: '绑定微信',
+                          title: 'bindWechat'.tr,
                           icon: Icons.wechat,
                           onTap: () async {
                             HapticsManager.light();
@@ -240,14 +223,14 @@ class _SettingsPageState extends State<SettingsPage> {
                       onError: () {
                         showClassicNotify(
                           context: context,
-                          title: "绑定失败",
+                          title: "bindFailed".tr,
                           dialogType: DialogType.error,
                         );
                       },
                     ),
               // 扫码登录设备
               ClickableTile(
-                title: '扫码登录设备',
+                title: 'scanLoginDevice'.tr,
                 icon: Icons.qr_code_scanner,
                 onTap: () async {
                   HapticsManager.light();
@@ -267,10 +250,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
           // 学习设置
           SectionTitle(
-            title: '学习',
+            title: 'learn'.tr,
             children: [
               ClickableTile(
-                title: '记忆模型',
+                title: 'rememberModel'.tr,
                 icon: FontAwesomeIcons.lightbulb,
                 subtitle: rememberMethodList
                     .firstWhereOrNull(
@@ -299,14 +282,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               DropdownSelectionTile<int>(
-                title: '难度等级',
+                title: 'wordsLevel'.tr,
                 value: _userProfile.wordsLevel,
-                items: const [
-                  DropdownMenuItem(value: 1, child: Text('菜鸟 🥚')),
-                  DropdownMenuItem(value: 2, child: Text('半熟萌新')),
-                  DropdownMenuItem(value: 3, child: Text('适中 🍳')),
-                  DropdownMenuItem(value: 4, child: Text('老鸟探险者')),
-                  DropdownMenuItem(value: 5, child: Text('神仙打架')),
+                items: [
+                  DropdownMenuItem(value: 1, child: Text('wordsLevel1'.tr)),
+                  DropdownMenuItem(value: 2, child: Text('wordsLevel2'.tr)),
+                  DropdownMenuItem(value: 3, child: Text('wordsLevel3'.tr)),
+                  DropdownMenuItem(value: 4, child: Text('wordsLevel4'.tr)),
+                  DropdownMenuItem(value: 5, child: Text('wordsLevel5'.tr)),
                 ],
                 onChanged: (value) async {
                   if (value == null) return;
@@ -314,16 +297,39 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               DropdownSelectionTile<int>(
-                title: '每日学习时间',
+                title: 'learnTimeDaily'.tr,
                 value: _userProfile.useMinute,
-                items: const [
-                  DropdownMenuItem(value: 3, child: Text('3分钟')),
-                  DropdownMenuItem(value: 5, child: Text('5分钟')),
-                  DropdownMenuItem(value: 10, child: Text('10分钟 😛')),
-                  DropdownMenuItem(value: 20, child: Text('20分钟')),
-                  DropdownMenuItem(value: 30, child: Text('30分钟')),
-                  DropdownMenuItem(value: 60, child: Text('1小时')),
-                  DropdownMenuItem(value: 120, child: Text('2小时')),
+                items: [
+                  DropdownMenuItem(
+                    value: 3,
+                    child: Text('learnTimeDailyValue'.trParams({'min': '3'})),
+                  ),
+                  DropdownMenuItem(
+                    value: 5,
+                    child: Text('learnTimeDailyValue'.trParams({'min': '5'})),
+                  ),
+                  DropdownMenuItem(
+                    value: 10,
+                    child: Text(
+                      'learnTimeDailyValueSuggest'.trParams({'min': '10'}),
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: 20,
+                    child: Text('learnTimeDailyValue'.trParams({'min': '20'})),
+                  ),
+                  DropdownMenuItem(
+                    value: 30,
+                    child: Text('learnTimeDailyValue'.trParams({'min': '30'})),
+                  ),
+                  DropdownMenuItem(
+                    value: 60,
+                    child: Text('learnTimeDailyValue'.trParams({'min': '60'})),
+                  ),
+                  DropdownMenuItem(
+                    value: 120,
+                    child: Text('learnTimeDailyValue'.trParams({'min': '120'})),
+                  ),
                 ],
                 onChanged: (value) async {
                   if (value == null) return;
@@ -331,7 +337,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               SwitchTile(
-                title: '多种发音源',
+                title: 'multiSpeaker'.tr,
                 value: _userProfile.multiSpeaker,
                 onChanged: (value) async {
                   HapticsManager.light();
@@ -342,7 +348,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               SliderTile(
-                title: '口语推送占比',
+                title: 'sayRatio'.tr,
                 value: _userProfile.sayRatio,
                 divisions: 10,
                 onChanged: (value) {
@@ -355,13 +361,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               DropdownSelectionTile<int>(
-                title: '反转单词本练习',
+                title: 'reverseWordBookRatio'.tr,
                 value: _userProfile.reverseWordBookRatio,
-                items: const [
-                  DropdownMenuItem(value: 0, child: Text('关闭')),
-                  DropdownMenuItem(value: 20, child: Text('少量 ✌️')),
-                  DropdownMenuItem(value: 50, child: Text('适中')),
-                  DropdownMenuItem(value: 75, child: Text('想要更多')),
+                items: [
+                  DropdownMenuItem(value: 0, child: Text('countOff'.tr)),
+                  DropdownMenuItem(
+                    value: 20,
+                    child: Text('countLessSuggest'.tr),
+                  ),
+                  DropdownMenuItem(value: 50, child: Text('countRegular'.tr)),
+                  DropdownMenuItem(value: 75, child: Text('countMore'.tr)),
                 ],
                 onChanged: (value) async {
                   if (value != null) {
@@ -376,13 +385,25 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               DropdownSelectionTile<int>(
-                title: '学习态度',
+                title: 'targetRetention'.tr,
                 value: _userProfile.targetRetention,
-                items: const [
-                  DropdownMenuItem(value: 80, child: Text('Whatever 🤪')),
-                  DropdownMenuItem(value: 85, child: Text('试试看')),
-                  DropdownMenuItem(value: 90, child: Text('稳扎稳打 ✊')),
-                  DropdownMenuItem(value: 95, child: Text('滴水不漏')),
+                items: [
+                  DropdownMenuItem(
+                    value: 80,
+                    child: Text('targetRetention80'.tr),
+                  ),
+                  DropdownMenuItem(
+                    value: 85,
+                    child: Text('targetRetention85'.tr),
+                  ),
+                  DropdownMenuItem(
+                    value: 90,
+                    child: Text('targetRetention90'.tr),
+                  ),
+                  DropdownMenuItem(
+                    value: 95,
+                    child: Text('targetRetention95'.tr),
+                  ),
                 ],
                 onChanged: (value) async {
                   if (value == null) return;
@@ -404,7 +425,7 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               Obx(() {
                 return SwitchTile(
-                  title: '触觉反馈',
+                  title: 'hapticFeedback'.tr,
                   value: HapticsManager.enabled,
                   onChanged: (value) async {
                     HapticsManager.light();
@@ -413,14 +434,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 );
               }),
               ClickableTile(
-                title: '清理缓存',
+                title: 'clearCache'.tr,
                 subtitle: _cacheSizeText,
                 icon: FontAwesomeIcons.trash,
                 onTap: () {
                   HapticsManager.light();
                   showConfirm(
                     context: context,
-                    title: l.confirmClean,
+                    title: "confirmClean".tr,
                     dialogType: DialogType.warning,
                     onConfirm: () {
                       HapticsManager.light();
@@ -432,7 +453,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               ClickableTile(
-                title: '捐赠',
+                title: 'donate'.tr,
                 icon: FontAwesomeIcons.handHoldingHeart,
                 onTap: () async {
                   HapticsManager.light();
@@ -446,13 +467,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   } catch (e) {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('无法打开浏览器：${e.toString()}')),
+                      SnackBar(
+                        content: Text('${'cannotOpenWeb'.tr}: ${e.toString()}'),
+                      ),
                     );
                   }
                 },
               ),
               ClickableTile(
-                title: '前往 HearAI 网站',
+                title: 'gotoWebsite'.tr,
                 icon: FontAwesomeIcons.globe,
                 onTap: () async {
                   HapticsManager.light();
@@ -464,21 +487,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   } catch (e) {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('无法打开浏览器：${e.toString()}')),
+                      SnackBar(
+                        content: Text('${'cannotOpenWeb'.tr}: ${e.toString()}'),
+                      ),
                     );
                   }
                 },
               ),
               ClickableTile(
-                title: '退出账号',
+                title: 'signOut'.tr,
                 icon: FontAwesomeIcons.arrowRightFromBracket,
                 onTap: () {
                   HapticsManager.light();
                   showConfirm(
                     context: context,
                     title: _userProfile.isWechat
-                        ? l.confirmSignOut
-                        : l.confirmSignOutWithoutWeChat,
+                        ? "confirmSignOut".tr
+                        : "confirmSignOutWithoutWeChat".tr,
                     dialogType: DialogType.warning,
                     onConfirm: () {
                       HapticsManager.light();
@@ -501,7 +526,6 @@ class _SettingsPageState extends State<SettingsPage> {
   // Header 区域
   Widget _buildHeader(BuildContext context) {
     final c = Theme.of(context).colorScheme;
-    final l = AppLocalizations.of(context);
     const String inviteUrl = 'https://yourapp.com/invite?user=123';
 
     Future<void> onTapWechat(Uint8List? bytes) async {
@@ -511,7 +535,7 @@ class _SettingsPageState extends State<SettingsPage> {
         if (bytes == null) {
           showClassicNotify(
             context: context,
-            title: l.errorUnknown,
+            title: "errorUnknown".tr,
             dialogType: DialogType.error,
           );
           return;
@@ -522,7 +546,7 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       } else {
         HapticsManager.light();
-        showNotify(context: context, title: l.noLinkWechat);
+        showNotify(context: context, title: "noLinkWechat".tr);
       }
     }
 
@@ -531,7 +555,7 @@ class _SettingsPageState extends State<SettingsPage> {
       if (bytes == null) {
         showClassicNotify(
           context: context,
-          title: l.errorUnknown,
+          title: "errorUnknown".tr,
           dialogType: DialogType.error,
         );
         return;
@@ -556,6 +580,19 @@ class _SettingsPageState extends State<SettingsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // 翻译
+              IconButton(
+                iconSize: 24,
+                icon: Icon(FontAwesomeIcons.language, color: c.secondary),
+                onPressed: () async {
+                  HapticsManager.light();
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LanguagePage()),
+                  );
+                },
+              ),
+              // 分享
               IconButton(
                 iconSize: 24,
                 icon: Icon(FontAwesomeIcons.shareNodes, color: c.secondary),
