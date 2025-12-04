@@ -12,6 +12,7 @@ class UserProfile {
   bool multiSpeaker;
   bool isWechat;
   int sayRatio;
+  int reverseWordBookRatio;
   int targetRetention;
 
   UserProfile({
@@ -23,6 +24,7 @@ class UserProfile {
     required this.multiSpeaker,
     required this.isWechat,
     required this.sayRatio,
+    required this.reverseWordBookRatio,
     required this.targetRetention,
   });
 

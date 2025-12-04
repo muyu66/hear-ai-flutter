@@ -48,6 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
     multiSpeaker: true,
     isWechat: false,
     sayRatio: 20,
+    reverseWordBookRatio: 20,
     targetRetention: 90,
   );
   final storeController = Get.put(StoreController());
@@ -354,6 +355,27 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               DropdownSelectionTile<int>(
+                title: '反转单词本练习',
+                value: _userProfile.reverseWordBookRatio,
+                items: const [
+                  DropdownMenuItem(value: 0, child: Text('关闭')),
+                  DropdownMenuItem(value: 20, child: Text('少量 ✌️')),
+                  DropdownMenuItem(value: 50, child: Text('适中')),
+                  DropdownMenuItem(value: 75, child: Text('想要更多')),
+                ],
+                onChanged: (value) async {
+                  if (value != null) {
+                    HapticsManager.light();
+                    await authService.updateProfile(
+                      reverseWordBookRatio: value,
+                    );
+                    setState(() {
+                      _userProfile.reverseWordBookRatio = value;
+                    });
+                  }
+                },
+              ),
+              DropdownSelectionTile<int>(
                 title: '学习态度',
                 value: _userProfile.targetRetention,
                 items: const [
@@ -419,6 +441,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       Uri.parse(
                         'https://muyu66.github.io/hear-ai-website/#contact',
                       ),
+                      mode: LaunchMode.externalApplication,
                     );
                   } catch (e) {
                     if (!context.mounted) return;
@@ -436,6 +459,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   try {
                     await launchUrl(
                       Uri.parse('https://muyu66.github.io/hear-ai-website'),
+                      mode: LaunchMode.externalApplication,
                     );
                   } catch (e) {
                     if (!context.mounted) return;

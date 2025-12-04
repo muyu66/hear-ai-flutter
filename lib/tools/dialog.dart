@@ -56,8 +56,6 @@ Future<void> showNotify({
 }
 
 Future<void> showOk({required BuildContext context}) async {
-  final t = Theme.of(context).textTheme;
-
   await AwesomeDialog(
     transitionAnimationDuration: const Duration(milliseconds: 150),
     context: context,
@@ -65,10 +63,10 @@ Future<void> showOk({required BuildContext context}) async {
     animType: AnimType.scale,
     dialogType: DialogType.success,
     body: null,
-    titleTextStyle: t.titleLarge,
+    width: 120,
     padding: EdgeInsets.zero,
     autoHide: Duration(milliseconds: 800),
-    dialogBackgroundColor: Colors.transparent,
+    dialogBackgroundColor: Colors.white.withAlpha(0),
   ).show();
 }
 

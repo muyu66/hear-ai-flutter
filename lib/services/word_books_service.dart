@@ -29,8 +29,8 @@ class WordBooksService extends ApiService {
   }
 
   // 获取单词本列表
-  Future<List<WordBook>> getWordBooks() async {
-    final res = await dio.get<List<dynamic>>('/word_books');
+  Future<List<WordBook>> getWordBooks({required int offset}) async {
+    final res = await dio.get<List<dynamic>>('/word_books?offset=$offset');
     return (res.data ?? []).map((e) => WordBook.fromJson(e)).toList();
   }
 

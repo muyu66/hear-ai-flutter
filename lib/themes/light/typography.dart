@@ -173,6 +173,15 @@ class AppTextStyles {
   );
 
   // 印刷体
+  static const printTextXl = TextStyle(
+    fontFamily: AppTypographyTokens.fontFamilyEnText,
+    fontFamilyFallback: [AppTypographyTokens.fontFamilyZhText],
+    fontWeight: AppTypographyTokens.weight400,
+    fontSize: AppTypographyTokens.size30,
+    height: AppTypographyTokens.heightRelaxed,
+  );
+
+  // 印刷体
   static const printTextLg = TextStyle(
     fontFamily: AppTypographyTokens.fontFamilyEnText,
     fontFamilyFallback: [AppTypographyTokens.fontFamilyZhText],
@@ -205,4 +214,5 @@ extension Extension on TextTheme {
   TextStyle get printTextLg => AppTextStyles.printTextLg;
   TextStyle get printText => AppTextStyles.printText;
   TextStyle get printTextSm => AppTextStyles.printTextSm;
+  TextStyle get printTextXl => AppTextStyles.printTextXl;
 }

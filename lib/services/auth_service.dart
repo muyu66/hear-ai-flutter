@@ -43,6 +43,7 @@ class AuthService extends ApiService {
     int? useMinute,
     bool? multiSpeaker,
     int? sayRatio,
+    int? reverseWordBookRatio,
     int? targetRetention,
   }) async {
     final data = {
@@ -52,6 +53,7 @@ class AuthService extends ApiService {
       'useMinute': useMinute,
       'multiSpeaker': multiSpeaker,
       'sayRatio': sayRatio,
+      'reverseWordBookRatio': reverseWordBookRatio,
       'targetRetention': targetRetention,
     }..removeWhere((key, value) => value == null);
 

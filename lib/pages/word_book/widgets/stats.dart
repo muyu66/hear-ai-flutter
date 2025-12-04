@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hearai/models/word_book_summary.dart';
 import 'package:hearai/pages/word_book/widgets/water_progress.dart';
+import 'package:hearai/tools/dialog.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 
 class Stats extends StatelessWidget {
   final WordBookSummary summary;
@@ -15,7 +17,7 @@ class Stats extends StatelessWidget {
         : summary.todayDoneCount / (summary.nowCount + summary.todayDoneCount);
 
     return Container(
-      height: 200,
+      height: 184,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
@@ -46,16 +48,25 @@ class Stats extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: StatItem(
+                        child: StatItem<String>(
                           label: "记忆评级",
                           value: summary.currStability != null ? 'S+' : '-',
+                          onTap: summary.currStability != null
+                              ? null
+                              : () {
+                                  HapticsManager.light();
+                                  showNotify(
+                                    context: context,
+                                    title: "需要开启 ARSS 记忆模型",
+                                  );
+                                },
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: StatItem(
+                        child: StatItem<int>(
                           label: "总单词数",
-                          value: summary.totalCount.toString(),
+                          value: summary.totalCount,
                         ),
                       ),
                     ],
@@ -67,16 +78,16 @@ class Stats extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: StatItem(
+                        child: StatItem<int>(
                           label: "待复习",
-                          value: summary.nowCount.toString(),
+                          value: summary.nowCount,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: StatItem(
+                        child: StatItem<int>(
                           label: "明天复习",
-                          value: summary.tomorrowCount.toString(),
+                          value: summary.tomorrowCount,
                         ),
                       ),
                     ],
@@ -91,9 +102,9 @@ class Stats extends StatelessWidget {
   }
 }
 
-class StatItem extends StatelessWidget {
+class StatItem<T> extends StatelessWidget {
   final String label;
-  final String value;
+  final T value;
   final VoidCallback? onTap;
 
   const StatItem({
@@ -103,50 +114,62 @@ class StatItem extends StatelessWidget {
     this.onTap,
   });
 
+  String formatValue(T value) {
+    if (value is String) {
+      return value;
+    } else if (value is int) {
+      if (value >= 99950) {
+        return '99K+';
+      } else if (value >= 10000) {
+        double val = value / 1000;
+        return '${val.toStringAsFixed(1)}K';
+      } else if (value >= 1000) {
+        double val = value / 1000;
+        return '${val.toStringAsFixed(1)}K';
+      } else {
+        return value.toString();
+      }
+    }
+    return value.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
 
-    // 判断 value 是否为数字且大于 999
-    String displayValue = value;
-    final numValue = int.tryParse(value);
-    if (numValue != null && numValue > 999) {
-      displayValue = '999+';
-    }
-
-    return Container(
-      width: 80,
-      height: 74,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: c.shadow, blurRadius: 2, offset: const Offset(0, 2)),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            displayValue,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: c.onPrimaryContainer,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        height: 70,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: c.shadow,
+              blurRadius: 2,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: c.onPrimaryContainer,
-              height: 1.2,
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              formatValue(value),
+              style: t.titleSmall!.copyWith(color: c.onPrimaryContainer),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: t.labelSmall!.copyWith(color: c.onPrimaryContainer),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

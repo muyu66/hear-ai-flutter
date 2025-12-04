@@ -2,13 +2,23 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'word_book.g.dart';
 
+enum WordWidgetType { source, target }
+
 @JsonSerializable()
 class WordBook {
   final String word;
   final String voice;
   final String? phonetic;
+  final String? translation;
+  final WordWidgetType type;
 
-  WordBook({required this.word, required this.voice, required this.phonetic});
+  const WordBook({
+    required this.word,
+    required this.voice,
+    this.phonetic,
+    this.translation,
+    required this.type,
+  });
 
   factory WordBook.fromJson(Map<String, dynamic> json) =>
       _$WordBookFromJson(json);

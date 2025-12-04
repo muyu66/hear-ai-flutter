@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hearai/apis/auth_store.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -30,6 +31,10 @@ class AudioManager {
   factory AudioManager() => _instance;
 
   final _player = AudioPlayer();
+  final String baseUrl = dotenv.get(
+    'API_URL',
+    fallback: 'http://127.0.0.1:3000',
+  );
 
   Future<Uint8List> _streamToBytes(Stream<Uint8List> stream) async {
     final bytes = await stream.fold<List<int>>([], (previous, element) {
@@ -47,8 +52,11 @@ class AudioManager {
     await _player.setAudioSource(
       AudioSource.uri(
         Uri.parse(url),
-        headers: AuthStore().isLoggedIn
-            ? {"Authorization": 'Bearer ${AuthStore().accessToken}'}
+        // 后端来源才需要传递token，第三方音频不需要
+        headers: url.contains(baseUrl)
+            ? AuthStore().isLoggedIn
+                  ? {"Authorization": 'Bearer ${AuthStore().accessToken}'}
+                  : null
             : null,
       ),
     );

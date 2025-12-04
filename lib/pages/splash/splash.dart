@@ -7,7 +7,8 @@ import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/auth.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+  final bool enableAnimation; // 新增参数
+  const SplashPage({super.key, this.enableAnimation = true});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -76,20 +77,33 @@ class _SplashPageState extends State<SplashPage>
     _controller?.forward();
 
     // 6. 自动跳转（动画后或固定时长）
-    final totalDuration = _controller?.duration ?? Duration(milliseconds: 2000);
-    Future.delayed(totalDuration + const Duration(milliseconds: 800), () {
-      authSignIn().then((needRedirect) {
-        if (!mounted) return;
-        // 有登录状态还是没有登录状态
-        Navigator.pushReplacementNamed(
-          context,
-          needRedirect ? '/sign_in' : '/home',
-        );
-      });
-    });
+    final totalDuration =
+        _controller?.duration ??
+        Duration(milliseconds: widget.enableAnimation ? 2000 : 1500);
+    Future.delayed(
+      totalDuration + Duration(milliseconds: widget.enableAnimation ? 800 : 0),
+      () {
+        authSignIn().then((needRedirect) {
+          if (!mounted) return;
+          // 有登录状态还是没有登录状态
+          Navigator.pushReplacementNamed(
+            context,
+            needRedirect ? '/sign_in' : '/home',
+          );
+        });
+      },
+    );
   }
 
   void _initAnimations(List<List<String>> chars) {
+    if (!widget.enableAnimation) {
+      // 不需要动画
+      _charAnimations = chars
+          .map((col) => col.map((e) => AlwaysStoppedAnimation(1.0)).toList())
+          .toList();
+      return;
+    }
+
     // 计算总字符数与总动画时长：最后一个字符的 start + fadeMs 为总时长
     final totalChars = chars.fold<int>(0, (sum, col) => sum + col.length);
     final lastStartMs = (totalChars - 1) * perCharDelayMs;
@@ -145,10 +159,8 @@ class _SplashPageState extends State<SplashPage>
         child: verticalTexts.isEmpty
             ? const SizedBox()
             : AnimatedBuilder(
-                animation: _controller!,
-                builder: (context, _) {
-                  return _buildVerticalTexts();
-                },
+                animation: _controller ?? AlwaysStoppedAnimation(1.0),
+                builder: (context, _) => _buildVerticalTexts(),
               ),
       ),
     );
