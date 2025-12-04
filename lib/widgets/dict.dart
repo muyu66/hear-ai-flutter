@@ -165,7 +165,7 @@ class _DictModalState extends State<_DictModal> {
               onPressed: () {
                 HapticsManager.light();
                 audioManager.play(
-                  wordService.getPronunciation(widget.word),
+                  wordService.getPronunciation(widget.word, slow: true),
                   mimeType: 'audio/ogg',
                 );
               },
@@ -174,7 +174,7 @@ class _DictModalState extends State<_DictModal> {
                 size: 24,
                 color: Colors.black87,
               ),
-              label: const Text('再听一遍', style: TextStyle(fontSize: 16)),
+              label: Text('playSlow'.tr, style: TextStyle(fontSize: 16)),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black87,
                 alignment: Alignment.center,
@@ -295,53 +295,69 @@ class _LocalDictViewState extends State<_LocalDictView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.word, style: t.printTextXl),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: c.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      widget.dictName,
-                      style: t.labelMedium!.copyWith(color: c.onPrimary),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(
-                      Icons.thumb_down,
-                      color: done ? c.secondary : c.error,
-                      size: 22,
-                    ),
-                    onPressed: done
-                        ? null
-                        : () {
-                            _badDict(widget.dictName);
-                          },
-                  ),
-                ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: c.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  widget.dictName,
+                  style: t.labelMedium!.copyWith(color: c.onPrimary),
+                ),
+              ),
+              const SizedBox(width: 10),
+              IconButton(
+                icon: Icon(
+                  Icons.thumb_down,
+                  color: done ? c.secondary : c.error,
+                  size: 22,
+                ),
+                onPressed: done
+                    ? null
+                    : () {
+                        _badDict(widget.dictName);
+                      },
               ),
             ],
           ),
-          const SizedBox(height: 2),
-          Text(
-            widget.phonetic.isNotEmpty ? widget.phonetic : '-',
-            style: t.printText.copyWith(color: c.secondary),
+          const SizedBox(height: 16),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(widget.word, style: t.printTextXl),
+                const SizedBox(height: 2),
+                Text(
+                  widget.phonetic.isNotEmpty ? widget.phonetic : '-',
+                  style: t.printText.copyWith(color: c.secondary),
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  widget.translation.isNotEmpty
+                      ? widget.translation
+                      : '完蛋，找不到这个单词的释义...',
+                  style: t.printTextSm.copyWith(color: c.secondary),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 32),
-          Text(
-            widget.translation.isNotEmpty
-                ? widget.translation
-                : '完蛋，找不到这个单词的释义...',
-            style: t.printTextSm.copyWith(color: c.secondary),
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [Text(widget.word, style: t.printTextXl)],
+          // ),
+          // const SizedBox(height: 2),
+          // Text(
+          //   widget.phonetic.isNotEmpty ? widget.phonetic : '-',
+          //   style: t.printText.copyWith(color: c.secondary),
+          // ),
+          // const SizedBox(height: 32),
+          // Text(
+          //   widget.translation.isNotEmpty
+          //       ? widget.translation
+          //       : '完蛋，找不到这个单词的释义...',
+          //   style: t.printTextSm.copyWith(color: c.secondary),
+          // ),
         ],
       ),
     );

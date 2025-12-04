@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
@@ -40,14 +41,14 @@ class _SettingsPageState extends State<SettingsPage> {
   CacheManager cacheManager = CacheManager();
   AuthService authService = AuthService();
   UserProfile _userProfile = UserProfile(
-    nickname: "",
+    nickname: GetStorage().read("nickname") ?? "",
     avatar: null,
-    rememberMethod: "sm2",
-    wordsLevel: 3,
-    useMinute: 5,
-    multiSpeaker: true,
-    isWechat: false,
-    sayRatio: 20,
+    rememberMethod: GetStorage().read("rememberMethod") ?? "sm2",
+    wordsLevel: GetStorage().read("wordsLevel") ?? 3,
+    useMinute: GetStorage().read("useMinute") ?? 5,
+    multiSpeaker: GetStorage().read("multiSpeaker") ?? true,
+    isWechat: GetStorage().read("isWechat") ?? false,
+    sayRatio: GetStorage().read("sayRatio") ?? 20,
     reverseWordBookRatio: 20,
     targetRetention: 90,
   );
@@ -90,7 +91,10 @@ class _SettingsPageState extends State<SettingsPage> {
     if (!mounted) return;
     HapticsManager.light();
     authService.updateProfile(useMinute: value).then((_) {
-      _loadProfile();
+      setState(() {
+        _userProfile.useMinute = value;
+      });
+      GetStorage().write("useMinute", value);
       storeController.resetPercent();
     });
   }
@@ -102,6 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _userProfile.wordsLevel = value;
       });
+      GetStorage().write("wordsLevel", value);
       refreshWordsController.setTrue();
     });
   }
@@ -113,6 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _userProfile.sayRatio = value;
       });
+      GetStorage().write("sayRatio", value);
       refreshWordsController.setTrue();
     });
   }
@@ -127,7 +133,10 @@ class _SettingsPageState extends State<SettingsPage> {
             title: "bindSuccess".tr,
             dialogType: DialogType.success,
           );
-          _loadProfile();
+          setState(() {
+            _userProfile.isWechat = true;
+          });
+          GetStorage().write("isWechat", true);
         })
         .catchError((err) {
           if (!mounted) return;
@@ -199,6 +208,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     setState(() {
                       _userProfile.nickname = newValue;
                     });
+                    GetStorage().write("nickname", newValue);
                   }
                 },
               ),
@@ -275,6 +285,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           setState(() {
                             _userProfile.rememberMethod = value;
                           });
+                          GetStorage().write("rememberMethod", value);
                         },
                       ),
                     ),
@@ -345,6 +356,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   setState(() {
                     _userProfile.multiSpeaker = value;
                   });
+                  GetStorage().write("multiSpeaker", value);
                 },
               ),
               SliderTile(

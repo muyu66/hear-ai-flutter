@@ -30,7 +30,7 @@ class AppTranslations extends Translations {
       'learnTimeDailyValueSuggest': '@min分钟 😛',
       'multiSpeaker': '多种发音源',
       'sayRatio': '口语推送占比',
-      'reverseWordBookRatio': '反转单词本练习',
+      'reverseWordBookRatio': '反转单词本复习',
       'countLessSuggest': '少量 ✌️',
       'countOff': '关闭',
       'countRegular': '适中',
@@ -60,6 +60,7 @@ class AppTranslations extends Translations {
       "shareText": "忍不住安利一个英语学习 APP",
       "noLinkWechat": "还没有绑定微信哦",
       "errorUnknown": "哦豁，程序出错了 👀",
+      "playSlow": "慢一点",
     },
     'en_US': {
       'chooseRememberModel': 'Choose Your Memory Model',

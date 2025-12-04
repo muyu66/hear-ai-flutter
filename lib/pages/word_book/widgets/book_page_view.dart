@@ -5,6 +5,7 @@ import 'package:hearai/models/word_book.dart';
 import 'package:hearai/pages/word_book/widgets/book_item.dart';
 import 'package:hearai/services/my_word_service.dart';
 import 'package:hearai/services/word_service.dart';
+import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
@@ -107,6 +108,9 @@ class _BookPageViewState extends State<BookPageView> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final c = Theme.of(context).colorScheme;
+
     return PageView.builder(
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(), // 禁止手势滑动
@@ -121,11 +125,10 @@ class _BookPageViewState extends State<BookPageView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.book_outlined, size: 72, color: Colors.grey),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 20),
                   Text(
                     '空空如也',
-                    style: TextStyle(fontSize: 28, color: Colors.grey[600]),
+                    style: t.printTextXl.copyWith(color: c.secondary),
                   ),
                 ],
               ),
