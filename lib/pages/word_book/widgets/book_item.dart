@@ -46,20 +46,27 @@ class _BookItemState extends State<BookItem> {
 
     return Stack(
       children: [
+        // 顶部按钮区
         Positioned(
           top: 0,
           right: 0,
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 8, vertical: 8),
-              child: IconButton(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
                 onPressed: () {
                   widget.onDeleteWordBook(widget.wordBook.word);
                 },
                 icon: Icon(FontAwesomeIcons.xmark, color: c.error),
               ),
-            ),
+              const SizedBox(width: 20),
+              IconButton(
+                onPressed: () {
+                  widget.onDeleteWordBook(widget.wordBook.word);
+                },
+                icon: Icon(FontAwesomeIcons.xmark, color: c.error),
+              ),
+            ],
           ),
         ),
         Center(

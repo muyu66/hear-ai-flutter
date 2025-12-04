@@ -50,6 +50,11 @@ class WordBooksService extends ApiService {
     );
   }
 
+  // 报告这个单词质量不行
+  Future<void> badWordBooks(String word) async {
+    await dio.post<void>('/word_books/bad', data: {"word": word});
+  }
+
   // 从单词本剔除单词
   Future<void> deleteWordBooks(String word) async {
     await dio.post<void>('/word_books/delete', data: {"word": word});
