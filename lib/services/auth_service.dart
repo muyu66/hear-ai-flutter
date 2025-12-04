@@ -9,30 +9,30 @@ import 'package:hearai/models/user_profile.dart';
 class AuthService extends ApiService {
   /// 用户注册
   Future<SignUpRes> signUp(SignUpReq req) async {
-    final res = await dio.post('/auth/sign_up', data: req.toJson());
+    final res = await dio.post('/auth/sign-up', data: req.toJson());
     return SignUpRes.fromJson(res.data);
   }
 
   /// 微信用户注册
   Future<SignUpRes> signUpWechat(SignUpWechatReq req) async {
-    final res = await dio.post('/auth/sign_up_wechat', data: req.toJson());
+    final res = await dio.post('/auth/sign-up-wechat', data: req.toJson());
     return SignUpRes.fromJson(res.data);
   }
 
   /// 绑定微信
   Future<void> linkWechat(String code) async {
-    await dio.post('/auth/link_wechat', data: {"code": code});
+    await dio.post('/auth/link-wechat', data: {"code": code});
   }
 
   /// 用户登录
   Future<SignUpRes> signIn(SignInReq req) async {
-    final res = await dio.post('/auth/sign_in', data: req.toJson());
+    final res = await dio.post('/auth/sign-in', data: req.toJson());
     return SignUpRes.fromJson(res.data);
   }
 
   /// 创建设备登录会话
   Future<void> createDeviceSession(CreateDeviceSessionReq req) async {
-    await dio.post('/auth/device_session', data: req.toJson());
+    await dio.post('/auth/device-session', data: req.toJson());
   }
 
   /// 更新用户信息

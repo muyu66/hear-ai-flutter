@@ -1,11 +1,13 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:hearai/l10n/app_localizations.dart';
 import 'package:hearai/models/word_book.dart';
 import 'package:hearai/pages/word_book/widgets/book_item.dart';
-import 'package:hearai/services/word_books_service.dart';
+import 'package:hearai/services/my_word_service.dart';
 import 'package:hearai/services/word_service.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
+import 'package:hearai/tools/haptics_manager.dart';
 
 class BookPageView extends StatefulWidget {
   final Future<void> Function() onPageChanged;
@@ -17,7 +19,7 @@ class BookPageView extends StatefulWidget {
 
 class _BookPageViewState extends State<BookPageView> {
   final PageController _pageController = PageController();
-  final WordBooksService wordBooksService = WordBooksService();
+  final MyWordService myWordService = MyWordService();
   final WordService wordService = WordService();
   DateTime lastThinkingTime = DateTime.now();
   bool _loadingSummary = false;
@@ -42,7 +44,7 @@ class _BookPageViewState extends State<BookPageView> {
     });
 
     // 获取单词列表
-    final wordBooks = await wordBooksService.getWordBooks(offset: _offset);
+    final wordBooks = await myWordService.getWords(offset: _offset);
     if (wordBooks.isNotEmpty) {
       setState(() {
         _offset += wordBooks.length;
@@ -86,6 +88,19 @@ class _BookPageViewState extends State<BookPageView> {
     }
   }
 
+  void _onTapBad(String word) {
+    final l = AppLocalizations.of(context);
+
+    HapticsManager.light();
+    myWordService
+        .bad(word)
+        .then((value) {
+          if (!mounted) return;
+          showNotify(context: context, title: l.reportSuccess);
+        })
+        .catchError((error) {});
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -122,16 +137,17 @@ class _BookPageViewState extends State<BookPageView> {
         final wordBook = _wordBooks[index];
         return BookItem(
           wordBook: wordBook,
+          onTapBad: _onTapBad,
           onTapHintButton: () {
             audioManager.play(
-              wordService.getWordVoiceUrl(wordBook.word, slow: true),
+              wordService.getPronunciation(wordBook.word, slow: true),
             );
             // audioManager.play(wordBook.voice);
           },
           onRememberWordBook:
               ({required String word, required int rememberLevel}) {
-                wordBooksService
-                    .rememberWordBooks(
+                myWordService
+                    .remember(
                       word: word,
                       hintCount: rememberLevel,
                       thinkingTime:
@@ -148,7 +164,7 @@ class _BookPageViewState extends State<BookPageView> {
               title: "确认将 $word 从单词本中删除吗？",
               dialogType: DialogType.warning,
               onConfirm: () {
-                wordBooksService.deleteWordBooks(word).then((_) {
+                myWordService.delete(word).then((_) {
                   _goToNextPage();
                 });
               },

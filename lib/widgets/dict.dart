@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hearai/l10n/app_localizations.dart';
-import 'package:hearai/models/word_dict.dart';
-import 'package:hearai/services/word_books_service.dart';
+import 'package:hearai/models/dict.dart';
+import 'package:hearai/services/dict_service.dart';
+import 'package:hearai/services/my_word_service.dart';
 import 'package:hearai/services/word_service.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 void showDictModal(BuildContext context, String word) {
   showGeneralDialog(
@@ -37,72 +37,56 @@ class _DictModal extends StatefulWidget {
   State<_DictModal> createState() => _DictModalState();
 }
 
-class _DictModalState extends State<_DictModal>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-  WebViewController? _webViewController;
+class _DictModalState extends State<_DictModal> {
   WordService wordService = WordService();
-  WordBooksService wordBooksService = WordBooksService();
+  DictService dictService = DictService();
+  MyWordService myWordService = MyWordService();
   final AudioManager audioManager = AudioManager();
-  WordDict? wordDict;
   bool? existInWordBooks;
+  final List<Dict> dicts = [];
 
   @override
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: 2, vsync: this);
-
-    // 延迟初始化 WebView
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!mounted) return;
-
-      wordService.getWordDict(widget.word).then((value) {
-        if (mounted) {
-          setState(() {
-            wordDict = value;
-          });
-        }
-      });
-
-      _handleExistInWordBooks();
-
-      audioManager.play(
-        wordService.getWordVoiceUrl(widget.word),
-        mimeType: 'audio/ogg',
-      );
-
-      final controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..loadRequest(
-          Uri.parse(
-            'https://www.bing.com/dict/search?q=${Uri.encodeFull(widget.word)}',
-          ),
-        );
-
+    dictService.getDict(widget.word).then((value) {
       if (mounted) {
         setState(() {
-          _webViewController = controller;
+          dicts.clear();
+          dicts.addAll(value);
         });
       }
     });
+
+    _handleExistInWordBooks();
+
+    audioManager.play(
+      wordService.getPronunciation(widget.word),
+      mimeType: 'audio/ogg',
+    );
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     audioManager.stop();
     super.dispose();
   }
 
   void _handleExistInWordBooks() async {
-    wordBooksService.exist(widget.word).then((value) {
+    myWordService.exist(widget.word).then((value) {
       if (mounted) {
         setState(() {
           existInWordBooks = value.result;
         });
       }
     });
+  }
+
+  void _onPageChanged(int index) {
+    audioManager.play(
+      wordService.getPronunciation(widget.word),
+      mimeType: 'audio/ogg',
+    );
   }
 
   @override
@@ -131,48 +115,35 @@ class _DictModalState extends State<_DictModal>
                   ),
                 ),
                 child: SafeArea(
-                  child: Column(
+                  child: Stack(
                     children: [
-                      TabBar(
-                        controller: _tabController,
-                        labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        unselectedLabelStyle: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                        ),
-                        tabs: const [
-                          Tab(text: '本地词典'),
-                          Tab(text: '必应词典'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [],
+                      ),
+                      Column(
+                        children: [
+                          Expanded(
+                            child: PageView.builder(
+                              onPageChanged: _onPageChanged,
+                              itemCount: dicts.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                final dict = dicts[index];
+                                return _LocalDictView(
+                                  key: ValueKey('local_${dict.dictName}'),
+                                  dict: dict.dict,
+                                  dictName: dict.dictName,
+                                  word: widget.word,
+                                  phonetic: dict.model.phonetic,
+                                  translation: dict.model.translation,
+                                );
+                              },
+                            ),
+                          ),
+                          _buildBottomActions(),
                         ],
                       ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            // 本地词典
-                            _LocalDictView(
-                              key: const ValueKey('local'),
-                              word: widget.word,
-                              phonetic: wordDict?.phonetic ?? '',
-                              explanation: (wordDict?.translation ?? '')
-                                  .replaceAll(r'\n', '\n'),
-                            ),
-                            // 必应词典
-                            _webViewController != null
-                                ? WebViewWidget(
-                                    key: const ValueKey('web'),
-                                    controller: _webViewController!,
-                                  )
-                                : const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                          ],
-                        ),
-                      ),
-
-                      _buildBottomActions(),
                     ],
                   ),
                 ),
@@ -194,7 +165,7 @@ class _DictModalState extends State<_DictModal>
               onPressed: () {
                 HapticsManager.light();
                 audioManager.play(
-                  wordService.getWordVoiceUrl(widget.word),
+                  wordService.getPronunciation(widget.word),
                   mimeType: 'audio/ogg',
                 );
               },
@@ -239,11 +210,11 @@ class _DictModalState extends State<_DictModal>
                   : () {
                       HapticsManager.light();
                       if (existInWordBooks!) {
-                        wordBooksService.deleteWordBooks(widget.word).then((_) {
+                        myWordService.delete(widget.word).then((_) {
                           _handleExistInWordBooks();
                         });
                       } else {
-                        wordBooksService.addWordBooks(widget.word).then((_) {
+                        myWordService.add(widget.word).then((_) {
                           _handleExistInWordBooks();
                         });
                       }
@@ -276,14 +247,18 @@ class _DictModalState extends State<_DictModal>
 // ---------------------------
 
 class _LocalDictView extends StatefulWidget {
+  final String dict;
+  final String dictName;
   final String word;
   final String phonetic;
-  final String explanation;
+  final String translation;
   const _LocalDictView({
     super.key,
+    required this.dict,
+    required this.dictName,
     required this.word,
     required this.phonetic,
-    required this.explanation,
+    required this.translation,
   });
 
   @override
@@ -291,15 +266,15 @@ class _LocalDictView extends StatefulWidget {
 }
 
 class _LocalDictViewState extends State<_LocalDictView> {
+  DictService dictService = DictService();
   bool done = false;
-  WordService wordService = WordService();
 
-  void _handleBadWordDict() {
+  void _badDict(String dictType) {
     final l = AppLocalizations.of(context);
 
     HapticsManager.light();
-    wordService
-        .badWordDict(widget.word)
+    dictService
+        .bad(word: widget.word, dictType: dictType)
         .then((value) {
           if (!mounted) return;
           showNotify(context: context, title: l.reportSuccess);
@@ -316,34 +291,59 @@ class _LocalDictViewState extends State<_LocalDictView> {
     final t = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: ListView(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.word,
-                style: t.printTextLg.copyWith(fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.thumb_down,
-                  color: done ? c.secondary : c.error,
-                  size: 22,
-                ),
-                onPressed: done ? null : _handleBadWordDict,
+              Text(widget.word, style: t.printTextXl),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: c.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      widget.dictName,
+                      style: t.labelMedium!.copyWith(color: c.onPrimary),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    icon: Icon(
+                      Icons.thumb_down,
+                      color: done ? c.secondary : c.error,
+                      size: 22,
+                    ),
+                    onPressed: done
+                        ? null
+                        : () {
+                            _badDict(widget.dictName);
+                          },
+                  ),
+                ],
               ),
             ],
           ),
-          if (widget.phonetic.isNotEmpty)
-            Text(
-              "/${widget.phonetic}/",
-              style: t.printTextSm.copyWith(color: c.secondary),
-            ),
-          const SizedBox(height: 22),
-          Text(widget.explanation, style: t.printTextSm),
-          const SizedBox(height: 20),
+          const SizedBox(height: 2),
+          Text(
+            widget.phonetic.isNotEmpty ? widget.phonetic : '-',
+            style: t.printText.copyWith(color: c.secondary),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            widget.translation.isNotEmpty
+                ? widget.translation
+                : '完蛋，找不到这个单词的释义...',
+            style: t.printTextSm.copyWith(color: c.secondary),
+          ),
         ],
       ),
     );

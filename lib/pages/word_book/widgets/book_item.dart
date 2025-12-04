@@ -8,6 +8,7 @@ class BookItem extends StatefulWidget {
   final WordBook wordBook;
   final void Function(String) onDeleteWordBook;
   final void Function() onTapHintButton;
+  final void Function(String word) onTapBad;
   final void Function({required String word, required int rememberLevel})
   onRememberWordBook;
 
@@ -17,6 +18,7 @@ class BookItem extends StatefulWidget {
     required this.onDeleteWordBook,
     required this.onRememberWordBook,
     required this.onTapHintButton,
+    required this.onTapBad,
   });
   @override
   State<BookItem> createState() => _BookItemState();
@@ -27,6 +29,7 @@ class _BookItemState extends State<BookItem> {
   bool showMore = false;
   // 记忆程度，0=好 1=中等 2=差
   int? _rememberLevel;
+  bool reported = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,18 +51,28 @@ class _BookItemState extends State<BookItem> {
       children: [
         // 顶部按钮区
         Positioned(
-          top: 0,
-          right: 0,
+          top: 10,
+          right: 6,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              IconButton(
-                onPressed: () {
-                  widget.onDeleteWordBook(widget.wordBook.word);
-                },
-                icon: Icon(FontAwesomeIcons.xmark, color: c.error),
-              ),
-              const SizedBox(width: 20),
+              if (showMore)
+                IconButton(
+                  onPressed: reported
+                      ? null
+                      : () {
+                          setState(() {
+                            reported = true;
+                          });
+                          widget.onTapBad(widget.wordBook.word);
+                        },
+                  icon: Icon(
+                    Icons.thumb_down,
+                    color: reported ? c.secondary : c.error,
+                    size: 22,
+                  ),
+                ),
+              const SizedBox(width: 4),
               IconButton(
                 onPressed: () {
                   widget.onDeleteWordBook(widget.wordBook.word);
@@ -80,9 +93,8 @@ class _BookItemState extends State<BookItem> {
                         const SizedBox(height: 12),
                         if (showMore) ...[
                           Text(
-                            widget.wordBook.phonetic != null &&
-                                    widget.wordBook.phonetic!.isNotEmpty
-                                ? '/${widget.wordBook.phonetic}/'
+                            widget.wordBook.phonetic.isNotEmpty
+                                ? widget.wordBook.phonetic
                                 : '-',
                             style: t.printText.copyWith(color: c.secondary),
                           ),
@@ -92,11 +104,8 @@ class _BookItemState extends State<BookItem> {
                               horizontal: 40,
                             ),
                             child: Text(
-                              widget.wordBook.translation != null &&
-                                      widget.wordBook.translation!.isNotEmpty
-                                  ? widget.wordBook.translation!
-                                        .replaceAll(r'\n', '\n')
-                                        .replaceAll(r'\r', '\n')
+                              widget.wordBook.translation.isNotEmpty
+                                  ? widget.wordBook.translation
                                   : '完蛋，找不到这个单词的释义...',
                               style: t.printTextSm.copyWith(color: c.secondary),
                             ),
@@ -108,9 +117,8 @@ class _BookItemState extends State<BookItem> {
                           Text(widget.wordBook.word, style: t.printTextXl),
                           const SizedBox(height: 12),
                           Text(
-                            widget.wordBook.phonetic != null &&
-                                    widget.wordBook.phonetic!.isNotEmpty
-                                ? '/${widget.wordBook.phonetic}/'
+                            widget.wordBook.phonetic.isNotEmpty
+                                ? widget.wordBook.phonetic
                                 : '-',
                             style: t.printText.copyWith(color: c.secondary),
                           ),
@@ -119,12 +127,8 @@ class _BookItemState extends State<BookItem> {
                         Padding(
                           padding: EdgeInsetsGeometry.symmetric(horizontal: 40),
                           child: Text(
-                            widget.wordBook.translation != null &&
-                                    widget.wordBook.translation!.isNotEmpty
-                                ? widget.wordBook.translation!.replaceAll(
-                                    r'\n',
-                                    '\n',
-                                  )
+                            widget.wordBook.translation.isNotEmpty
+                                ? widget.wordBook.translation
                                 : '完蛋，找不到这个单词的释义...',
                             style: t.printTextSm.copyWith(color: c.secondary),
                           ),

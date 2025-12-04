@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hearai/models/word_book_summary.dart';
 import 'package:hearai/pages/word_book/widgets/book_page_view.dart';
 import 'package:hearai/pages/word_book/widgets/stats.dart';
-import 'package:hearai/services/word_books_service.dart';
+import 'package:hearai/services/my_word_service.dart';
 
 class WordBookPage extends StatefulWidget {
   const WordBookPage({super.key});
@@ -20,7 +20,7 @@ class _WordBookPageState extends State<WordBookPage> {
     nowCount: 0,
     todayDoneCount: 0,
   );
-  final WordBooksService wordBooksService = WordBooksService();
+  final MyWordService myWordService = MyWordService();
 
   Future<void> _loadSummary() async {
     if (_loadingSummary) {
@@ -31,7 +31,7 @@ class _WordBookPageState extends State<WordBookPage> {
     });
 
     // 获取单词本统计
-    final wordBookSummary = await wordBooksService.getWordBooksSummary();
+    final wordBookSummary = await myWordService.getSummary();
 
     setState(() {
       _summary = wordBookSummary;

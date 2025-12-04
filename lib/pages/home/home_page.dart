@@ -10,8 +10,8 @@ import 'package:hearai/models/words.dart';
 import 'package:hearai/pages/home/widgets/pad.dart';
 import 'package:hearai/pages/home/widgets/words_item.dart';
 import 'package:hearai/services/auth_service.dart';
-import 'package:hearai/services/word_books_service.dart';
-import 'package:hearai/services/words_service.dart';
+import 'package:hearai/services/my_word_service.dart';
+import 'package:hearai/services/sentence_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
@@ -26,8 +26,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with RouteAware {
-  final WordsService wordsService = WordsService();
-  final WordBooksService wordBooksService = WordBooksService();
+  final SentenceService sentenceService = SentenceService();
+  final MyWordService myWordService = MyWordService();
   final AuthService authService = AuthService();
   List<WordsModel> words = [];
   // 0来自于数组第一元素下标
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     if (_pollingInProgress) return;
     _pollingInProgress = true;
     try {
-      final now = await wordBooksService.getWordBooksNow();
+      final now = await myWordService.getNow();
 
       int maxSeconds = (useMinute ?? 10) * 60;
       if (maxSeconds <= 0) maxSeconds = 600; // 默认10分钟
@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   Future<void> _loadWords() async {
     if (!mounted) return;
-    final fetchedWords = await wordsService.getWords();
+    final fetchedWords = await sentenceService.getSentences();
     if (fetchedWords.isEmpty) return;
     setState(() {
       words.addAll(fetchedWords);
@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   // 废弃未看的内容，并获取新内容
   Future<void> _loadNewWords() async {
     if (!mounted) return;
-    final fetchedWords = await wordsService.getWords();
+    final fetchedWords = await sentenceService.getSentences();
     if (fetchedWords.isEmpty) return;
     setState(() {
       final subWords = words.take(currIndex + 1).toList();
@@ -296,7 +296,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
     if (op.play) {
       await audioManager.play(
-        wordsService.getWordsVoiceUrl(wordsId, slow: op.playSlow),
+        sentenceService.getPronunciationUrl(wordsId, slow: op.playSlow),
         mimeType: 'audio/ogg',
       );
     }
@@ -320,8 +320,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
     final now = DateTime.now();
 
     // 上报记住的句子
-    wordsService.rememberWords(
-      wordsId: words[currIndex].id,
+    sentenceService.remember(
+      sentenceId: words[currIndex].id,
       hintCount: level - 1,
       // 配合 _onTapPadCenter 表示只要点击PAD后才开始计时，忽略一些不喜欢就翻页的场景
       thinkingTime: _lastThinkingTime == null
@@ -358,8 +358,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
     HapticsManager.light();
 
-    wordsService
-        .badWords(wordsModel.id)
+    sentenceService
+        .bad(wordsModel.id)
         .then((value) {
           if (!mounted) return;
           showNotify(context: context, title: l.reportSuccess);
