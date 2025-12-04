@@ -48,9 +48,9 @@ class Stats extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: StatItem<String>(
-                          label: "记忆评级",
-                          value: summary.currStability != null ? 'S+' : '-',
+                        child: StatCurveItem(
+                          label: "记忆曲线",
+                          value: summary.memoryCurve ?? [],
                           onTap: summary.currStability != null
                               ? null
                               : () {
@@ -171,6 +171,105 @@ class StatItem<T> extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class StatCurveItem extends StatelessWidget {
+  final String label;
+  final List<double> value;
+  final VoidCallback? onTap;
+
+  const StatCurveItem({
+    super.key,
+    required this.label,
+    required this.value,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        height: 70,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: c.shadow,
+              blurRadius: 2,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            value.isNotEmpty
+                ? ForgettingCurveWidget(values: value)
+                : Text(
+                    "-",
+                    style: t.titleSmall!.copyWith(color: c.onPrimaryContainer),
+                  ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: t.labelSmall!.copyWith(color: c.onPrimaryContainer),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CurvePainter extends CustomPainter {
+  final List<double> values; // 遗忘曲线的 y 值 (0~1)
+
+  CurvePainter(this.values);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Color(0xFFFF7A00)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    if (values.isEmpty) return;
+
+    // 起点
+    path.moveTo(0, size.height * (1 - values[0]));
+
+    for (int i = 1; i < values.length; i++) {
+      final dx = i * (size.width / (values.length - 1));
+      final dy = size.height * (1 - values[i]);
+      path.lineTo(dx, dy);
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class ForgettingCurveWidget extends StatelessWidget {
+  final List<double> values;
+  const ForgettingCurveWidget({super.key, required this.values});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: CustomPaint(painter: CurvePainter(values), child: Container()),
     );
   }
 }

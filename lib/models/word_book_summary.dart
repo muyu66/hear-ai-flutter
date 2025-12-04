@@ -9,6 +9,7 @@ class WordBookSummary {
   final int tomorrowCount;
   final int nowCount;
   final int todayDoneCount;
+  final List<double>? memoryCurve;
 
   WordBookSummary({
     required this.totalCount,
@@ -16,6 +17,7 @@ class WordBookSummary {
     required this.tomorrowCount,
     required this.nowCount,
     required this.todayDoneCount,
+    this.memoryCurve,
   });
 
   factory WordBookSummary.fromJson(Map<String, dynamic> json) =>

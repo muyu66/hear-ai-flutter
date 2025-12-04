@@ -13,6 +13,9 @@ WordBookSummary _$WordBookSummaryFromJson(Map<String, dynamic> json) =>
       tomorrowCount: (json['tomorrowCount'] as num).toInt(),
       nowCount: (json['nowCount'] as num).toInt(),
       todayDoneCount: (json['todayDoneCount'] as num).toInt(),
+      memoryCurve: (json['memoryCurve'] as List<dynamic>?)
+          ?.map((e) => (e as num).toDouble())
+          .toList(),
     );
 
 Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>
@@ -22,4 +25,5 @@ Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>
       'tomorrowCount': instance.tomorrowCount,
       'nowCount': instance.nowCount,
       'todayDoneCount': instance.todayDoneCount,
+      'memoryCurve': instance.memoryCurve,
     };
