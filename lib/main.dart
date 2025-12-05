@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hearai/app.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/tools/record_manager.dart';
+import 'package:hearai/tools/memory_cache.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,7 @@ void main() async {
   await dotenv.load(fileName: isProd ? ".env.prod" : ".env");
 
   await GetStorage.init();
+  MemoryCache.init(GetStorage('dataCache'));
   HapticsManager.init();
   await RecordManager().init();
 

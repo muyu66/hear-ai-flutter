@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:hearai/apis/auth_store.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
@@ -22,6 +21,7 @@ import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/cache_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
+import 'package:hearai/tools/memory_cache.dart';
 import 'package:hearai/tools/save_img.dart';
 import 'package:hearai/tools/secure_storage.dart';
 import 'package:hearai/tools/share.dart';
@@ -40,18 +40,20 @@ class _SettingsPageState extends State<SettingsPage> {
   String _cacheSizeText = '0 B';
   CacheManager cacheManager = CacheManager();
   AuthService authService = AuthService();
-  UserProfile _userProfile = UserProfile(
-    nickname: GetStorage().read("nickname") ?? "",
-    avatar: null,
-    rememberMethod: GetStorage().read("rememberMethod") ?? "sm2",
-    wordsLevel: GetStorage().read("wordsLevel") ?? 3,
-    useMinute: GetStorage().read("useMinute") ?? 5,
-    multiSpeaker: GetStorage().read("multiSpeaker") ?? true,
-    isWechat: GetStorage().read("isWechat") ?? false,
-    sayRatio: GetStorage().read("sayRatio") ?? 20,
-    reverseWordBookRatio: 20,
-    targetRetention: 90,
-  );
+  UserProfile _userProfile =
+      MemoryCache().loadUserProfile() ??
+      UserProfile(
+        nickname: "",
+        avatar: null,
+        rememberMethod: "sm2",
+        wordsLevel: 3,
+        useMinute: 5,
+        multiSpeaker: true,
+        isWechat: false,
+        sayRatio: 20,
+        reverseWordBookRatio: 20,
+        targetRetention: 90,
+      );
   final storeController = Get.put(StoreController());
   final refreshWordsController = Get.put(RefreshWordsController());
 
@@ -76,6 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _userProfile = userProfile;
     });
+    MemoryCache().saveUserProfile(userProfile);
   }
 
   Future<void> _signOut() async {
@@ -94,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _userProfile.useMinute = value;
       });
-      GetStorage().write("useMinute", value);
+      MemoryCache().saveUserProfile(_userProfile);
       storeController.resetPercent();
     });
   }
@@ -106,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _userProfile.wordsLevel = value;
       });
-      GetStorage().write("wordsLevel", value);
+      MemoryCache().saveUserProfile(_userProfile);
       refreshWordsController.setTrue();
     });
   }
@@ -118,7 +121,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _userProfile.sayRatio = value;
       });
-      GetStorage().write("sayRatio", value);
+      MemoryCache().saveUserProfile(_userProfile);
       refreshWordsController.setTrue();
     });
   }
@@ -136,7 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
           setState(() {
             _userProfile.isWechat = true;
           });
-          GetStorage().write("isWechat", true);
+          MemoryCache().saveUserProfile(_userProfile);
         })
         .catchError((err) {
           if (!mounted) return;
@@ -208,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     setState(() {
                       _userProfile.nickname = newValue;
                     });
-                    GetStorage().write("nickname", newValue);
+                    MemoryCache().saveUserProfile(_userProfile);
                   }
                 },
               ),
@@ -285,7 +288,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           setState(() {
                             _userProfile.rememberMethod = value;
                           });
-                          GetStorage().write("rememberMethod", value);
+                          MemoryCache().saveUserProfile(_userProfile);
                         },
                       ),
                     ),
@@ -356,7 +359,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   setState(() {
                     _userProfile.multiSpeaker = value;
                   });
-                  GetStorage().write("multiSpeaker", value);
+                  MemoryCache().saveUserProfile(_userProfile);
                 },
               ),
               SliderTile(

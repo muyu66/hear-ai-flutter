@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:hearai/models/word_book_summary.dart';
 import 'package:hearai/pages/word_book/widgets/book_page_view.dart';
 import 'package:hearai/pages/word_book/widgets/stats.dart';
 import 'package:hearai/services/my_word_service.dart';
+import 'package:hearai/tools/memory_cache.dart';
 
 class WordBookPage extends StatefulWidget {
   const WordBookPage({super.key});
@@ -14,24 +14,16 @@ class WordBookPage extends StatefulWidget {
 
 class _WordBookPageState extends State<WordBookPage> {
   bool _loadingSummary = false;
-  WordBookSummary _summary = WordBookSummary(
-    currStability:
-        GetStorage().read<WordBookSummary>("WordBookSummary")?.currStability ??
-        0,
-    memoryCurve: GetStorage()
-        .read<WordBookSummary>("WordBookSummary")
-        ?.memoryCurve,
-    tomorrowCount:
-        GetStorage().read<WordBookSummary>("WordBookSummary")?.tomorrowCount ??
-        0,
-    totalCount:
-        GetStorage().read<WordBookSummary>("WordBookSummary")?.totalCount ?? 0,
-    nowCount:
-        GetStorage().read<WordBookSummary>("WordBookSummary")?.nowCount ?? 0,
-    todayDoneCount:
-        GetStorage().read<WordBookSummary>("WordBookSummary")?.todayDoneCount ??
-        0,
-  );
+  WordBookSummary _summary =
+      MemoryCache().loadWordBookSummary() ??
+      WordBookSummary(
+        currStability: null,
+        memoryCurve: null,
+        tomorrowCount: 0,
+        totalCount: 0,
+        nowCount: 0,
+        todayDoneCount: 0,
+      );
   final MyWordService myWordService = MyWordService();
 
   Future<void> _loadSummary() async {
@@ -49,7 +41,7 @@ class _WordBookPageState extends State<WordBookPage> {
       _summary = wordBookSummary;
       _loadingSummary = false;
     });
-    GetStorage().write("WordBookSummary", wordBookSummary);
+    MemoryCache().saveWordBookSummary(wordBookSummary);
   }
 
   @override

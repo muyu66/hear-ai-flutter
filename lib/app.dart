@@ -48,7 +48,7 @@ class App extends StatelessWidget {
       theme: buildLightTheme(),
       navigatorKey: navigatorKey,
       routes: {
-        '/splash': (context) => const SplashPage(enableAnimation: false),
+        '/splash': (context) => const SplashPage(),
         '/home': (context) => const HomePage(),
         '/sign_in': (context) => const SignInPage(),
         '/settings': (context) => const SettingsPage(),

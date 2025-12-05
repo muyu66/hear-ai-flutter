@@ -9,6 +9,7 @@ import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
+import 'package:hearai/tools/memory_cache.dart';
 
 class BookPageView extends StatefulWidget {
   final Future<void> Function() onPageChanged;
@@ -23,8 +24,8 @@ class _BookPageViewState extends State<BookPageView> {
   final MyWordService myWordService = MyWordService();
   final WordService wordService = WordService();
   DateTime lastThinkingTime = DateTime.now();
-  bool _loadingSummary = false;
-  final List<WordBook> _wordBooks = [];
+  bool _loading = false;
+  final List<WordBook> _wordBooks = MemoryCache().loadWordBookList() ?? [];
   final AudioManager audioManager = AudioManager();
   int _offset = 0;
 
@@ -37,20 +38,21 @@ class _BookPageViewState extends State<BookPageView> {
   }
 
   Future<void> _loadData() async {
-    if (_loadingSummary) {
+    if (_loading) {
       return;
     }
     setState(() {
-      _loadingSummary = true;
+      _loading = true;
     });
 
     // 获取单词列表
     final wordBooks = await myWordService.getWords(offset: _offset);
+    MemoryCache().saveWordBookList(wordBooks);
     if (wordBooks.isNotEmpty) {
       setState(() {
         _offset += wordBooks.length;
         _wordBooks.addAll(wordBooks);
-        _loadingSummary = false;
+        _loading = false;
       });
     }
   }
