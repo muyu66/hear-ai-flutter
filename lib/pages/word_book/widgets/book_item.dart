@@ -143,7 +143,7 @@ class _BookItemState extends State<BookItem> {
                         _buildEmojiButton(
                           "😣",
                           onTap: () {
-                            onTapEmoji(2);
+                            onTapEmoji(4);
                           },
                           enabled: _rememberLevel == null,
                           selected: _rememberLevel == 2,
@@ -152,7 +152,7 @@ class _BookItemState extends State<BookItem> {
                         _buildEmojiButton(
                           "😐",
                           onTap: () {
-                            onTapEmoji(1);
+                            onTapEmoji(2);
                           },
                           enabled: _rememberLevel == null,
                           selected: _rememberLevel == 1,

@@ -61,6 +61,11 @@ class AppTranslations extends Translations {
       "noLinkWechat": "还没有绑定微信哦",
       "errorUnknown": "哦豁，程序出错了 👀",
       "playSlow": "慢一点",
+      "needBetterRememberModel": "需要开启任意长期记忆模型",
+      "memory": "记忆",
+      "totalWordCount": "总单词数",
+      "nowWordCount": "待复习",
+      "tomorrowWordCount": "明天复习",
     },
     'en_US': {
       'chooseRememberModel': 'Choose Your Memory Model',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/utils.dart';
 import 'package:hearai/models/word_book_summary.dart';
 import 'package:hearai/pages/word_book/widgets/water_progress.dart';
 import 'package:hearai/tools/dialog.dart';
@@ -48,16 +49,16 @@ class Stats extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: StatCurveItem(
-                          label: "记忆曲线",
-                          value: summary.memoryCurve ?? [],
-                          onTap: summary.currStability != null
+                        child: StatItem<String>(
+                          label: "记忆",
+                          value: summary.stability != null ? 'A+' : '-',
+                          onTap: summary.stability != null
                               ? null
                               : () {
                                   HapticsManager.light();
                                   showNotify(
                                     context: context,
-                                    title: "需要开启 ARSS 记忆模型",
+                                    title: "needBetterRememberModel".tr,
                                   );
                                 },
                         ),
@@ -65,7 +66,7 @@ class Stats extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: StatItem<int>(
-                          label: "总单词数",
+                          label: "totalWordCount".tr,
                           value: summary.totalCount,
                         ),
                       ),
@@ -79,14 +80,14 @@ class Stats extends StatelessWidget {
                     children: [
                       Expanded(
                         child: StatItem<int>(
-                          label: "待复习",
+                          label: "nowWordCount".tr,
                           value: summary.nowCount,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: StatItem<int>(
-                          label: "明天复习",
+                          label: "tomorrowWordCount".tr,
                           value: summary.tomorrowCount,
                         ),
                       ),

@@ -8,6 +8,7 @@ class SelectionItem {
   final Widget icon;
   final String content;
   final String value;
+  final bool enabled;
 
   const SelectionItem({
     required this.title,
@@ -15,41 +16,38 @@ class SelectionItem {
     required this.icon,
     required this.content,
     required this.value,
+    required this.enabled,
   });
 }
 
 // 定义选项数据列表
 final List<SelectionItem> rememberMethodList = const [
   SelectionItem(
-    value: "sm2",
-    title: "SM-2",
-    subTitle: "经典算法",
-    icon: Text("⭐⭐⭐⭐"),
-    content: "间隔重复领域最具影响力的经典算法，它通过动态调整复习间隔和易度因子，帮助用户在遗忘临界点高效巩固记忆。",
-  ),
-  SelectionItem(
-    value: "asmplus",
-    title: "ASM+",
-    subTitle: "自适应算法",
-    icon: Text("⭐⭐⭐⭐"),
-    content:
-        "在 SM-2 基础上深度优化的新一代自适应记忆调度算法，引入动态初始间隔、平滑难度调整、历史提示稳定性评估和失败软重置机制，显著提升个性化与鲁棒性。",
-  ),
-  SelectionItem(
-    value: "arss",
-    title: "ARSS",
-    subTitle: "数据建模",
+    value: "smz",
+    title: "Zhuzhu 1.0",
+    subTitle: "长期算法 - 持续升级",
     icon: Text("⭐⭐⭐⭐⭐"),
     content:
-        "轻量级、数据驱动的间隔重复调度算法，专为“全局拟合 + 单词级微调”场景设计。它在 FSRS 记忆模型基础上，仅依赖单次复习记录实现个性化调度，兼顾科学性与工程效率。",
+        "基于 SuperMemo 18 (SM-18) 的自适应间隔重复变体实现，用于优化长期记忆和复习计划。其核心思想是尽可能多角度从用户数据出发，为每一位用户量身定制最适合最有效率的黄金记忆曲线。",
+    enabled: true,
+  ),
+  SelectionItem(
+    value: "smc",
+    title: "SuperMemo Classic",
+    subTitle: "长期算法 - 经典复刻",
+    icon: Text("⭐⭐⭐⭐"),
+    content:
+        "基于 SuperMemo 18 (SM-18) 的自适应间隔重复经典复刻，用于优化长期记忆和复习计划。其核心思想是根据用户对单词的掌握情况，动态调整复习间隔，使记忆效率最大化。",
+    enabled: true,
   ),
   SelectionItem(
     value: "st",
     title: "ShortTerm",
-    subTitle: "短期突击记忆",
+    subTitle: "短期算法",
     icon: Text("⭐⭐⭐"),
     content:
         "在极短时间内（通常 6 小时至 24 小时）将新知识牢固编码进工作记忆与短期长期记忆交界区，不追求最小化长期复习次数，而是最大化短期记忆强度与稳定性。",
+    enabled: true,
   ),
 ];
 
@@ -69,7 +67,7 @@ class RememberSelectionPage extends StatefulWidget {
 
 class _RememberSelectionPageState extends State<RememberSelectionPage> {
   int? selectedIndex;
-  String _rememberMethod = "sm2";
+  String _rememberMethod = "smz";
 
   @override
   void initState() {
@@ -103,12 +101,14 @@ class _RememberSelectionPageState extends State<RememberSelectionPage> {
                   icon: item.icon,
                   content: item.content,
                   selected: _rememberMethod == item.value,
-                  onTap: () {
-                    widget.onTap(item.value);
-                    setState(() {
-                      _rememberMethod = item.value;
-                    });
-                  },
+                  onTap: item.enabled
+                      ? () {
+                          widget.onTap(item.value);
+                          setState(() {
+                            _rememberMethod = item.value;
+                          });
+                        }
+                      : null,
                 ),
               );
             },

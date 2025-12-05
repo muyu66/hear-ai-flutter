@@ -92,12 +92,14 @@ Future<bool> authSignIn() async {
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     final sig = KeyManager.sign(privateKey, timestamp);
     final sigBase64 = base64Encode(sig);
+    final deviceInfo = jsonEncode(await DeviceUtils.getDeviceInfo());
 
     final api = await AuthService().signIn(
       SignInReq(
         account: privateHash,
         signatureBase64: sigBase64,
         timestamp: timestamp,
+        deviceInfo: deviceInfo,
       ),
     );
 

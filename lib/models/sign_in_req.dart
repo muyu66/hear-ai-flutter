@@ -7,11 +7,13 @@ class SignInReq {
   final String account;
   final String signatureBase64;
   final String timestamp; // 通常传字符串形式的时间戳
+  final String? deviceInfo;
 
   SignInReq({
     required this.account,
     required this.signatureBase64,
     required this.timestamp,
+    this.deviceInfo,
   });
 
   factory SignInReq.fromJson(Map<String, dynamic> json) =>

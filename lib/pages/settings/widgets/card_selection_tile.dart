@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CardSelectionTile extends StatelessWidget {
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final String title;
   final String subTitle;
   final Widget icon;
@@ -11,7 +11,7 @@ class CardSelectionTile extends StatelessWidget {
   const CardSelectionTile({
     super.key,
     required this.selected,
-    required this.onTap,
+    this.onTap,
     required this.title,
     required this.subTitle,
     required this.icon,

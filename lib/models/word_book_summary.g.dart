@@ -9,11 +9,11 @@ part of 'word_book_summary.dart';
 WordBookSummary _$WordBookSummaryFromJson(Map<String, dynamic> json) =>
     WordBookSummary(
       totalCount: (json['totalCount'] as num).toInt(),
-      currStability: (json['currStability'] as num?)?.toInt(),
       tomorrowCount: (json['tomorrowCount'] as num).toInt(),
       nowCount: (json['nowCount'] as num).toInt(),
       todayDoneCount: (json['todayDoneCount'] as num).toInt(),
-      memoryCurve: (json['memoryCurve'] as List<dynamic>?)
+      stability: (json['stability'] as num?)?.toInt(),
+      retention: (json['retention'] as List<dynamic>?)
           ?.map((e) => (e as num).toDouble())
           .toList(),
     );
@@ -21,9 +21,9 @@ WordBookSummary _$WordBookSummaryFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$WordBookSummaryToJson(WordBookSummary instance) =>
     <String, dynamic>{
       'totalCount': instance.totalCount,
-      'currStability': instance.currStability,
       'tomorrowCount': instance.tomorrowCount,
       'nowCount': instance.nowCount,
       'todayDoneCount': instance.todayDoneCount,
-      'memoryCurve': instance.memoryCurve,
+      'stability': instance.stability,
+      'retention': instance.retention,
     };

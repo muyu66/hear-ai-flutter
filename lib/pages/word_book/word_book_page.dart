@@ -17,8 +17,8 @@ class _WordBookPageState extends State<WordBookPage> {
   WordBookSummary _summary =
       MemoryCache().loadWordBookSummary() ??
       WordBookSummary(
-        currStability: null,
-        memoryCurve: null,
+        stability: null,
+        retention: null,
         tomorrowCount: 0,
         totalCount: 0,
         nowCount: 0,
