@@ -31,7 +31,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
   List<WordsModel> words = [];
   // 0来自于数组第一元素下标
   int currIndex = 0;
-  int level = 1;
   Timer? _timer;
   // n秒执行一次定时任务
   final int _timerInterval = 10;
@@ -168,7 +167,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   // 点击Pad中间按钮的逻辑
   ({bool play, bool playSlow, bool record, bool playRecord, bool thinking})
-  _onTapPadCenter(int wordsId, WidgetType type) {
+  _onTapPadCenter(int wordsId, WidgetType type, int level) {
     if (type == WidgetType.say) {
       switch (level) {
         case 1:
@@ -285,7 +284,11 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   Future<void> play(int wordsId) async {
-    final op = _onTapPadCenter(words[currIndex].id, words[currIndex].type);
+    final op = _onTapPadCenter(
+      words[currIndex].id,
+      words[currIndex].type,
+      words[currIndex].level,
+    );
 
     if (op.thinking) {
       setState(() {
@@ -321,7 +324,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     // 上报记住的句子
     sentenceService.remember(
       sentenceId: words[currIndex].id,
-      hintCount: level - 1,
+      hintCount: words[index].level - 1,
       // 配合 _onTapPadCenter 表示只要点击PAD后才开始计时，忽略一些不喜欢就翻页的场景
       thinkingTime: _lastThinkingTime == null
           ? 0
@@ -331,7 +334,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
     // 初始化当前PageView页
     setState(() {
-      level = 1;
       currIndex = index;
       _lastThinkingTime = null;
     });
@@ -378,9 +380,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
             itemCount: words.length,
             itemBuilder: (context, index) {
               return WordsItem(
-                key: ValueKey(words[index].id),
                 wordsModel: words[index],
-                level: level,
+                level: words[index].level,
                 type: words[index].type,
                 reported: words[index].reported,
                 onTapReport: () {
@@ -411,7 +412,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
                   HapticsManager.light();
                   setState(() {
-                    level++;
+                    words[currIndex].level++;
                   });
                   await play(words[currIndex].id);
                 },

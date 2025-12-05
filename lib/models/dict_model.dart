@@ -9,11 +9,15 @@ class DictModel {
   final String phonetic;
   final String translation;
 
+  // 扩展字段
+  bool reported;
+
   DictModel({
     required this.word,
     required this.badScore,
     required this.phonetic,
     required this.translation,
+    this.reported = false,
   });
 
   factory DictModel.fromJson(Map<String, dynamic> json) =>

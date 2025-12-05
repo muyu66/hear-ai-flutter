@@ -12,6 +12,7 @@ class WordsModel {
 
   // 扩展字段
   bool reported;
+  int level;
 
   WordsModel({
     required this.id,
@@ -19,6 +20,7 @@ class WordsModel {
     required this.translation,
     required this.type,
     this.reported = false,
+    this.level = 1,
   });
 
   factory WordsModel.fromJson(Map<String, dynamic> json) =>

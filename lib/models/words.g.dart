@@ -12,6 +12,7 @@ WordsModel _$WordsModelFromJson(Map<String, dynamic> json) => WordsModel(
   translation: json['translation'] as String,
   type: $enumDecode(_$WidgetTypeEnumMap, json['type']),
   reported: json['reported'] as bool? ?? false,
+  level: (json['level'] as num?)?.toInt() ?? 1,
 );
 
 Map<String, dynamic> _$WordsModelToJson(WordsModel instance) =>
@@ -21,6 +22,7 @@ Map<String, dynamic> _$WordsModelToJson(WordsModel instance) =>
       'translation': instance.translation,
       'type': _$WidgetTypeEnumMap[instance.type]!,
       'reported': instance.reported,
+      'level': instance.level,
     };
 
 const _$WidgetTypeEnumMap = {

@@ -11,6 +11,7 @@ DictModel _$DictModelFromJson(Map<String, dynamic> json) => DictModel(
   badScore: (json['badScore'] as num).toInt(),
   phonetic: json['phonetic'] as String,
   translation: json['translation'] as String,
+  reported: json['reported'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$DictModelToJson(DictModel instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$DictModelToJson(DictModel instance) => <String, dynamic>{
   'badScore': instance.badScore,
   'phonetic': instance.phonetic,
   'translation': instance.translation,
+  'reported': instance.reported,
 };

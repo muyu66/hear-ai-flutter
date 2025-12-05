@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
 import 'package:hearai/models/dict.dart';
+import 'package:hearai/models/dict_model.dart';
 import 'package:hearai/services/dict_service.dart';
 import 'package:hearai/services/my_word_service.dart';
 import 'package:hearai/services/word_service.dart';
@@ -134,9 +135,7 @@ class _DictModalState extends State<_DictModal> {
                                   key: ValueKey('local_${dict.dictName}'),
                                   dict: dict.dict,
                                   dictName: dict.dictName,
-                                  word: widget.word,
-                                  phonetic: dict.model.phonetic,
-                                  translation: dict.model.translation,
+                                  dictModel: dict.model,
                                 );
                               },
                             ),
@@ -249,16 +248,13 @@ class _DictModalState extends State<_DictModal> {
 class _LocalDictView extends StatefulWidget {
   final String dict;
   final String dictName;
-  final String word;
-  final String phonetic;
-  final String translation;
+  final DictModel dictModel;
+
   const _LocalDictView({
     super.key,
     required this.dict,
     required this.dictName,
-    required this.word,
-    required this.phonetic,
-    required this.translation,
+    required this.dictModel,
   });
 
   @override
@@ -267,17 +263,16 @@ class _LocalDictView extends StatefulWidget {
 
 class _LocalDictViewState extends State<_LocalDictView> {
   DictService dictService = DictService();
-  bool done = false;
 
   void _badDict(String dictType) {
     HapticsManager.light();
     dictService
-        .bad(word: widget.word, dictType: dictType)
+        .bad(word: widget.dictModel.word, dictType: dictType)
         .then((value) {
           if (!mounted) return;
           showNotify(context: context, title: "reportSuccess".tr);
           setState(() {
-            done = true;
+            widget.dictModel.reported = true;
           });
         })
         .catchError((error) {});
@@ -310,10 +305,10 @@ class _LocalDictViewState extends State<_LocalDictView> {
               IconButton(
                 icon: Icon(
                   Icons.thumb_down,
-                  color: done ? c.secondary : c.error,
+                  color: widget.dictModel.reported ? c.secondary : c.error,
                   size: 22,
                 ),
-                onPressed: done
+                onPressed: widget.dictModel.reported
                     ? null
                     : () {
                         _badDict(widget.dictName);
@@ -326,38 +321,24 @@ class _LocalDictViewState extends State<_LocalDictView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(widget.word, style: t.printTextXl),
+                Text(widget.dictModel.word, style: t.printTextXl),
                 const SizedBox(height: 2),
                 Text(
-                  widget.phonetic.isNotEmpty ? widget.phonetic : '-',
+                  widget.dictModel.phonetic.isNotEmpty
+                      ? widget.dictModel.phonetic
+                      : '-',
                   style: t.printText.copyWith(color: c.secondary),
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  widget.translation.isNotEmpty
-                      ? widget.translation
+                  widget.dictModel.translation.isNotEmpty
+                      ? widget.dictModel.translation
                       : '完蛋，找不到这个单词的释义...',
                   style: t.printTextSm.copyWith(color: c.secondary),
                 ),
               ],
             ),
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [Text(widget.word, style: t.printTextXl)],
-          // ),
-          // const SizedBox(height: 2),
-          // Text(
-          //   widget.phonetic.isNotEmpty ? widget.phonetic : '-',
-          //   style: t.printText.copyWith(color: c.secondary),
-          // ),
-          // const SizedBox(height: 32),
-          // Text(
-          //   widget.translation.isNotEmpty
-          //       ? widget.translation
-          //       : '完蛋，找不到这个单词的释义...',
-          //   style: t.printTextSm.copyWith(color: c.secondary),
-          // ),
         ],
       ),
     );
