@@ -23,50 +23,53 @@ class CardSelectionTile extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
 
-    return Card(
-      elevation: selected ? 12 : 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: selected
-            ? BorderSide(color: Theme.of(context).primaryColor, width: 2)
-            : BorderSide(
-                color: Theme.of(context).colorScheme.outline,
-                width: 0.3,
-              ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(child: Text(title, style: t.titleSmall)),
-                  icon,
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [Text(subTitle, style: t.bodyLarge)],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      content,
-                      style: t.bodyLarge!.copyWith(color: c.secondary),
+    return SizedBox(
+      height: 140,
+      child: Card(
+        elevation: selected ? 12 : 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: selected
+              ? BorderSide(color: Theme.of(context).primaryColor, width: 2)
+              : BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 0.3,
+                ),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(child: Text(title, style: t.titleSmall)),
+                    icon,
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [Text(subTitle, style: t.bodyLarge)],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        content,
+                        style: t.bodyLarge!.copyWith(color: c.secondary),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

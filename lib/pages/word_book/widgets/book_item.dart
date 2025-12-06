@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hearai/models/word_book.dart';
+import 'package:hearai/pages/word_book/widgets/snap_slider.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 
@@ -27,8 +28,6 @@ class BookItem extends StatefulWidget {
 class _BookItemState extends State<BookItem> {
   // 是否显示释义等
   bool showMore = false;
-  // 记忆程度，0=好 1=中等 2=差
-  int? _rememberLevel;
   bool reported = false;
 
   @override
@@ -36,11 +35,7 @@ class _BookItemState extends State<BookItem> {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
 
-    void onTapEmoji(int rememberLevel) {
-      HapticsManager.light();
-      setState(() {
-        _rememberLevel = rememberLevel;
-      });
+    void onTapSubmit(int rememberLevel) {
       widget.onRememberWordBook(
         word: widget.wordBook.word,
         rememberLevel: rememberLevel,
@@ -135,38 +130,29 @@ class _BookItemState extends State<BookItem> {
                         ),
                       ],
               ),
-              const SizedBox(height: 16),
               showMore
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ? SnapSlider(
                       children: [
-                        _buildEmojiButton(
-                          "😣",
-                          onTap: () {
-                            onTapEmoji(4);
-                          },
-                          enabled: _rememberLevel == null,
-                          selected: _rememberLevel == 2,
-                        ),
-                        const SizedBox(width: 20),
-                        _buildEmojiButton(
-                          "😐",
-                          onTap: () {
-                            onTapEmoji(2);
-                          },
-                          enabled: _rememberLevel == null,
-                          selected: _rememberLevel == 1,
-                        ),
-                        const SizedBox(width: 20),
-                        _buildEmojiButton(
-                          "😊",
-                          onTap: () {
-                            onTapEmoji(0);
-                          },
-                          enabled: _rememberLevel == null,
-                          selected: _rememberLevel == 0,
-                        ),
+                        Text("😣", style: TextStyle(fontSize: 38)), // 4
+                        Text("😐", style: TextStyle(fontSize: 38)), // 3
+                        Text("😊", style: TextStyle(fontSize: 38)), // 1
+                        Text("😆", style: TextStyle(fontSize: 38)), // 0
                       ],
+                      onChanged: (i) {
+                        // onTapSubmit(i);
+                      },
+                      onFinished: (i) {
+                        // i 对应上方的数组下标
+                        onTapSubmit(
+                          i == 0
+                              ? 4
+                              : i == 1
+                              ? 3
+                              : i == 2
+                              ? 1
+                              : 0,
+                        );
+                      },
                     )
                   : _buildQuestionButton(() {
                       HapticsManager.light();
@@ -183,27 +169,6 @@ class _BookItemState extends State<BookItem> {
   }
 }
 
-Widget _buildEmojiButton(
-  String emoji, {
-  required VoidCallback onTap,
-  bool enabled = true, // 是否可点击
-  bool selected = false, // 是否选中
-}) {
-  return ClipOval(
-    child: Material(
-      child: InkWell(
-        onTap: enabled ? onTap : null, // 不可点击时禁用
-        child: Container(
-          width: 54,
-          height: 54,
-          alignment: Alignment.center,
-          child: Text(emoji, style: TextStyle(fontSize: 38)),
-        ),
-      ),
-    ),
-  );
-}
-
 Widget _buildQuestionButton(VoidCallback onTap) {
   return Padding(
     padding: const EdgeInsets.all(8), // 扩大触摸范围
@@ -214,10 +179,10 @@ Widget _buildQuestionButton(VoidCallback onTap) {
           onTap: onTap,
           customBorder: const CircleBorder(),
           child: Container(
-            width: 48,
-            height: 48,
+            width: 64,
+            height: 64,
             alignment: Alignment.center,
-            child: Icon(FontAwesomeIcons.solidCircleQuestion, size: 48),
+            child: Icon(FontAwesomeIcons.solidCircleQuestion, size: 64),
           ),
         ),
       ),

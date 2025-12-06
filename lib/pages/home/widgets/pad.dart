@@ -114,6 +114,9 @@ class _PadState extends State<Pad> with SingleTickerProviderStateMixin {
               knobSize: widget.knobSize,
               color: knobColor,
               opacity: centerOpacity,
+              onPanStart: () {
+                HapticsManager.medium();
+              },
               onPanUpdate: (dx) {
                 setState(() {
                   dragX += dx;
@@ -202,6 +205,7 @@ class CenterKnob extends StatelessWidget {
   final double opacity;
   final void Function(double dx) onPanUpdate;
   final VoidCallback onPanEnd;
+  final VoidCallback onPanStart;
   final IconData? icon;
 
   const CenterKnob({
@@ -212,6 +216,7 @@ class CenterKnob extends StatelessWidget {
     required this.opacity,
     required this.onPanUpdate,
     required this.onPanEnd,
+    required this.onPanStart,
     this.icon,
   });
 
@@ -222,6 +227,7 @@ class CenterKnob extends StatelessWidget {
     return GestureDetector(
       onPanUpdate: (details) => onPanUpdate(details.delta.dx),
       onPanEnd: (_) => onPanEnd(),
+      onPanStart: (_) => onPanStart(),
       child: Transform.translate(
         offset: Offset(dragX, 0),
         child: Opacity(

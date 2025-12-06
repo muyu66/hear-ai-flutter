@@ -23,30 +23,35 @@ class SelectionItem {
 // 定义选项数据列表
 final List<SelectionItem> rememberMethodList = const [
   SelectionItem(
-    value: "smz",
+    value: "zhuzhu",
     title: "Zhuzhu 1.0",
-    subTitle: "长期算法 - 持续升级",
-    icon: Text("⭐⭐⭐⭐⭐"),
-    content:
-        "基于 SuperMemo 18 (SM-18) 的自适应间隔重复变体实现，用于优化长期记忆和复习计划。其核心思想是尽可能多角度从用户数据出发，为每一位用户量身定制最适合最有效率的黄金记忆曲线。",
-    enabled: true,
-  ),
-  SelectionItem(
-    value: "smc",
-    title: "SuperMemo Classic",
-    subTitle: "长期算法 - 经典复刻",
+    subTitle: "自研算法",
     icon: Text("⭐⭐⭐⭐"),
-    content:
-        "基于 SuperMemo 18 (SM-18) 的自适应间隔重复经典复刻，用于优化长期记忆和复习计划。其核心思想是根据用户对单词的掌握情况，动态调整复习间隔，使记忆效率最大化。",
+    content: "基于用户行为数据研发。其核心思想是尽可能多角度从用户数据出发，为每一位用户量身定制最适合最有效率的记忆方法。",
     enabled: true,
   ),
   SelectionItem(
-    value: "st",
-    title: "ShortTerm",
+    value: "fsrs",
+    title: "FSRS 6.0",
+    subTitle: "长期算法",
+    icon: Text("⭐⭐⭐⭐⭐"),
+    content: "智能间隔重复调度算法。用遗忘模型而不是经验公式，依据用户行为真实拟合“记忆保持概率曲线”，从而给出最优复习间隔。",
+    enabled: true,
+  ),
+  SelectionItem(
+    value: "fsrsst",
+    title: "FSRS ST",
     subTitle: "短期算法",
     icon: Text("⭐⭐⭐"),
-    content:
-        "在极短时间内（通常 6 小时至 24 小时）将新知识牢固编码进工作记忆与短期长期记忆交界区，不追求最小化长期复习次数，而是最大化短期记忆强度与稳定性。",
+    content: "在极短时间内将新知识牢固编码进工作记忆与短期长期记忆交界区，不追求最小化长期复习次数，而是最大化短期记忆强度与稳定性。",
+    enabled: true,
+  ),
+  SelectionItem(
+    value: "sm2",
+    title: "SuperMemo 2",
+    subTitle: "经典算法",
+    icon: Text("⭐⭐⭐"),
+    content: "基于间隔重复的学习系统。它的核心思想是根据每次复习的表现，动态调整下次复习的时间间隔，以最大化记忆效率。",
     enabled: true,
   ),
 ];
