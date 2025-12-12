@@ -96,7 +96,7 @@ class _SplashPageState extends State<SplashPage> {
           // 有登录状态还是没有登录状态
           Navigator.pushReplacementNamed(
             context,
-            needRedirect ? '/sign_in' : '/home',
+            needRedirect ? '/sign-in' : '/home',
           );
         });
       },

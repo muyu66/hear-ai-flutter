@@ -1,6 +1,7 @@
 import 'package:hearai/apis/api_service.dart';
 import 'package:hearai/models/create_device_session_req.dart';
 import 'package:hearai/models/sign_in_req.dart';
+import 'package:hearai/models/sign_in_res.dart';
 import 'package:hearai/models/sign_up_req.dart';
 import 'package:hearai/models/sign_up_res.dart';
 import 'package:hearai/models/sign_up_wechat_req.dart';
@@ -25,9 +26,9 @@ class AuthService extends ApiService {
   }
 
   /// 用户登录
-  Future<SignUpRes> signIn(SignInReq req) async {
+  Future<SignInRes> signIn(SignInReq req) async {
     final res = await dio.post('/auth/sign-in', data: req.toJson());
-    return SignUpRes.fromJson(res.data);
+    return SignInRes.fromJson(res.data);
   }
 
   /// 创建设备登录会话
@@ -45,6 +46,8 @@ class AuthService extends ApiService {
     int? sayRatio,
     int? reverseWordBookRatio,
     int? targetRetention,
+    String? sourceLang,
+    List<String>? targetLangs,
   }) async {
     final data = {
       'nickname': nickname,
@@ -55,6 +58,8 @@ class AuthService extends ApiService {
       'sayRatio': sayRatio,
       'reverseWordBookRatio': reverseWordBookRatio,
       'targetRetention': targetRetention,
+      'sourceLang': sourceLang,
+      'targetLangs': targetLangs,
     }..removeWhere((key, value) => value == null);
 
     await dio.post('/auth/profile', data: data);

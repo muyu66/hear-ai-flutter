@@ -7,6 +7,7 @@ part of 'dict_model.dart';
 // **************************************************************************
 
 DictModel _$DictModelFromJson(Map<String, dynamic> json) => DictModel(
+  id: json['id'] as String,
   word: json['word'] as String,
   badScore: (json['badScore'] as num).toInt(),
   phonetic: json['phonetic'] as String,
@@ -15,6 +16,7 @@ DictModel _$DictModelFromJson(Map<String, dynamic> json) => DictModel(
 );
 
 Map<String, dynamic> _$DictModelToJson(DictModel instance) => <String, dynamic>{
+  'id': instance.id,
   'word': instance.word,
   'badScore': instance.badScore,
   'phonetic': instance.phonetic,

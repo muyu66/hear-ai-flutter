@@ -5,11 +5,13 @@ import 'package:hearai/themes/light/typography.dart';
 
 class WordsListenWidget extends StatelessWidget {
   final String words;
+  final String lang;
   final int level;
   final String translation;
   const WordsListenWidget({
     super.key,
     required this.words,
+    required this.lang,
     required this.level,
     required this.translation,
   });
@@ -27,25 +29,25 @@ class WordsListenWidget extends StatelessWidget {
         // 显示 0% 文字
         return Transform.translate(
           offset: const Offset(0, -130),
-          child: SliceWords(words: words, hiddenPercent: 100),
+          child: SliceWords(words: words, lang: lang, hiddenPercent: 100),
         );
       case 3:
         // 显示 30% 文字
         return Transform.translate(
           offset: const Offset(0, -130),
-          child: SliceWords(words: words, hiddenPercent: 70),
+          child: SliceWords(words: words, lang: lang, hiddenPercent: 70),
         );
       case 4:
         // 显示 60% 文字
         return Transform.translate(
           offset: const Offset(0, -130),
-          child: SliceWords(words: words, hiddenPercent: 40),
+          child: SliceWords(words: words, lang: lang, hiddenPercent: 40),
         );
       case 5:
         // 显示 100% 文字
         return Transform.translate(
           offset: const Offset(0, -130),
-          child: SliceWords(words: words, hiddenPercent: 0),
+          child: SliceWords(words: words, lang: lang, hiddenPercent: 0),
         );
       case 6:
       default:
@@ -55,7 +57,7 @@ class WordsListenWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min, // 避免 Column 占满高度
             children: [
-              SliceWords(words: words, hiddenPercent: 0),
+              SliceWords(words: words, lang: lang, hiddenPercent: 0),
               const SizedBox(height: 52),
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
@@ -73,11 +75,13 @@ class WordsListenWidget extends StatelessWidget {
 
 class WordsSayWidget extends StatelessWidget {
   final String words;
+  final String lang;
   final int level;
   final String translation;
   const WordsSayWidget({
     super.key,
     required this.words,
+    required this.lang,
     required this.level,
     required this.translation,
   });
@@ -130,7 +134,7 @@ class WordsSayWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min, // 避免 Column 占满高度
             children: [
-              SliceWords(words: words, hiddenPercent: 0),
+              SliceWords(words: words, lang: lang, hiddenPercent: 0),
               const SizedBox(height: 52),
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 10),

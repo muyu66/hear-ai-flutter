@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/apis/auth_store.dart';
@@ -14,7 +17,9 @@ import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/pages/settings/widgets/section_tile.dart';
 import 'package:hearai/pages/settings/widgets/simple_tile.dart';
 import 'package:hearai/pages/settings/widgets/slider_tile.dart';
+import 'package:hearai/pages/settings/widgets/source_lang_page.dart';
 import 'package:hearai/pages/settings/widgets/switch_tile_tile.dart';
+import 'package:hearai/pages/settings/widgets/target_lang_page.dart';
 import 'package:hearai/services/auth_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/auth.dart';
@@ -45,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
       UserProfile(
         nickname: "",
         avatar: null,
-        rememberMethod: "sm2",
+        rememberMethod: "fsrs",
         wordsLevel: 3,
         useMinute: 5,
         multiSpeaker: true,
@@ -53,6 +58,8 @@ class _SettingsPageState extends State<SettingsPage> {
         sayRatio: 20,
         reverseWordBookRatio: 20,
         targetRetention: 90,
+        sourceLang: "zh-CN",
+        targetLangs: ["en"],
       );
   final storeController = Get.put(StoreController());
   final refreshWordsController = Get.put(RefreshWordsController());
@@ -86,7 +93,7 @@ class _SettingsPageState extends State<SettingsPage> {
     await SecureStorageUtils.delete("privateKeyBase64");
     AuthStore().clearToken();
     if (mounted) {
-      Navigator.pushReplacementNamed(context, '/sign_in');
+      Navigator.pushReplacementNamed(context, '/sign-in');
     }
   }
 
@@ -180,7 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               ClickableTile(
                 title: 'nickname'.tr,
-                icon: FontAwesomeIcons.lightbulb,
+                icon: FontAwesomeIcons.user,
                 subtitle: _userProfile.nickname,
                 onTap: () async {
                   HapticsManager.light();
@@ -287,6 +294,52 @@ class _SettingsPageState extends State<SettingsPage> {
                           );
                           setState(() {
                             _userProfile.rememberMethod = value;
+                          });
+                          MemoryCache().saveUserProfile(_userProfile);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ClickableTile(
+                title: 'sourceLang'.tr,
+                icon: FontAwesomeIcons.listCheck,
+                onTap: () async {
+                  HapticsManager.light();
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SourceLangPage(
+                        initValue: _userProfile.sourceLang,
+                        onTap: (String value) async {
+                          HapticsManager.light();
+                          await authService.updateProfile(sourceLang: value);
+                          setState(() {
+                            _userProfile.sourceLang = value;
+                          });
+                          MemoryCache().saveUserProfile(_userProfile);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ClickableTile(
+                title: 'targetLangs'.tr,
+                icon: FontAwesomeIcons.list,
+                onTap: () async {
+                  HapticsManager.light();
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TargetLangPage(
+                        initValues: _userProfile.targetLangs,
+                        onTap: (List<String> values) async {
+                          HapticsManager.light();
+                          await authService.updateProfile(targetLangs: values);
+                          setState(() {
+                            _userProfile.targetLangs = values;
                           });
                           MemoryCache().saveUserProfile(_userProfile);
                         },
@@ -474,9 +527,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   HapticsManager.light();
                   try {
                     await launchUrl(
-                      Uri.parse(
-                        'https://muyu66.github.io/hear-ai-website/#contact',
-                      ),
+                      Uri.parse('https://zhuzhu.website/#contact'),
                       mode: LaunchMode.externalApplication,
                     );
                   } catch (e) {
@@ -496,7 +547,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   HapticsManager.light();
                   try {
                     await launchUrl(
-                      Uri.parse('https://muyu66.github.io/hear-ai-website'),
+                      Uri.parse('https:/zhuzhu.website'),
                       mode: LaunchMode.externalApplication,
                     );
                   } catch (e) {
@@ -627,7 +678,14 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(width: 30),
             ],
           ),
-          Icon(Icons.account_circle, color: c.primary, size: 72),
+          _userProfile.avatar == null
+              ? Icon(Icons.account_circle, color: c.primary, size: 72)
+              : SvgPicture.string(
+                  utf8.decode(base64.decode(_userProfile.avatar!)),
+                  width: 72,
+                  height: 72,
+                  fit: BoxFit.cover,
+                ),
           const SizedBox(height: 12),
           Text(
             _userProfile.nickname,

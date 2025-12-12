@@ -7,7 +7,7 @@ import 'package:hearai/models/word_book_summary.dart';
 class MyWordService extends ApiService {
   // 单词是否存在单词本
   Future<ResultBool> exist(String word) async {
-    final res = await dio.get('/my/words/$word/exist');
+    final res = await dio.get('/my/words/${Uri.encodeComponent(word)}/exist');
     return ResultBool.fromJson(res.data);
   }
 

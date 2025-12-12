@@ -1,25 +1,31 @@
 import 'package:hearai/apis/api_service.dart';
-import 'package:hearai/models/words.dart';
+import 'package:hearai/models/sentence.dart';
 
 class SentenceService extends ApiService {
   /// 获取句子分页
-  Future<List<WordsModel>> getSentences() async {
+  Future<List<SentenceModel>> getSentences() async {
     final res = await dio.get<List<dynamic>>('/sentences');
-    return (res.data ?? []).map((item) => WordsModel.fromJson(item)).toList();
+    return (res.data ?? [])
+        .map((item) => SentenceModel.fromJson(item))
+        .toList();
   }
 
-  String getPronunciationUrl(int sentenceId, {bool slow = false}) {
-    return '${dio.options.baseUrl}/sentences/$sentenceId/pronunciation?slow=$slow';
+  String getPronunciationUrl(
+    String sentenceId, {
+    bool slow = false,
+    required String lang,
+  }) {
+    return '${dio.options.baseUrl}/sentences/$sentenceId/pronunciation?slow=$slow&lang=$lang';
   }
 
   // 差评句子
-  Future<void> bad(int sentenceId) async {
+  Future<void> bad(String sentenceId) async {
     await dio.post('/sentences/$sentenceId/bad-feedback');
   }
 
   // 记住句子
   Future<void> remember({
-    required int sentenceId,
+    required String sentenceId,
     required int hintCount,
     required int thinkingTime,
   }) async {

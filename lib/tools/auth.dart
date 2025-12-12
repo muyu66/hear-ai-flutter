@@ -11,7 +11,7 @@ import 'package:hearai/tools/device_info.dart';
 import 'package:hearai/tools/key_manager.dart';
 import 'package:hearai/tools/secure_storage.dart';
 
-Future<void> authSignUp() async {
+Future<bool> authSignUp() async {
   final pair = KeyManager.generateKeyPair();
   final privateHash = KeyManager.sha256(pair.privateKey.bytes);
   final publicKeyBase64 = base64Encode(pair.publicKey.bytes);
@@ -34,9 +34,10 @@ Future<void> authSignUp() async {
   // 安全存储私钥
   await SecureStorageUtils.write('privateKeyBase64', privateKeyBase64);
   AuthStore().setToken(api.accessToken);
+  return api.newUser;
 }
 
-Future<void> authSignUpWechat(String code) async {
+Future<bool> authSignUpWechat(String code) async {
   final pair = KeyManager.generateKeyPair();
   final privateHash = KeyManager.sha256(pair.privateKey.bytes);
   final publicKeyBase64 = base64Encode(pair.publicKey.bytes);
@@ -60,6 +61,7 @@ Future<void> authSignUpWechat(String code) async {
   // 安全存储私钥
   await SecureStorageUtils.write('privateKeyBase64', privateKeyBase64);
   AuthStore().setToken(api.accessToken);
+  return api.newUser;
 }
 
 /// 是否需要重定向

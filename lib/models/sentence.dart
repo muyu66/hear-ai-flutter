@@ -1,12 +1,13 @@
 import 'package:hearai/pages/home/widgets/words_item.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'words.g.dart';
+part 'sentence.g.dart';
 
 @JsonSerializable()
-class WordsModel {
-  final int id;
+class SentenceModel {
+  final String id;
   final String words;
+  final String wordsLang;
   final String translation;
   final WidgetType type;
 
@@ -14,16 +15,17 @@ class WordsModel {
   bool reported;
   int level;
 
-  WordsModel({
+  SentenceModel({
     required this.id,
     required this.words,
+    required this.wordsLang,
     required this.translation,
     required this.type,
     this.reported = false,
     this.level = 1,
   });
 
-  factory WordsModel.fromJson(Map<String, dynamic> json) =>
-      _$WordsModelFromJson(json);
-  Map<String, dynamic> toJson() => _$WordsModelToJson(this);
+  factory SentenceModel.fromJson(Map<String, dynamic> json) =>
+      _$SentenceModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SentenceModelToJson(this);
 }

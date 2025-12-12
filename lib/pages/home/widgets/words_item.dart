@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hearai/models/words.dart';
+import 'package:hearai/models/sentence.dart';
 import 'package:hearai/pages/home/widgets/words_widget.dart';
 
 enum WidgetType { listen, say }
 
 class WordsItem extends StatelessWidget {
-  final WordsModel wordsModel;
+  final SentenceModel wordsModel;
   final WidgetType type;
   final int level;
   final bool reported;
@@ -35,11 +35,13 @@ class WordsItem extends StatelessWidget {
               child: type == WidgetType.listen
                   ? WordsListenWidget(
                       words: wordsModel.words,
+                      lang: wordsModel.wordsLang,
                       level: level,
                       translation: wordsModel.translation,
                     )
                   : WordsSayWidget(
                       words: wordsModel.words,
+                      lang: wordsModel.wordsLang,
                       level: level,
                       translation: wordsModel.translation,
                     ),

@@ -4,6 +4,7 @@ part 'dict_model.g.dart';
 
 @JsonSerializable()
 class DictModel {
+  final String id;
   final String word;
   final int badScore;
   final String phonetic;
@@ -13,6 +14,7 @@ class DictModel {
   bool reported;
 
   DictModel({
+    required this.id,
     required this.word,
     required this.badScore,
     required this.phonetic,

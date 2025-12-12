@@ -17,6 +17,10 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
   sayRatio: (json['sayRatio'] as num).toInt(),
   reverseWordBookRatio: (json['reverseWordBookRatio'] as num).toInt(),
   targetRetention: (json['targetRetention'] as num).toInt(),
+  sourceLang: json['sourceLang'] as String,
+  targetLangs: (json['targetLangs'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
@@ -31,4 +35,6 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'sayRatio': instance.sayRatio,
       'reverseWordBookRatio': instance.reverseWordBookRatio,
       'targetRetention': instance.targetRetention,
+      'sourceLang': instance.sourceLang,
+      'targetLangs': instance.targetLangs,
     };

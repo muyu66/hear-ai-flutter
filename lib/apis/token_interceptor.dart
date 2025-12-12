@@ -22,7 +22,7 @@ class TokenInterceptor extends Interceptor {
       // token无效 或者 私钥无效
       final needRedirect = await authSignIn();
       if (needRedirect) {
-        navigatorKey.currentState?.pushNamed('/sign_in');
+        navigatorKey.currentState?.pushNamed('/sign-in');
         return;
       }
       // ---------- 重试逻辑开始 ----------

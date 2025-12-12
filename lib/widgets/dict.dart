@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
-import 'package:hearai/models/dict.dart';
 import 'package:hearai/models/dict_model.dart';
 import 'package:hearai/services/dict_service.dart';
 import 'package:hearai/services/my_word_service.dart';
-import 'package:hearai/services/word_service.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 
-void showDictModal(BuildContext context, String word) {
+void showDictModal(BuildContext context, String word, String lang) {
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
     barrierColor: Colors.black54,
     barrierLabel: 'Dictionary',
     pageBuilder: (context, animation, secondaryAnimation) {
-      return _DictModal(word: word);
+      return _DictModal(word: word, lang: lang);
     },
     transitionDuration: const Duration(milliseconds: 300),
     transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -32,29 +30,28 @@ void showDictModal(BuildContext context, String word) {
 
 class _DictModal extends StatefulWidget {
   final String word;
-  const _DictModal({required this.word});
+  final String lang;
+  const _DictModal({required this.word, required this.lang});
 
   @override
   State<_DictModal> createState() => _DictModalState();
 }
 
 class _DictModalState extends State<_DictModal> {
-  WordService wordService = WordService();
   DictService dictService = DictService();
   MyWordService myWordService = MyWordService();
   final AudioManager audioManager = AudioManager();
   bool? existInWordBooks;
-  final List<Dict> dicts = [];
+  DictModel? dict;
 
   @override
   void initState() {
     super.initState();
 
-    dictService.getDict(widget.word).then((value) {
+    dictService.getDict(widget.word, widget.lang).then((value) {
       if (mounted) {
         setState(() {
-          dicts.clear();
-          dicts.addAll(value);
+          dict = value;
         });
       }
     });
@@ -62,7 +59,7 @@ class _DictModalState extends State<_DictModal> {
     _handleExistInWordBooks();
 
     audioManager.play(
-      wordService.getPronunciation(widget.word),
+      dictService.getPronunciation(widget.word, slow: false, lang: widget.lang),
       mimeType: 'audio/ogg',
     );
   }
@@ -85,7 +82,7 @@ class _DictModalState extends State<_DictModal> {
 
   void _onPageChanged(int index) {
     audioManager.play(
-      wordService.getPronunciation(widget.word),
+      dictService.getPronunciation(widget.word, slow: false, lang: widget.lang),
       mimeType: 'audio/ogg',
     );
   }
@@ -94,6 +91,7 @@ class _DictModalState extends State<_DictModal> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final modalHeight = screenHeight * 0.8;
+    final t = Theme.of(context);
 
     return Material(
       type: MaterialType.transparency,
@@ -122,27 +120,33 @@ class _DictModalState extends State<_DictModal> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [],
                       ),
-                      Column(
-                        children: [
-                          Expanded(
-                            child: PageView.builder(
-                              onPageChanged: _onPageChanged,
-                              itemCount: dicts.length,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                final dict = dicts[index];
-                                return _LocalDictView(
-                                  key: ValueKey('local_${dict.dictName}'),
-                                  dict: dict.dict,
-                                  dictName: dict.dictName,
-                                  dictModel: dict.model,
-                                );
-                              },
+                      dict == null
+                          ? Center(
+                              child: Text(
+                                "404".tr,
+                                style: t.textTheme.printTextXl,
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                Expanded(
+                                  child: PageView.builder(
+                                    onPageChanged: _onPageChanged,
+                                    itemCount: 1,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      return _LocalDictView(
+                                        key: ValueKey('local_ai'),
+                                        dict: 'ai',
+                                        dictName: 'AI词典',
+                                        dictModel: dict!,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                _buildBottomActions(),
+                              ],
                             ),
-                          ),
-                          _buildBottomActions(),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -164,7 +168,11 @@ class _DictModalState extends State<_DictModal> {
               onPressed: () {
                 HapticsManager.light();
                 audioManager.play(
-                  wordService.getPronunciation(widget.word, slow: true),
+                  dictService.getPronunciation(
+                    widget.word,
+                    slow: true,
+                    lang: widget.lang,
+                  ),
                   mimeType: 'audio/ogg',
                 );
               },
@@ -267,7 +275,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
   void _badDict(String dictType) {
     HapticsManager.light();
     dictService
-        .bad(word: widget.dictModel.word, dictType: dictType)
+        .bad(id: widget.dictModel.id)
         .then((value) {
           if (!mounted) return;
           showNotify(context: context, title: "reportSuccess".tr);

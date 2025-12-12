@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:get/utils.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/dialog.dart';
@@ -98,15 +99,14 @@ class _GuestButtonState extends State<_GuestButton> {
     setState(() => _loading = true);
     HapticsManager.light();
 
-    try {
-      print(66666666666666);
-      await authSignUp();
-    } catch (e) {
-      debugPrint('SignUp failed: $e');
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-        Navigator.pushReplacementNamed(context, '/home');
+    final newUser = await authSignUp();
+    if (mounted) {
+      setState(() => _loading = false);
+      if (newUser) {
+        // 用户引导页
+        await Get.offAllNamed("/sign-up/1");
+      } else {
+        await Get.offAllNamed("/home");
       }
     }
   }
@@ -171,9 +171,15 @@ class _WeChatButton extends StatefulWidget {
 class _WeChatButtonState extends State<_WeChatButton> {
   void _wechatSignInCallback(String code) {
     authSignUpWechat(code)
-        .then((_) {
+        .then((newUser) {
           if (!mounted) return;
-          Navigator.pushReplacementNamed(context, '/home');
+
+          if (newUser) {
+            // 用户引导页
+            Get.offAllNamed("/sign-up/1");
+          } else {
+            Get.offAllNamed("/home");
+          }
         })
         .catchError((e) {
           debugPrint('SignUp failed: $e');

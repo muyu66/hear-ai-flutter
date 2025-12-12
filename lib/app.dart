@@ -7,6 +7,9 @@ import 'package:hearai/l10n/app_translations.dart';
 import 'package:hearai/pages/home/home_page.dart';
 import 'package:hearai/pages/settings/settings_page.dart';
 import 'package:hearai/pages/sign_in/sign_in_page.dart';
+import 'package:hearai/pages/sign_in/sign_up_page_1.dart';
+import 'package:hearai/pages/sign_in/sign_up_page_2.dart';
+import 'package:hearai/pages/sign_in/sign_up_page_3.dart';
 import 'package:hearai/pages/splash/splash.dart';
 import 'package:hearai/pages/word_book/word_book_page.dart';
 import 'package:hearai/themes/light/theme.dart';
@@ -22,7 +25,6 @@ class _AppRouteObserver extends NavigatorObserver {
     Route<dynamic> topRoute,
     Route<dynamic>? previousTopRoute,
   ) async {
-    debugPrint("当前route = ${topRoute.settings.name}");
     AudioManager().stop();
   }
 }
@@ -50,9 +52,12 @@ class App extends StatelessWidget {
       routes: {
         '/splash': (context) => const SplashPage(),
         '/home': (context) => const HomePage(),
-        '/sign_in': (context) => const SignInPage(),
+        '/sign-in': (context) => const SignInPage(),
         '/settings': (context) => const SettingsPage(),
-        '/word_book': (context) => const WordBookPage(),
+        '/word-book': (context) => const WordBookPage(),
+        '/sign-up/1': (context) => const SignUpPage1(),
+        '/sign-up/2': (context) => const SignUpPage2(),
+        '/sign-up/3': (context) => const SignUpPage3(),
       },
       initialRoute: '/splash',
       navigatorObservers: [routeObserver, _AppRouteObserver()],

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/app.dart';
-import 'package:hearai/models/words.dart';
+import 'package:hearai/models/sentence.dart';
 import 'package:hearai/pages/home/widgets/pad.dart';
 import 'package:hearai/pages/home/widgets/words_item.dart';
 import 'package:hearai/services/auth_service.dart';
@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   final SentenceService sentenceService = SentenceService();
   final MyWordService myWordService = MyWordService();
   final AuthService authService = AuthService();
-  List<WordsModel> words = [];
+  List<SentenceModel> words = [];
   // 0来自于数组第一元素下标
   int currIndex = 0;
   Timer? _timer;
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     await _setUserMinute();
     await _loadWords();
     await pollingTask();
-    play(words[0].id);
+    play(words[0].id, words[0].wordsLang);
     startPolling();
   }
 
@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   // 点击Pad中间按钮的逻辑
   ({bool play, bool playSlow, bool record, bool playRecord, bool thinking})
-  _onTapPadCenter(int wordsId, WidgetType type, int level) {
+  _onTapPadCenter(String sentenceId, WidgetType type, int level) {
     if (type == WidgetType.say) {
       switch (level) {
         case 1:
@@ -283,7 +283,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     }
   }
 
-  Future<void> play(int wordsId) async {
+  Future<void> play(String sentenceId, String lang) async {
     final op = _onTapPadCenter(
       words[currIndex].id,
       words[currIndex].type,
@@ -298,7 +298,11 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
     if (op.play) {
       await audioManager.play(
-        sentenceService.getPronunciationUrl(wordsId, slow: op.playSlow),
+        sentenceService.getPronunciationUrl(
+          sentenceId,
+          slow: op.playSlow,
+          lang: lang,
+        ),
         mimeType: 'audio/ogg',
       );
     }
@@ -339,7 +343,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      play(words[currIndex].id);
+      play(words[currIndex].id, words[currIndex].wordsLang);
 
       // 自动预加载
       debugPrint(
@@ -354,7 +358,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     });
   }
 
-  void _handleBadWords(WordsModel wordsModel) {
+  void _handleBadWords(SentenceModel wordsModel) {
     HapticsManager.light();
 
     sentenceService
@@ -414,11 +418,11 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   setState(() {
                     words[currIndex].level++;
                   });
-                  await play(words[currIndex].id);
+                  await play(words[currIndex].id, words[currIndex].wordsLang);
                 },
                 onDirection: (dir) {
                   if (dir == "left") {
-                    Navigator.pushNamed(context, '/word_book');
+                    Navigator.pushNamed(context, '/word-book');
                   } else if (dir == "right") {
                     Navigator.pushNamed(context, '/settings');
                   }

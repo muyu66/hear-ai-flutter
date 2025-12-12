@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
 import 'package:hearai/models/word_book.dart';
 import 'package:hearai/pages/word_book/widgets/book_item.dart';
+import 'package:hearai/services/dict_service.dart';
 import 'package:hearai/services/my_word_service.dart';
-import 'package:hearai/services/word_service.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
@@ -22,7 +22,7 @@ class BookPageView extends StatefulWidget {
 class _BookPageViewState extends State<BookPageView> {
   final PageController _pageController = PageController();
   final MyWordService myWordService = MyWordService();
-  final WordService wordService = WordService();
+  final DictService dictService = DictService();
   DateTime lastThinkingTime = DateTime.now();
   bool _loading = false;
   final List<WordBook> _wordBooks = MemoryCache().loadWordBookList() ?? [];
@@ -143,7 +143,11 @@ class _BookPageViewState extends State<BookPageView> {
           onTapBad: _onTapBad,
           onTapHintButton: () {
             audioManager.play(
-              wordService.getPronunciation(wordBook.word, slow: true),
+              dictService.getPronunciation(
+                wordBook.word,
+                slow: true,
+                lang: wordBook.wordLang,
+              ),
             );
             // audioManager.play(wordBook.voice);
           },

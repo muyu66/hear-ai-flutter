@@ -4,12 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/widgets/dict.dart';
+import 'package:japanese_word_tokenizer/japanese_word_tokenizer.dart';
 
 class SliceWords extends StatelessWidget {
   final String words;
+  final String lang;
   final int hiddenPercent; // 0-100
 
-  const SliceWords({super.key, required this.words, this.hiddenPercent = 0});
+  const SliceWords({
+    super.key,
+    required this.words,
+    required this.lang,
+    this.hiddenPercent = 0,
+  });
 
   List<int> _calcHiddenIndices(List<String> wordList, int hiddenPercent) {
     final total = wordList.length;
@@ -29,13 +36,18 @@ class SliceWords extends StatelessWidget {
     return indices.sublist(0, hiddenCount);
   }
 
+  List<String> _splitWords(String words, String lang) {
+    if (lang == 'ja') {
+      return tokenize(words);
+    }
+
+    return words.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    final words = this.words
-        .split(RegExp(r'\s+'))
-        .where((w) => w.isNotEmpty)
-        .toList();
+    final words = _splitWords(this.words, lang);
     final hiddenIndices = _calcHiddenIndices(words, hiddenPercent);
 
     return Wrap(
@@ -51,11 +63,10 @@ class SliceWords extends StatelessWidget {
           onTap: () {
             if (!isHidden) {
               HapticsManager.light();
-
-              final safeWord = word
-                  .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')
-                  .toLowerCase();
-              showDictModal(context, safeWord);
+              final safeWord = lang == 'en'
+                  ? word.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toLowerCase()
+                  : word;
+              showDictModal(context, safeWord, lang);
             }
           },
           child: IntrinsicWidth(
