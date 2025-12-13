@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:hearai/pages/home/widgets/slice_words.dart';
 import 'package:hearai/themes/light/typography.dart';
 
@@ -97,6 +98,8 @@ class WordsSayWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min, // 避免 Column 占满高度
             children: [
               Icon(FontAwesomeIcons.microphone, size: 94),
+              const SizedBox(height: 16),
+              Text(lang.tr, style: Theme.of(context).textTheme.printTextLg),
               const SizedBox(height: 52),
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
@@ -116,6 +119,8 @@ class WordsSayWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min, // 避免 Column 占满高度
             children: [
               Icon(FontAwesomeIcons.microphone, size: 94),
+              const SizedBox(height: 16),
+              Text("......", style: Theme.of(context).textTheme.printTextLg),
               const SizedBox(height: 52),
               Padding(
                 padding: EdgeInsetsGeometry.symmetric(horizontal: 10),

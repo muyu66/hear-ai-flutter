@@ -296,15 +296,14 @@ class _HomePageState extends State<HomePage> with RouteAware {
       });
     }
 
+    // 注意await保持顺序，先发音再播放自己的录音
     if (op.play) {
-      await audioManager.play(
-        sentenceService.getPronunciationUrl(
-          sentenceId,
-          slow: op.playSlow,
-          lang: lang,
-        ),
-        mimeType: 'audio/ogg',
+      final bytes = await sentenceService.getPronunciation(
+        sentenceId,
+        slow: op.playSlow,
+        lang: lang,
       );
+      await audioManager.play(bytes, mimeType: 'audio/ogg');
     }
 
     if (op.record) {

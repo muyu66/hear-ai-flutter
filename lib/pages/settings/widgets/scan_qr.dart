@@ -35,6 +35,8 @@ class _ScanQrState extends State<ScanQr> with SingleTickerProviderStateMixin {
       begin: 0,
       end: 1,
     ).animate(CurvedAnimation(parent: lineController, curve: Curves.easeInOut));
+
+    audioManager.preloadAsset("sounds/scan.opus", mimeType: "audio/ogg");
   }
 
   @override
@@ -49,7 +51,7 @@ class _ScanQrState extends State<ScanQr> with SingleTickerProviderStateMixin {
     if (!raw.startsWith("hearai-device-session://")) return;
 
     // 播放音效 & 震动反馈
-    audioManager.playAsset("assets/sounds/scan.opus");
+    audioManager.playAsset("assets/sounds/scan.opus", mimeType: "audio/ogg");
     HapticsManager.selectionClick();
 
     Navigator.pop(context, raw);

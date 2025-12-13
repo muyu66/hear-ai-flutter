@@ -3,12 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hearai/apis/auth_store.dart';
 import 'package:just_audio/just_audio.dart';
 
-class StreamSource extends StreamAudioSource {
+// Feed your own stream of bytes into the player
+class MyCustomSource extends StreamAudioSource {
   final List<int> bytes;
-  StreamSource(this.bytes);
+  MyCustomSource(this.bytes);
 
   @override
   Future<StreamAudioResponse> request([int? start, int? end]) async {
@@ -19,7 +19,7 @@ class StreamSource extends StreamAudioSource {
       contentLength: end - start,
       offset: start,
       stream: Stream.value(bytes.sublist(start, end)),
-      contentType: 'audio/ogg',
+      contentType: 'audio/opp',
     );
   }
 }
@@ -36,53 +36,26 @@ class AudioManager {
     fallback: 'http://127.0.0.1:3000',
   );
 
-  Future<Uint8List> _streamToBytes(Stream<Uint8List> stream) async {
-    final bytes = await stream.fold<List<int>>([], (previous, element) {
-      previous.addAll(element);
-      return previous;
-    });
-    return Uint8List.fromList(bytes);
-  }
-
-  /// 播放URL音频
-  Future<void> play(String url, {String? mimeType}) async {
+  /// 播放bytes音频
+  Future<void> play(Uint8List bytes, {String? mimeType}) async {
     if (isPlaying()) {
       await _player.stop(); // 播放新音频前先停止当前音频
     }
-    await _player.setUrl(
-      url,
-      headers: AuthStore().isLoggedIn
-          ? {"Authorization": 'Bearer ${AuthStore().accessToken}'}
-          : null,
-      preload: true,
-    );
+    await _player.setAudioSource(MyCustomSource(bytes));
     await _player.play();
+  }
+
+  /// 预载asset音频
+  Future<void> preloadAsset(String assetUrl, {String? mimeType}) async {
+    await _player.setAsset(assetUrl);
   }
 
   /// 播放asset音频
-  Future<void> playAsset(String assetUrl) async {
+  Future<void> playAsset(String assetUrl, {String? mimeType}) async {
     if (isPlaying()) {
       await _player.stop(); // 播放新音频前先停止当前音频
     }
-    await _player.setAudioSource(AudioSource.asset(assetUrl));
-    await _player.play();
-  }
-
-  /// 播放字节音频
-  Future<void> playBytes(List<int> bytes) async {
-    if (isPlaying()) {
-      await _player.stop(); // 播放新音频前先停止当前音频
-    }
-    await _player.setAudioSource(StreamSource(bytes));
-    await _player.play();
-  }
-
-  /// 播放流音频
-  Future<void> playStream(Stream<Uint8List> stream) async {
-    if (isPlaying()) {
-      await _player.stop(); // 播放新音频前先停止当前音频
-    }
-    await _player.setAudioSource(StreamSource(await _streamToBytes(stream)));
+    await _player.setAsset(assetUrl);
     await _player.play();
   }
 

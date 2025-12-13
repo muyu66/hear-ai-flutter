@@ -142,14 +142,15 @@ class _BookPageViewState extends State<BookPageView> {
           wordBook: wordBook,
           onTapBad: _onTapBad,
           onTapHintButton: () {
-            audioManager.play(
-              dictService.getPronunciation(
-                wordBook.word,
-                slow: true,
-                lang: wordBook.wordLang,
-              ),
-            );
-            // audioManager.play(wordBook.voice);
+            dictService
+                .getPronunciation(
+                  wordBook.word,
+                  slow: true,
+                  lang: wordBook.wordLang,
+                )
+                .then((bytes) {
+                  audioManager.play(bytes, mimeType: 'audio/ogg');
+                });
           },
           onRememberWordBook:
               ({required String word, required int rememberLevel}) {

@@ -48,20 +48,23 @@ class _DictModalState extends State<_DictModal> {
   void initState() {
     super.initState();
 
-    dictService.getDict(widget.word, widget.lang).then((value) {
-      if (mounted) {
-        setState(() {
-          dict = value;
-        });
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      dictService.getDict(widget.word, widget.lang).then((value) {
+        if (mounted) {
+          setState(() {
+            dict = value;
+          });
+        }
+      });
+
+      _handleExistInWordBooks();
+
+      dictService
+          .getPronunciation(widget.word, slow: false, lang: widget.lang)
+          .then((bytes) {
+            audioManager.play(bytes, mimeType: 'audio/ogg');
+          });
     });
-
-    _handleExistInWordBooks();
-
-    audioManager.play(
-      dictService.getPronunciation(widget.word, slow: false, lang: widget.lang),
-      mimeType: 'audio/ogg',
-    );
   }
 
   @override
@@ -81,10 +84,11 @@ class _DictModalState extends State<_DictModal> {
   }
 
   void _onPageChanged(int index) {
-    audioManager.play(
-      dictService.getPronunciation(widget.word, slow: false, lang: widget.lang),
-      mimeType: 'audio/ogg',
-    );
+    dictService
+        .getPronunciation(widget.word, slow: false, lang: widget.lang)
+        .then((bytes) {
+          audioManager.play(bytes, mimeType: 'audio/ogg');
+        });
   }
 
   @override
@@ -167,14 +171,15 @@ class _DictModalState extends State<_DictModal> {
             child: TextButton.icon(
               onPressed: () {
                 HapticsManager.light();
-                audioManager.play(
-                  dictService.getPronunciation(
-                    widget.word,
-                    slow: true,
-                    lang: widget.lang,
-                  ),
-                  mimeType: 'audio/ogg',
-                );
+                dictService
+                    .getPronunciation(
+                      widget.word,
+                      slow: true,
+                      lang: widget.lang,
+                    )
+                    .then((bytes) {
+                      audioManager.play(bytes, mimeType: 'audio/ogg');
+                    });
               },
               icon: const Icon(
                 Icons.play_circle,

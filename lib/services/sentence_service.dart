@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:hearai/apis/api_service.dart';
 import 'package:hearai/models/sentence.dart';
 
@@ -10,12 +13,27 @@ class SentenceService extends ApiService {
         .toList();
   }
 
-  String getPronunciationUrl(
+  // 获取句子发音
+  Future<Uint8List> getPronunciation(
     String sentenceId, {
     bool slow = false,
     required String lang,
-  }) {
-    return '${dio.options.baseUrl}/sentences/$sentenceId/pronunciation?slow=$slow&lang=$lang&timestamp=${DateTime.now().millisecondsSinceEpoch}';
+  }) async {
+    final response = await dio.get<List<int>>(
+      '/sentences/$sentenceId/pronunciation',
+      queryParameters: {
+        'slow': slow,
+        'lang': lang,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+      options: Options(responseType: ResponseType.bytes),
+    );
+
+    if (response.data == null || response.data!.isEmpty) {
+      throw Exception('Audio bytes is empty');
+    }
+
+    return Uint8List.fromList(response.data!);
   }
 
   // 差评句子

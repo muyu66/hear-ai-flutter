@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:hearai/apis/api_service.dart';
 import 'package:hearai/models/dict_model.dart';
 
@@ -15,11 +18,25 @@ class DictService extends ApiService {
   }
 
   // 获取单词发音
-  String getPronunciation(
+  Future<Uint8List> getPronunciation(
     String word, {
     bool slow = false,
     required String lang,
-  }) {
-    return '${dio.options.baseUrl}/dicts/${Uri.encodeComponent(word)}/pronunciation?slow=$slow&lang=$lang&timestamp=${DateTime.now().millisecondsSinceEpoch}';
+  }) async {
+    final response = await dio.get<List<int>>(
+      '/dicts/${Uri.encodeComponent(word)}/pronunciation',
+      queryParameters: {
+        'slow': slow,
+        'lang': lang,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      },
+      options: Options(responseType: ResponseType.bytes),
+    );
+
+    if (response.data == null || response.data!.isEmpty) {
+      throw Exception('Audio bytes is empty');
+    }
+
+    return Uint8List.fromList(response.data!);
   }
 }
