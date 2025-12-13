@@ -14,6 +14,7 @@ class SignUpPage3 extends StatefulWidget {
 class _SignUpPage3State extends State<SignUpPage3> {
   final AuthService authService = AuthService();
   List<SelectOption<int>> levels = [
+    SelectOption(label: 'wordsLevel0', value: 0),
     SelectOption(label: 'wordsLevel1', value: 1),
     SelectOption(label: 'wordsLevel2', value: 2),
     SelectOption(label: 'wordsLevel3', value: 3),

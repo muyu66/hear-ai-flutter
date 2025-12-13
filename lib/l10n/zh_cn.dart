@@ -17,6 +17,7 @@ const Map<String, String> zhCn = {
   'learn': '学习',
   'rememberModel': '记忆模型',
   'wordsLevel': '难度等级',
+  'wordsLevel0': '超萌新',
   'wordsLevel1': '菜鸟 🥚',
   'wordsLevel2': '半熟萌新',
   'wordsLevel3': '适中 🍳',
@@ -71,4 +72,5 @@ const Map<String, String> zhCn = {
   "404": "没有数据",
   "signUp": "注册",
   "chooseLevel": "选择适合你的难度",
+  "sentenceVersion": "语料库版本",
 };

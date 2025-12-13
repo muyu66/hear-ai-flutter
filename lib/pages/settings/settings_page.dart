@@ -15,6 +15,7 @@ import 'package:hearai/pages/settings/widgets/language_page.dart';
 import 'package:hearai/pages/settings/widgets/remember_selection_page.dart';
 import 'package:hearai/pages/settings/widgets/scan_qr.dart';
 import 'package:hearai/pages/settings/widgets/section_tile.dart';
+import 'package:hearai/pages/settings/widgets/sentence_version_page.dart';
 import 'package:hearai/pages/settings/widgets/simple_tile.dart';
 import 'package:hearai/pages/settings/widgets/slider_tile.dart';
 import 'package:hearai/pages/settings/widgets/source_lang_page.dart';
@@ -352,6 +353,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: 'wordsLevel'.tr,
                 value: _userProfile.wordsLevel,
                 items: [
+                  DropdownMenuItem(value: 0, child: Text('wordsLevel0'.tr)),
                   DropdownMenuItem(value: 1, child: Text('wordsLevel1'.tr)),
                   DropdownMenuItem(value: 2, child: Text('wordsLevel2'.tr)),
                   DropdownMenuItem(value: 3, child: Text('wordsLevel3'.tr)),
@@ -558,6 +560,19 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     );
                   }
+                },
+              ),
+              ClickableTile(
+                title: 'sentenceVersion'.tr,
+                icon: FontAwesomeIcons.book,
+                onTap: () async {
+                  HapticsManager.light();
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SentenceVersionPage(),
+                    ),
+                  );
                 },
               ),
               ClickableTile(

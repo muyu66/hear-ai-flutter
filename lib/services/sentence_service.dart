@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:hearai/apis/api_service.dart';
 import 'package:hearai/models/sentence.dart';
+import 'package:hearai/models/sentence_version.dart';
 
 class SentenceService extends ApiService {
   /// 获取句子分页
@@ -10,6 +11,14 @@ class SentenceService extends ApiService {
     final res = await dio.get<List<dynamic>>('/sentences');
     return (res.data ?? [])
         .map((item) => SentenceModel.fromJson(item))
+        .toList();
+  }
+
+  /// 获取句子版本
+  Future<List<SentenceVersion>> getVersion() async {
+    final res = await dio.get<List<dynamic>>('/sentences/version');
+    return (res.data ?? [])
+        .map((item) => SentenceVersion.fromJson(item))
         .toList();
   }
 
