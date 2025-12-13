@@ -4,7 +4,7 @@ import 'package:hearai/pages/home/widgets/slice_words.dart';
 import 'package:hearai/themes/light/typography.dart';
 
 class WordsListenWidget extends StatelessWidget {
-  final String words;
+  final List<String> words;
   final String lang;
   final int level;
   final String translation;
@@ -74,7 +74,7 @@ class WordsListenWidget extends StatelessWidget {
 }
 
 class WordsSayWidget extends StatelessWidget {
-  final String words;
+  final List<String> words;
   final String lang;
   final int level;
   final String translation;

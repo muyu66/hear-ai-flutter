@@ -49,16 +49,12 @@ class AudioManager {
     if (isPlaying()) {
       await _player.stop(); // 播放新音频前先停止当前音频
     }
-    await _player.setAudioSource(
-      AudioSource.uri(
-        Uri.parse(url),
-        // 后端来源才需要传递token，第三方音频不需要
-        headers: url.contains(baseUrl)
-            ? AuthStore().isLoggedIn
-                  ? {"Authorization": 'Bearer ${AuthStore().accessToken}'}
-                  : null
-            : null,
-      ),
+    await _player.setUrl(
+      url,
+      headers: AuthStore().isLoggedIn
+          ? {"Authorization": 'Bearer ${AuthStore().accessToken}'}
+          : null,
+      preload: true,
     );
     await _player.play();
   }

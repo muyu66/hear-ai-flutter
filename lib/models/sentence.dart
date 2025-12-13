@@ -6,7 +6,7 @@ part 'sentence.g.dart';
 @JsonSerializable()
 class SentenceModel {
   final String id;
-  final String words;
+  final List<String> words;
   final String wordsLang;
   final String translation;
   final WidgetType type;

@@ -36,7 +36,6 @@ dependencies:
   image: ^4.5.4
   record: ^6.1.2
   path: ^1.9.1
-  japanese_word_tokenizer: ^0.0.3
   flutter_svg: ^2.2.3
 
 dev_dependencies:

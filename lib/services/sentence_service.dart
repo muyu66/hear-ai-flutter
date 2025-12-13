@@ -15,7 +15,7 @@ class SentenceService extends ApiService {
     bool slow = false,
     required String lang,
   }) {
-    return '${dio.options.baseUrl}/sentences/$sentenceId/pronunciation?slow=$slow&lang=$lang';
+    return '${dio.options.baseUrl}/sentences/$sentenceId/pronunciation?slow=$slow&lang=$lang&timestamp=${DateTime.now().millisecondsSinceEpoch}';
   }
 
   // 差评句子

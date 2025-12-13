@@ -9,7 +9,7 @@ part of 'sentence.dart';
 SentenceModel _$SentenceModelFromJson(Map<String, dynamic> json) =>
     SentenceModel(
       id: json['id'] as String,
-      words: json['words'] as String,
+      words: (json['words'] as List<dynamic>).map((e) => e as String).toList(),
       wordsLang: json['wordsLang'] as String,
       translation: json['translation'] as String,
       type: $enumDecode(_$WidgetTypeEnumMap, json['type']),

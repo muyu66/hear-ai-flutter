@@ -20,6 +20,6 @@ class DictService extends ApiService {
     bool slow = false,
     required String lang,
   }) {
-    return '${dio.options.baseUrl}/dicts/${Uri.encodeComponent(word)}/pronunciation?slow=$slow&lang=$lang';
+    return '${dio.options.baseUrl}/dicts/${Uri.encodeComponent(word)}/pronunciation?slow=$slow&lang=$lang&timestamp=${DateTime.now().millisecondsSinceEpoch}';
   }
 }

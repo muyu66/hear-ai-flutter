@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/haptics_manager.dart';
 import 'package:hearai/widgets/dict.dart';
-import 'package:japanese_word_tokenizer/japanese_word_tokenizer.dart';
 
 class SliceWords extends StatelessWidget {
-  final String words;
+  final List<String> words;
   final String lang;
   final int hiddenPercent; // 0-100
 
@@ -36,18 +35,9 @@ class SliceWords extends StatelessWidget {
     return indices.sublist(0, hiddenCount);
   }
 
-  List<String> _splitWords(String words, String lang) {
-    if (lang == 'ja') {
-      return tokenize(words);
-    }
-
-    return words.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    final words = _splitWords(this.words, lang);
     final hiddenIndices = _calcHiddenIndices(words, hiddenPercent);
 
     return Wrap(
