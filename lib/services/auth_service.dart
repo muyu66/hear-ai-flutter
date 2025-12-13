@@ -47,7 +47,7 @@ class AuthService extends ApiService {
     int? reverseWordBookRatio,
     int? targetRetention,
     String? sourceLang,
-    List<String>? targetLangs,
+    String? targetLang,
   }) async {
     final data = {
       'nickname': nickname,
@@ -59,7 +59,7 @@ class AuthService extends ApiService {
       'reverseWordBookRatio': reverseWordBookRatio,
       'targetRetention': targetRetention,
       'sourceLang': sourceLang,
-      'targetLangs': targetLangs,
+      'targetLang': targetLang,
     }..removeWhere((key, value) => value == null);
 
     await dio.post('/auth/profile', data: data);

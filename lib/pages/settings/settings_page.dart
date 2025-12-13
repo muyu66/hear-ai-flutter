@@ -18,9 +18,7 @@ import 'package:hearai/pages/settings/widgets/section_tile.dart';
 import 'package:hearai/pages/settings/widgets/sentence_version_page.dart';
 import 'package:hearai/pages/settings/widgets/simple_tile.dart';
 import 'package:hearai/pages/settings/widgets/slider_tile.dart';
-import 'package:hearai/pages/settings/widgets/source_lang_page.dart';
 import 'package:hearai/pages/settings/widgets/switch_tile_tile.dart';
-import 'package:hearai/pages/settings/widgets/target_lang_page.dart';
 import 'package:hearai/services/auth_service.dart';
 import 'package:hearai/store.dart';
 import 'package:hearai/tools/auth.dart';
@@ -60,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
         reverseWordBookRatio: 20,
         targetRetention: 90,
         sourceLang: "zh-CN",
-        targetLangs: ["en"],
+        targetLang: "en",
       );
   final storeController = Get.put(StoreController());
   final refreshWordsController = Get.put(RefreshWordsController());
@@ -132,6 +130,29 @@ class _SettingsPageState extends State<SettingsPage> {
       MemoryCache().saveUserProfile(_userProfile);
       refreshWordsController.setTrue();
     });
+  }
+
+  void _updateSourceLang(String value) async {
+    if (!mounted) return;
+    HapticsManager.light();
+    await authService.updateProfile(sourceLang: value);
+    setState(() {
+      _userProfile.sourceLang = value;
+    });
+    MemoryCache().saveUserProfile(_userProfile);
+    refreshWordsController.setTrue();
+  }
+
+  void _updateTargetLang(String value) async {
+    if (!mounted) return;
+    HapticsManager.light();
+    await authService.updateProfile(targetLang: value);
+    setState(() {
+      _userProfile.targetLang = value;
+    });
+    MemoryCache().saveUserProfile(_userProfile);
+    storeController.resetPercent();
+    refreshWordsController.setTrue();
   }
 
   void _linkWechat(String code) {
@@ -303,50 +324,30 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
-              ClickableTile(
+              DropdownSelectionTile<String>(
                 title: 'sourceLang'.tr,
-                icon: FontAwesomeIcons.listCheck,
-                onTap: () async {
-                  HapticsManager.light();
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SourceLangPage(
-                        initValue: _userProfile.sourceLang,
-                        onTap: (String value) async {
-                          HapticsManager.light();
-                          await authService.updateProfile(sourceLang: value);
-                          setState(() {
-                            _userProfile.sourceLang = value;
-                          });
-                          MemoryCache().saveUserProfile(_userProfile);
-                        },
-                      ),
-                    ),
-                  );
+                value: _userProfile.sourceLang,
+                items: [
+                  DropdownMenuItem(value: "en", child: Text('en'.tr)),
+                  DropdownMenuItem(value: "zh-CN", child: Text('zh-CN'.tr)),
+                  DropdownMenuItem(value: "ja", child: Text('ja'.tr)),
+                ],
+                onChanged: (value) async {
+                  if (value == null) return;
+                  _updateSourceLang(value);
                 },
               ),
-              ClickableTile(
-                title: 'targetLangs'.tr,
-                icon: FontAwesomeIcons.list,
-                onTap: () async {
-                  HapticsManager.light();
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => TargetLangPage(
-                        initValues: _userProfile.targetLangs,
-                        onTap: (List<String> values) async {
-                          HapticsManager.light();
-                          await authService.updateProfile(targetLangs: values);
-                          setState(() {
-                            _userProfile.targetLangs = values;
-                          });
-                          MemoryCache().saveUserProfile(_userProfile);
-                        },
-                      ),
-                    ),
-                  );
+              DropdownSelectionTile<String>(
+                title: 'targetLang'.tr,
+                value: _userProfile.targetLang,
+                items: [
+                  DropdownMenuItem(value: "en", child: Text('en'.tr)),
+                  DropdownMenuItem(value: "zh-CN", child: Text('zh-CN'.tr)),
+                  DropdownMenuItem(value: "ja", child: Text('ja'.tr)),
+                ],
+                onChanged: (value) async {
+                  if (value == null) return;
+                  _updateTargetLang(value);
                 },
               ),
               DropdownSelectionTile<int>(

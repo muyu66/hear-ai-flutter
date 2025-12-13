@@ -31,6 +31,23 @@ class WordsItem extends StatelessWidget {
         child: Stack(
           alignment: Alignment.topRight,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (level > 4)
+                    IconButton(
+                      icon: Icon(
+                        Icons.thumb_down,
+                        color: reported ? c.secondary : c.error,
+                        size: 22,
+                      ),
+                      onPressed: reported ? null : onTapReport,
+                    ),
+                ],
+              ),
+            ),
             Center(
               child: type == WidgetType.listen
                   ? WordsListenWidget(
@@ -46,22 +63,6 @@ class WordsItem extends StatelessWidget {
                       translation: wordsModel.translation,
                     ),
             ),
-            if (level > 4)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.thumb_down,
-                      color: reported ? c.secondary : c.error,
-                      size: 22,
-                    ),
-                    onPressed: reported ? null : onTapReport,
-                  ),
-                ),
-              ),
           ],
         ),
       ),

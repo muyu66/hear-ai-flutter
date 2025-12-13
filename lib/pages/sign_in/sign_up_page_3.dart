@@ -48,7 +48,7 @@ class _SignUpPage3State extends State<SignUpPage3> {
                 ),
               ),
               Expanded(
-                flex: 5,
+                flex: 6,
                 child: Column(
                   children: [
                     SelectableCard<int>(
@@ -67,12 +67,12 @@ class _SignUpPage3State extends State<SignUpPage3> {
                       onPressed: () async {
                         HapticsManager.light();
                         final sourceLang = Get.arguments['sourceLang'];
-                        final targetLangs = Get.arguments['targetLangs'];
+                        final targetLang = Get.arguments['targetLang'];
                         final level = selectedLevel.first;
                         await authService.updateProfile(
                           wordsLevel: level,
                           sourceLang: sourceLang,
-                          targetLangs: targetLangs,
+                          targetLang: targetLang,
                         );
                         Get.offAllNamed('/home');
                       },

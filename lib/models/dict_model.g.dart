@@ -10,7 +10,9 @@ DictModel _$DictModelFromJson(Map<String, dynamic> json) => DictModel(
   id: json['id'] as String,
   word: json['word'] as String,
   badScore: (json['badScore'] as num).toInt(),
-  phonetic: json['phonetic'] as String,
+  phonetic: (json['phonetic'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
   translation: json['translation'] as String,
   reported: json['reported'] as bool? ?? false,
 );

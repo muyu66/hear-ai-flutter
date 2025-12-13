@@ -15,7 +15,7 @@ class UserProfile {
   int reverseWordBookRatio;
   int targetRetention;
   String sourceLang;
-  List<String> targetLangs;
+  String targetLang;
 
   UserProfile({
     required this.nickname,
@@ -29,7 +29,7 @@ class UserProfile {
     required this.reverseWordBookRatio,
     required this.targetRetention,
     required this.sourceLang,
-    required this.targetLangs,
+    required this.targetLang,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>

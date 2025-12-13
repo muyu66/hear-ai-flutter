@@ -7,6 +7,7 @@ import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/audio_manager.dart';
 import 'package:hearai/tools/dialog.dart';
 import 'package:hearai/tools/haptics_manager.dart';
+import 'package:hearai/widgets/phonetic_tag.dart';
 
 void showDictModal(BuildContext context, String word, String lang) {
   showGeneralDialog(
@@ -144,6 +145,7 @@ class _DictModalState extends State<_DictModal> {
                                         dict: 'ai',
                                         dictName: 'AI词典',
                                         dictModel: dict!,
+                                        lang: widget.lang,
                                       );
                                     },
                                   ),
@@ -262,12 +264,14 @@ class _LocalDictView extends StatefulWidget {
   final String dict;
   final String dictName;
   final DictModel dictModel;
+  final String lang;
 
   const _LocalDictView({
     super.key,
     required this.dict,
     required this.dictName,
     required this.dictModel,
+    required this.lang,
   });
 
   @override
@@ -295,6 +299,7 @@ class _LocalDictViewState extends State<_LocalDictView> {
   Widget build(BuildContext context) {
     final c = Theme.of(context).colorScheme;
     final t = Theme.of(context).textTheme;
+    final phonetic = widget.dictModel.phonetic;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -335,14 +340,45 @@ class _LocalDictViewState extends State<_LocalDictView> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(widget.dictModel.word, style: t.printTextXl),
-                const SizedBox(height: 2),
-                Text(
-                  widget.dictModel.phonetic.isNotEmpty
-                      ? widget.dictModel.phonetic
-                      : '-',
-                  style: t.printText.copyWith(color: c.secondary),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: widget.lang == "en"
+                      ? [
+                          PhoneticTag(
+                            prefix: "phonetic_en_1".tr,
+                            text: phonetic[0],
+                          ),
+                          const SizedBox(width: 6),
+                          PhoneticTag(
+                            prefix: "phonetic_en_2".tr,
+                            text: phonetic[1],
+                          ),
+                        ]
+                      : [
+                          PhoneticTag(
+                            prefix: "phonetic_ja_1".tr,
+                            text: phonetic[0],
+                          ),
+                          const SizedBox(width: 6),
+                          PhoneticTag(
+                            prefix: "phonetic_ja_2".tr,
+                            text: phonetic[1],
+                          ),
+                          const SizedBox(width: 6),
+                          PhoneticTag(
+                            prefix: "phonetic_ja_3".tr,
+                            text: phonetic[2],
+                          ),
+                        ],
                 ),
-                const SizedBox(height: 32),
+                // Text(
+                //   widget.dictModel.phonetic.isNotEmpty
+                //       ? widget.dictModel.phonetic.join(" ")
+                //       : '-',
+                //   style: t.printText.copyWith(color: c.secondary),
+                // ),
+                const SizedBox(height: 36),
                 Text(
                   widget.dictModel.translation.isNotEmpty
                       ? widget.dictModel.translation

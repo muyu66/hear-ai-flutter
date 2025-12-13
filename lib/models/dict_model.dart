@@ -7,7 +7,7 @@ class DictModel {
   final String id;
   final String word;
   final int badScore;
-  final String phonetic;
+  final List<String> phonetic;
   final String translation;
 
   // 扩展字段

@@ -17,7 +17,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
     SelectOption(label: '日本語', value: 'ja'),
   ];
 
-  Set<String> selectedLanguages = {'en'};
+  Set<String> selectedLanguage = {'zh-CN'};
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +48,14 @@ class _SignUpPage2State extends State<SignUpPage2> {
                   children: [
                     SelectableCard<String>(
                       options: languages,
-                      multiSelect: true,
-                      selectedValues: selectedLanguages,
+                      multiSelect: false,
+                      selectedValues: selectedLanguage,
                       onChanged: (newSelected) {
                         HapticsManager.light();
-                        setState(() => selectedLanguages = newSelected);
+                        setState(() => selectedLanguage = newSelected);
                       },
                     ),
-
                     const SizedBox(height: 60),
-
                     ElevatedButton(
                       onPressed: () {
                         HapticsManager.light();
@@ -65,7 +63,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
                           '/sign-up/3',
                           arguments: {
                             'sourceLang': Get.arguments['sourceLang'],
-                            'targetLangs': selectedLanguages.toList(),
+                            'targetLang': selectedLanguage.first,
                           },
                         );
                       },

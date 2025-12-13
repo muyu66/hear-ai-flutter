@@ -25,11 +25,7 @@ class DictService extends ApiService {
   }) async {
     final response = await dio.get<List<int>>(
       '/dicts/${Uri.encodeComponent(word)}/pronunciation',
-      queryParameters: {
-        'slow': slow,
-        'lang': lang,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
+      queryParameters: {'slow': slow, 'lang': lang},
       options: Options(responseType: ResponseType.bytes),
     );
 

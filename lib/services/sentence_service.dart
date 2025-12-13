@@ -7,8 +7,11 @@ import 'package:hearai/models/sentence_version.dart';
 
 class SentenceService extends ApiService {
   /// 获取句子分页
-  Future<List<SentenceModel>> getSentences() async {
-    final res = await dio.get<List<dynamic>>('/sentences');
+  Future<List<SentenceModel>> getSentences({String? lang}) async {
+    final res = await dio.get<List<dynamic>>(
+      '/sentences',
+      queryParameters: {'lang': lang},
+    );
     return (res.data ?? [])
         .map((item) => SentenceModel.fromJson(item))
         .toList();
@@ -30,11 +33,7 @@ class SentenceService extends ApiService {
   }) async {
     final response = await dio.get<List<int>>(
       '/sentences/$sentenceId/pronunciation',
-      queryParameters: {
-        'slow': slow,
-        'lang': lang,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-      },
+      queryParameters: {'slow': slow, 'lang': lang},
       options: Options(responseType: ResponseType.bytes),
     );
 

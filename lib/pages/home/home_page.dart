@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   DateTime? _lastThinkingTime;
   // 防止快速点击
   int _lastClickTime = 0; // 上次点击时间（毫秒）
+  List<String> targetLangs = [];
 
   @override
   void didChangeDependencies() {
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   Future<void> _handleReturnFromNext() async {
-    await _setUserMinute();
+    await _setUserProfile();
     await pollingTask();
     startPolling();
   }
@@ -96,14 +97,14 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   Future<void> _initAsync() async {
-    await _setUserMinute();
+    await _setUserProfile();
     await _loadWords();
     await pollingTask();
     play(words[0].id, words[0].wordsLang);
     startPolling();
   }
 
-  Future<void> _setUserMinute() async {
+  Future<void> _setUserProfile() async {
     if (!mounted) return;
     final profile = await authService.getProfile();
     setState(() {
@@ -154,9 +155,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   // 废弃未看的内容，并获取新内容
-  Future<void> _loadNewWords() async {
+  Future<void> _loadNewWords({String? lang}) async {
     if (!mounted) return;
-    final fetchedWords = await sentenceService.getSentences();
+    final fetchedWords = await sentenceService.getSentences(lang: lang);
     if (fetchedWords.isEmpty) return;
     setState(() {
       final subWords = words.take(currIndex + 1).toList();
