@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:hearai/models/word_book.dart';
 import 'package:hearai/pages/word_book/widgets/snap_slider.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/haptics_manager.dart';
+import 'package:hearai/widgets/phonetic_tag.dart';
 
 class BookItem extends StatefulWidget {
   final WordBook wordBook;
@@ -34,6 +36,7 @@ class _BookItemState extends State<BookItem> {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final c = Theme.of(context).colorScheme;
+    final phonetic = widget.wordBook.phonetic;
 
     void onTapSubmit(int rememberLevel) {
       widget.onRememberWordBook(
@@ -87,11 +90,36 @@ class _BookItemState extends State<BookItem> {
                         Text(widget.wordBook.word, style: t.printTextXl),
                         const SizedBox(height: 12),
                         if (showMore) ...[
-                          Text(
-                            widget.wordBook.phonetic.isNotEmpty
-                                ? widget.wordBook.phonetic
-                                : '-',
-                            style: t.printText.copyWith(color: c.secondary),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: widget.wordBook.lang == "en"
+                                ? [
+                                    PhoneticTag(
+                                      prefix: "phonetic_en_1".tr,
+                                      text: phonetic[0],
+                                    ),
+                                    const SizedBox(width: 6),
+                                    PhoneticTag(
+                                      prefix: "phonetic_en_2".tr,
+                                      text: phonetic[1],
+                                    ),
+                                  ]
+                                : [
+                                    PhoneticTag(
+                                      prefix: "phonetic_ja_1".tr,
+                                      text: phonetic[0],
+                                    ),
+                                    const SizedBox(width: 6),
+                                    PhoneticTag(
+                                      prefix: "phonetic_ja_2".tr,
+                                      text: phonetic[1],
+                                    ),
+                                    const SizedBox(width: 6),
+                                    PhoneticTag(
+                                      prefix: "phonetic_ja_3".tr,
+                                      text: phonetic[2],
+                                    ),
+                                  ],
                           ),
                           const SizedBox(height: 30),
                           Padding(
@@ -111,11 +139,36 @@ class _BookItemState extends State<BookItem> {
                         if (showMore) ...[
                           Text(widget.wordBook.word, style: t.printTextXl),
                           const SizedBox(height: 12),
-                          Text(
-                            widget.wordBook.phonetic.isNotEmpty
-                                ? widget.wordBook.phonetic
-                                : '-',
-                            style: t.printText.copyWith(color: c.secondary),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: widget.wordBook.lang == "en"
+                                ? [
+                                    PhoneticTag(
+                                      prefix: "phonetic_en_1".tr,
+                                      text: phonetic[0],
+                                    ),
+                                    const SizedBox(width: 6),
+                                    PhoneticTag(
+                                      prefix: "phonetic_en_2".tr,
+                                      text: phonetic[1],
+                                    ),
+                                  ]
+                                : [
+                                    PhoneticTag(
+                                      prefix: "phonetic_ja_1".tr,
+                                      text: phonetic[0],
+                                    ),
+                                    const SizedBox(width: 6),
+                                    PhoneticTag(
+                                      prefix: "phonetic_ja_2".tr,
+                                      text: phonetic[1],
+                                    ),
+                                    const SizedBox(width: 6),
+                                    PhoneticTag(
+                                      prefix: "phonetic_ja_3".tr,
+                                      text: phonetic[2],
+                                    ),
+                                  ],
                           ),
                           const SizedBox(height: 30),
                         ],

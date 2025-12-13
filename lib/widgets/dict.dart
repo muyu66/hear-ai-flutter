@@ -228,9 +228,11 @@ class _DictModalState extends State<_DictModal> {
                           _handleExistInWordBooks();
                         });
                       } else {
-                        myWordService.add(widget.word).then((_) {
-                          _handleExistInWordBooks();
-                        });
+                        myWordService
+                            .add(word: widget.word, lang: widget.lang)
+                            .then((_) {
+                              _handleExistInWordBooks();
+                            });
                       }
                     },
               style: ElevatedButton.styleFrom(
@@ -372,12 +374,6 @@ class _LocalDictViewState extends State<_LocalDictView> {
                           ),
                         ],
                 ),
-                // Text(
-                //   widget.dictModel.phonetic.isNotEmpty
-                //       ? widget.dictModel.phonetic.join(" ")
-                //       : '-',
-                //   style: t.printText.copyWith(color: c.secondary),
-                // ),
                 const SizedBox(height: 36),
                 Text(
                   widget.dictModel.translation.isNotEmpty

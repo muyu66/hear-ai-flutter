@@ -7,7 +7,6 @@ import 'package:hearai/models/dict_model.dart';
 class DictService extends ApiService {
   // 获取内置词典
   Future<DictModel> getDict(String word, String lang) async {
-    print('/dicts/${Uri.encodeComponent(word)}?lang=$lang');
     final res = await dio.get('/dicts/${Uri.encodeComponent(word)}?lang=$lang');
     return DictModel.fromJson(res.data);
   }

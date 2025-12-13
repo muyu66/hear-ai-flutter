@@ -12,8 +12,8 @@ class MyWordService extends ApiService {
   }
 
   // 新增单词到单词本
-  Future<void> add(String word) async {
-    await dio.post<void>('/my/words', data: {"word": word});
+  Future<void> add({required String word, required String lang}) async {
+    await dio.post<void>('/my/words', data: {"word": word, "lang": lang});
   }
 
   // 获取单词本概况

@@ -146,7 +146,7 @@ class _BookPageViewState extends State<BookPageView> {
                 .getPronunciation(
                   wordBook.word,
                   slow: true,
-                  lang: wordBook.wordLang,
+                  lang: wordBook.lang,
                 )
                 .then((bytes) {
                   audioManager.play(bytes, mimeType: 'audio/ogg');

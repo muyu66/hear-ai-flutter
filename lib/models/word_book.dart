@@ -7,14 +7,14 @@ enum WordWidgetType { source, target }
 @JsonSerializable()
 class WordBook {
   final String word;
-  final String wordLang;
-  final String phonetic;
+  final String lang;
+  final List<String> phonetic;
   final String translation;
   final WordWidgetType type;
 
   const WordBook({
     required this.word,
-    required this.wordLang,
+    required this.lang,
     required this.phonetic,
     required this.translation,
     required this.type,
