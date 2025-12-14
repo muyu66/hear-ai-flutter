@@ -79,4 +79,5 @@ const Map<String, String> zhCn = {
   "phonetic_ja_1": "罗",
   "phonetic_ja_2": "片",
   "phonetic_ja_3": "平",
+  "copied": "已复制",
 };

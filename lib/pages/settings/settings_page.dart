@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hearai/apis/auth_store.dart';
+import 'package:hearai/models/system_info.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/pages/settings/widgets/clickable_tile.dart';
 import 'package:hearai/pages/settings/widgets/dropdown_selection_tile.dart';
@@ -60,14 +61,26 @@ class _SettingsPageState extends State<SettingsPage> {
         sourceLang: "zh-CN",
         targetLang: "en",
       );
+  final SystemInfo _systemInfo =
+      MemoryCache().loadSystemInfo() ??
+      SystemInfo(androidAppVersion: "unknown");
+  bool _newVersion = false;
   final storeController = Get.put(StoreController());
   final refreshWordsController = Get.put(RefreshWordsController());
 
   @override
   void initState() {
     super.initState();
+    _loadNewVersion();
     _loadCacheSize();
     _loadProfile();
+  }
+
+  void _loadNewVersion() {
+    final version = MemoryCache().loadPackageInfoVersion();
+    setState(() {
+      _newVersion = _systemInfo.androidAppVersion != version;
+    });
   }
 
   Future<void> _loadCacheSize() async {
@@ -197,6 +210,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Theme.of(context);
+
     return Scaffold(
       body: ListView(
         children: [
@@ -576,6 +591,30 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
+              if (_newVersion)
+                ClickableTile(
+                  title: "发现新版本",
+                  icon: FontAwesomeIcons.cloudArrowDown,
+                  iconColor: t.colorScheme.error,
+                  onTap: () async {
+                    HapticsManager.light();
+                    try {
+                      await launchUrl(
+                        Uri.parse('https://zhuzhu.website/#download'),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${'cannotOpenWeb'.tr}: ${e.toString()}',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ClickableTile(
                 title: 'signOut'.tr,
                 icon: FontAwesomeIcons.arrowRightFromBracket,
@@ -722,6 +761,11 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           Text(
             "© 2025 zhuzhu",
+            style: t.bodyMedium!.copyWith(color: c.secondary),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "version  ${MemoryCache().loadPackageInfoVersion()}",
             style: t.bodyMedium!.copyWith(color: c.secondary),
           ),
         ],

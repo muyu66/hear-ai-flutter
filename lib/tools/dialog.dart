@@ -51,7 +51,7 @@ Future<void> showNotify({
     title: title,
     titleTextStyle: t.titleMedium,
     padding: EdgeInsets.fromLTRB(12, 0, 12, 24),
-    autoHide: Duration(milliseconds: 1500),
+    autoHide: Duration(milliseconds: 1200),
   ).show();
 }
 
@@ -65,7 +65,7 @@ Future<void> showOk({required BuildContext context}) async {
     body: null,
     width: 120,
     padding: EdgeInsets.zero,
-    autoHide: Duration(milliseconds: 800),
+    autoHide: Duration(milliseconds: 700),
     dialogBackgroundColor: Colors.white.withAlpha(0),
   ).show();
 }
@@ -86,6 +86,6 @@ Future<void> showClassicNotify({
     title: title,
     titleTextStyle: t.titleMedium,
     padding: EdgeInsets.fromLTRB(12, 0, 12, 24),
-    autoHide: Duration(milliseconds: 1500),
+    autoHide: Duration(milliseconds: 1200),
   ).show();
 }

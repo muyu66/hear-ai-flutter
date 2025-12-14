@@ -37,6 +37,7 @@ dependencies:
   path: ^1.9.1
   flutter_svg: ^2.2.3
   just_audio: ^0.10.5
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:

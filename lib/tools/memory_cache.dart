@@ -1,4 +1,5 @@
 import 'package:get_storage/get_storage.dart';
+import 'package:hearai/models/system_info.dart';
 import 'package:hearai/models/user_profile.dart';
 import 'package:hearai/models/word_book.dart';
 import 'package:hearai/models/word_book_summary.dart';
@@ -69,5 +70,41 @@ class MemoryCache {
     // 保存前把每个对象转换成 Map
     final jsonList = data.map((e) => e.toJson()).toList();
     await _box!.write("WordBookList", jsonList);
+  }
+
+  SystemInfo? loadSystemInfo() {
+    if (_box == null) {
+      throw StateError('Storage not initialized. Call Storage.init() first.');
+    }
+
+    final data = _box!.read("SystemInfo");
+    if (data == null) return null;
+    return SystemInfo.fromJson(data);
+  }
+
+  void saveSystemInfo(SystemInfo data) async {
+    if (_box == null) {
+      throw StateError('Storage not initialized. Call Storage.init() first.');
+    }
+
+    _box!.writeInMemory("SystemInfo", data.toJson());
+  }
+
+  String? loadPackageInfoVersion() {
+    if (_box == null) {
+      throw StateError('Storage not initialized. Call Storage.init() first.');
+    }
+
+    final data = _box!.read("PackageInfoVersion");
+    if (data == null) return null;
+    return data;
+  }
+
+  void savePackageInfoVersion(String data) async {
+    if (_box == null) {
+      throw StateError('Storage not initialized. Call Storage.init() first.');
+    }
+
+    _box!.writeInMemory("PackageInfoVersion", data);
   }
 }

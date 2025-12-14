@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hearai/tools/haptics_manager.dart';
 
 class SnapSlider extends StatefulWidget {
   final List<Widget> children;
@@ -46,7 +45,7 @@ class _SnapSliderState extends State<SnapSlider> with TickerProviderStateMixin {
     _iconScale = TweenSequence([
       TweenSequenceItem(
         tween: Tween(
-          begin: 1.0,
+          begin: 0.0,
           end: 1.2,
         ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 60,
@@ -78,9 +77,6 @@ class _SnapSliderState extends State<SnapSlider> with TickerProviderStateMixin {
 
       // 图标缩放动画
       _iconController.forward(from: 0);
-
-      // Haptic
-      HapticsManager.light();
     }
 
     setState(() {
@@ -102,7 +98,6 @@ class _SnapSliderState extends State<SnapSlider> with TickerProviderStateMixin {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onHorizontalDragEnd: (details) {
-        HapticsManager.medium();
         widget.onFinished(_currentIndex);
       },
       onHorizontalDragUpdate: (details) {
@@ -111,7 +106,6 @@ class _SnapSliderState extends State<SnapSlider> with TickerProviderStateMixin {
         _update(local);
       },
       onTapDown: (details) {
-        HapticsManager.medium();
         final box = context.findRenderObject() as RenderBox;
         final local = box.globalToLocal(details.globalPosition);
         _update(local);

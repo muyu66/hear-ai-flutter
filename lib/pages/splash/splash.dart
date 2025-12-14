@@ -5,9 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:hearai/services/auth_service.dart';
 import 'package:hearai/services/my_word_service.dart';
 import 'package:hearai/services/splash_service.dart';
+import 'package:hearai/services/system_service.dart';
 import 'package:hearai/themes/light/typography.dart';
 import 'package:hearai/tools/auth.dart';
 import 'package:hearai/tools/memory_cache.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -25,6 +27,7 @@ class _SplashPageState extends State<SplashPage> {
   // 预载数据用的 Service
   final MyWordService myWordService = MyWordService();
   final AuthService authService = AuthService();
+  final SystemService systemService = SystemService();
 
   @override
   void initState() {
@@ -45,6 +48,12 @@ class _SplashPageState extends State<SplashPage> {
 
     final wordBookList = await myWordService.getWords(offset: 0);
     MemoryCache().saveWordBookList(wordBookList);
+
+    final systemInfo = await systemService.getSystemInfo();
+    MemoryCache().saveSystemInfo(systemInfo);
+
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    MemoryCache().savePackageInfoVersion(packageInfo.version);
   }
 
   Future<void> _loadSplashTexts() async {

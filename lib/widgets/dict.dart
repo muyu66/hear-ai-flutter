@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/utils.dart';
 import 'package:hearai/models/dict_model.dart';
 import 'package:hearai/services/dict_service.dart';
@@ -49,17 +50,12 @@ class _DictModalState extends State<_DictModal> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      dictService.getDict(widget.word, widget.lang).then((value) {
-        if (mounted) {
-          setState(() {
-            dict = value;
-          });
-        }
+    dictService.getDict(widget.word, widget.lang).then((value) {
+      if (!mounted) return;
+      setState(() {
+        dict = value;
       });
-
       _handleExistInWordBooks();
-
       dictService
           .getPronunciation(widget.word, slow: false, lang: widget.lang)
           .then((bytes) {
@@ -74,7 +70,7 @@ class _DictModalState extends State<_DictModal> {
     super.dispose();
   }
 
-  void _handleExistInWordBooks() async {
+  Future<void> _handleExistInWordBooks() async {
     myWordService.exist(widget.word).then((value) {
       if (mounted) {
         setState(() {
@@ -341,7 +337,16 @@ class _LocalDictViewState extends State<_LocalDictView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(widget.dictModel.word, style: t.printTextXl),
+                GestureDetector(
+                  onTap: () {
+                    HapticsManager.light();
+                    Clipboard.setData(
+                      ClipboardData(text: widget.dictModel.word),
+                    );
+                    showNotify(context: context, title: "copied".tr);
+                  },
+                  child: Text(widget.dictModel.word, style: t.printTextXl),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

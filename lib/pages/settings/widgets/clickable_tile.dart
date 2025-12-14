@@ -6,11 +6,13 @@ class ClickableTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData icon;
+  final Color? iconColor;
   final Function() onTap;
   const ClickableTile({
     super.key,
     required this.title,
     required this.icon,
+    this.iconColor,
     this.subtitle,
     required this.onTap,
   });
@@ -25,7 +27,7 @@ class ClickableTile extends StatelessWidget {
               child: Text(subtitle!),
             )
           : null,
-      leading: FaIcon(icon, size: 20),
+      leading: FaIcon(icon, size: 20, color: iconColor),
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: onTap,
     );
