@@ -13,7 +13,7 @@ class SentenceModel {
 
   // 扩展字段
   bool reported;
-  int level;
+  int clickCount;
 
   SentenceModel({
     required this.id,
@@ -22,7 +22,7 @@ class SentenceModel {
     required this.translation,
     required this.type,
     this.reported = false,
-    this.level = 1,
+    this.clickCount = 1,
   });
 
   factory SentenceModel.fromJson(Map<String, dynamic> json) =>

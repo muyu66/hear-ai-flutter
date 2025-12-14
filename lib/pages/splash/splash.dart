@@ -40,6 +40,12 @@ class _SplashPageState extends State<SplashPage> {
 
   /// 预载后端数据
   Future<void> _preloadData() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    MemoryCache().savePackageInfoVersion(packageInfo.version);
+
+    final systemInfo = await systemService.getSystemInfo();
+    MemoryCache().saveSystemInfo(systemInfo);
+
     final summary = await myWordService.getSummary();
     MemoryCache().saveWordBookSummary(summary);
 
@@ -48,12 +54,6 @@ class _SplashPageState extends State<SplashPage> {
 
     final wordBookList = await myWordService.getWords(offset: 0);
     MemoryCache().saveWordBookList(wordBookList);
-
-    final systemInfo = await systemService.getSystemInfo();
-    MemoryCache().saveSystemInfo(systemInfo);
-
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    MemoryCache().savePackageInfoVersion(packageInfo.version);
   }
 
   Future<void> _loadSplashTexts() async {

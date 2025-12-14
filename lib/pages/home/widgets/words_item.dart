@@ -7,14 +7,14 @@ enum WidgetType { listen, say }
 class WordsItem extends StatelessWidget {
   final SentenceModel wordsModel;
   final WidgetType type;
-  final int level;
+  final int clickCount;
   final bool reported;
   final void Function() onTapReport;
 
   const WordsItem({
     super.key,
     required this.wordsModel,
-    required this.level,
+    required this.clickCount,
     required this.type,
     required this.reported,
     required this.onTapReport,
@@ -36,7 +36,7 @@ class WordsItem extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (level > 4)
+                  if (clickCount > 4)
                     IconButton(
                       icon: Icon(
                         Icons.thumb_down,
@@ -53,13 +53,13 @@ class WordsItem extends StatelessWidget {
                   ? WordsListenWidget(
                       words: wordsModel.words,
                       lang: wordsModel.wordsLang,
-                      level: level,
+                      clickCount: clickCount,
                       translation: wordsModel.translation,
                     )
                   : WordsSayWidget(
                       words: wordsModel.words,
                       lang: wordsModel.wordsLang,
-                      level: level,
+                      clickCount: clickCount,
                       translation: wordsModel.translation,
                     ),
             ),

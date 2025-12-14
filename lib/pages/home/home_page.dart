@@ -288,7 +288,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     final op = _onTapPadCenter(
       words[currIndex].id,
       words[currIndex].type,
-      words[currIndex].level,
+      words[currIndex].clickCount,
     );
 
     if (op.thinking) {
@@ -328,7 +328,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     // 上报记住的句子
     sentenceService.remember(
       sentenceId: words[currIndex].id,
-      hintCount: words[index].level - 1,
+      hintCount: words[index].clickCount - 1,
       // 配合 _onTapPadCenter 表示只要点击PAD后才开始计时，忽略一些不喜欢就翻页的场景
       thinkingTime: _lastThinkingTime == null
           ? 0
@@ -385,7 +385,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
             itemBuilder: (context, index) {
               return WordsItem(
                 wordsModel: words[index],
-                level: words[index].level,
+                clickCount: words[index].clickCount,
                 type: words[index].type,
                 reported: words[index].reported,
                 onTapReport: () {
@@ -416,7 +416,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
                   HapticsManager.light();
                   setState(() {
-                    words[currIndex].level++;
+                    words[currIndex].clickCount++;
                   });
                   await play(words[currIndex].id, words[currIndex].wordsLang);
                 },

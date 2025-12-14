@@ -55,13 +55,14 @@ class _DictModalState extends State<_DictModal> {
       setState(() {
         dict = value;
       });
-      _handleExistInWordBooks();
       dictService
           .getPronunciation(widget.word, slow: false, lang: widget.lang)
           .then((bytes) {
             audioManager.play(bytes, mimeType: 'audio/ogg');
           });
     });
+
+    _handleExistInWordBooks();
   }
 
   @override

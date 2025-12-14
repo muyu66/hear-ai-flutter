@@ -14,7 +14,7 @@ SentenceModel _$SentenceModelFromJson(Map<String, dynamic> json) =>
       translation: json['translation'] as String,
       type: $enumDecode(_$WidgetTypeEnumMap, json['type']),
       reported: json['reported'] as bool? ?? false,
-      level: (json['level'] as num?)?.toInt() ?? 1,
+      clickCount: (json['level'] as num?)?.toInt() ?? 1,
     );
 
 Map<String, dynamic> _$SentenceModelToJson(SentenceModel instance) =>
@@ -25,7 +25,7 @@ Map<String, dynamic> _$SentenceModelToJson(SentenceModel instance) =>
       'translation': instance.translation,
       'type': _$WidgetTypeEnumMap[instance.type]!,
       'reported': instance.reported,
-      'level': instance.level,
+      'level': instance.clickCount,
     };
 
 const _$WidgetTypeEnumMap = {
